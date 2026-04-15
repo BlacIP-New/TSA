@@ -33,7 +33,7 @@ export function TransactionPagination({
   const visiblePages = getVisiblePages(page, totalPages);
 
   return (
-    <div className="app-panel border-gray-300 flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between">
+    <div className="app-panel border-gray-300 flex flex-col gap-4 p-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between">
       <div>
         <p className="text-sm font-semibold text-slate-950">
           Showing {start}-{end} of {total.toLocaleString()} records
@@ -41,7 +41,7 @@ export function TransactionPagination({
         <p className="mt-1 text-sm text-slate-500">Results remain in reverse chronological order.</p>
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         {!hidePageSize && (
           <label className="flex items-center gap-2 text-sm text-slate-600">
             Rows
@@ -58,7 +58,7 @@ export function TransactionPagination({
           </label>
         )}
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between gap-2 sm:justify-start">
           <Button
             variant="secondary"
             size="sm"
@@ -66,7 +66,7 @@ export function TransactionPagination({
             leftIcon={<ChevronLeft className="h-4 w-4" />}
             onClick={() => onPageChange(page - 1)}
           >
-            Prev
+            <span className="hidden sm:inline">Prev</span>
           </Button>
 
           <div className="hidden items-center gap-2 sm:flex">
@@ -98,7 +98,7 @@ export function TransactionPagination({
             rightIcon={<ChevronRight className="h-4 w-4" />}
             onClick={() => onPageChange(page + 1)}
           >
-            Next
+            <span className="hidden sm:inline">Next</span>
           </Button>
         </div>
       </div>

@@ -23,6 +23,7 @@ export interface MDACollectionCode {
 export interface MDAServiceCode {
   id: string;
   mdaId: string;
+  collectionCode: string;
   code: string;
   name: string;
   aggregatorId: string;
@@ -42,7 +43,7 @@ export interface MDAUser {
   mdaCode: string;
   mdaName: string;
   collectionCode: string;
-  serviceCode: string;
+  serviceCode?: string;
   status: MDAStatus;
   invitedAt: string;
   activatedAt?: string;
@@ -55,5 +56,5 @@ export interface InviteMDAPayload {
   email: string;
   mdaId: string;
   collectionCode: string;
-  serviceCode: string;
+  serviceCode?: string;
 }

@@ -56,7 +56,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-6 p-5 lg:p-8">
+    <div className="space-y-6 p-4 sm:p-5 lg:p-8">
       <div className="flex flex-wrap items-center justify-end gap-3">
         <DateRangeDropdown dateRange={dateRange} onDateRangeChange={setDateRange} />
       </div>

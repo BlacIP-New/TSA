@@ -17,13 +17,13 @@ export function AppLayout() {
   const title = PAGE_TITLES[location.pathname] ?? '';
 
   return (
-    <div className="app-shell-grid flex h-screen overflow-hidden bg-white">
+    <div className="app-shell-grid flex h-dvh min-h-0 overflow-hidden bg-white">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         <TopBar onMenuClick={() => setSidebarOpen(true)} title={title} />
 
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto overscroll-contain">
           <Outlet />
         </main>
       </div>

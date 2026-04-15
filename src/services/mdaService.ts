@@ -63,9 +63,12 @@ function getCollectionOrThrow(mdaId: string, collectionCode: string) {
   return collection;
 }
 
-function getServiceOrThrow(mdaId: string, serviceCode: string) {
+function getServiceOrThrow(mdaId: string, serviceCode: string, collectionCode?: string) {
   const service = mockMDAServiceCodes.find(
-    (entry) => entry.mdaId === mdaId && entry.code === serviceCode,
+    (entry) =>
+      entry.mdaId === mdaId &&
+      entry.code === serviceCode &&
+      (!collectionCode || entry.collectionCode === collectionCode),
   );
 
   if (!service) {
@@ -105,10 +108,20 @@ export async function getMDACollections(mdaId: string): Promise<MDACollectionCod
   return mockMDACollections.filter((entry) => entry.mdaId === mdaId);
 }
 
-export async function getMDAServiceCodes(mdaId: string): Promise<MDAServiceCode[]> {
+export async function getMDAServiceCodes(
+  mdaId: string,
+  collectionCode?: string,
+): Promise<MDAServiceCode[]> {
   await delay(220);
   getMDAOrThrow(mdaId);
-  return mockMDAServiceCodes.filter((entry) => entry.mdaId === mdaId);
+
+  if (!collectionCode) {
+    return mockMDAServiceCodes.filter((entry) => entry.mdaId === mdaId);
+  }
+
+  return mockMDAServiceCodes.filter(
+    (entry) => entry.mdaId === mdaId && entry.collectionCode === collectionCode,
+  );
 }
 
 export async function getMDADetail(mdaId: string): Promise<MDADetail> {
@@ -154,7 +167,9 @@ export async function inviteMDAUser(
 
   const record = getMDAOrThrow(payload.mdaId);
   getCollectionOrThrow(payload.mdaId, payload.collectionCode);
-  getServiceOrThrow(payload.mdaId, payload.serviceCode);
+  if (payload.serviceCode) {
+    getServiceOrThrow(payload.mdaId, payload.serviceCode, payload.collectionCode);
+  }
 
   const invitedUser: MDAUser = {
     id: `mda_usr_${Date.now()}`,

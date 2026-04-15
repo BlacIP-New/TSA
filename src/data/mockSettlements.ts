@@ -22,7 +22,14 @@ const ACCOUNT_NAMES = [
   'Olaide Afolabi',
 ];
 
-const SETTLEMENT_MDA_IDS = ['mda_fmf', 'mda_mw', 'mda_lirs', 'mda_vis'] as const;
+const SETTLEMENT_MDA_IDS = [
+  'mda_fmf',
+  'mda_mw',
+  'mda_lirs',
+  'mda_vis',
+  'mda_health',
+  'mda_immigration',
+] as const;
 
 function toIsoDate(year: number, month: number, day: number, hour: number, minute: number) {
   return new Date(Date.UTC(year, month, day, hour, minute, 0)).toISOString();
@@ -77,7 +84,8 @@ function buildBatchDetailsForMonth(monthOffset: number, batchCountPerMDA: number
 
     return Array.from({ length: batchCountPerMDA }, (_, batchIndex) => {
       const collection = profile.collections[batchIndex % profile.collections.length];
-      const service = profile.services[(batchIndex + mdaIndex) % profile.services.length];
+      // Keep collection/service pairing stable so MDA viewer scope combinations always have data.
+      const service = profile.services[batchIndex % profile.services.length];
       const settledDay = Math.max(1, referenceDays[batchIndex] ?? daysInMonth - batchIndex * 2);
       const settledDate = toIsoDate(year, month, settledDay, 9 + mdaIndex, 15);
       const batchId = `${year}${pad(month + 1)}${pad(settledDay)}${mdaIndex + 1}${batchIndex + 1}`;
@@ -124,6 +132,7 @@ function buildBatchDetailsForMonth(monthOffset: number, batchCountPerMDA: number
 }
 
 export const mockSettlementBatchDetails: SettlementBatchDetail[] = [
+  ...buildBatchDetailsForMonth(-2, 4),
   ...buildBatchDetailsForMonth(-1, 4),
   ...buildBatchDetailsForMonth(0, 6),
 ];

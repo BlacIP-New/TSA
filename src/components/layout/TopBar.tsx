@@ -52,23 +52,23 @@ export function TopBar({ onMenuClick, title }: TopBarProps) {
 
   return (
     <>
-    <header className="sticky top-0 z-20 flex h-[72px] items-center justify-between border-b border-slate-200/70 bg-white px-4 lg:px-8">
-      <div className="flex items-center gap-3">
+    <header className="sticky top-0 z-20 flex min-h-[64px] items-center justify-between border-b border-slate-200/70 bg-white px-3 py-2 sm:px-4 lg:min-h-[72px] lg:px-8">
+      <div className="flex min-w-0 items-center gap-2 sm:gap-3">
         <button
           onClick={onMenuClick}
           className="rounded border border-gray-300 bg-white/80 p-2.5 text-slate-500 transition-colors hover:text-slate-800 lg:hidden"
         >
           <Menu className="h-5 w-5" />
         </button>
-        <div>
-          {title && <h1 className="text-lg font-semibold tracking-[-0.03em] text-slate-900">{title}</h1>}
+        <div className="min-w-0">
+          {title && <h1 className="truncate text-base font-semibold tracking-[-0.03em] text-slate-900 sm:text-lg">{title}</h1>}
           <p className="hidden text-xs uppercase tracking-[0.18em] text-slate-400 sm:block">
             TSA Collection Operations Console
           </p>
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
         <div className="hidden items-center gap-2 rounded-lg border border-gray-300 bg-white/70 px-3 py-2 text-sm text-slate-400 md:flex">
           <Search className="h-4 w-4" />
           Search coming soon
@@ -82,16 +82,16 @@ export function TopBar({ onMenuClick, title }: TopBarProps) {
           <button
             type="button"
             onClick={() => setMenuOpen((value) => !value)}
-            className="flex items-center gap-3 rounded border border-gray-300 bg-white px-3 py-2 text-left text-slate-600 transition-colors hover:bg-gray-50 hover:text-slate-900"
+            className="flex items-center gap-2 rounded border border-gray-300 bg-white px-2.5 py-2 text-left text-slate-600 transition-colors hover:bg-gray-50 hover:text-slate-900 sm:gap-3 sm:px-3"
             aria-haspopup="menu"
             aria-expanded={menuOpen}
           >
             <CircleUserRound className="h-5 w-5 shrink-0" />
-            <span className="flex min-w-0 flex-col items-start leading-tight">
+            <span className="hidden min-w-0 flex-col items-start leading-tight sm:flex">
               <span className="truncate text-sm font-semibold text-slate-900">{primaryLabel}</span>
               <span className="truncate text-xs text-slate-500">{user?.email}</span>
             </span>
-            <ChevronDown className="h-4 w-4 shrink-0 text-slate-400" />
+            <ChevronDown className="hidden h-4 w-4 shrink-0 text-slate-400 sm:block" />
           </button>
 
           {menuOpen && (

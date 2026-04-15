@@ -21,7 +21,7 @@ export function MDATable({
   actionKey,
   isLoading = false,
   title = 'MDA users',
-  description = 'Invite and manage MDA-scoped portal access for one collection code and one service code.',
+  description = 'Invite and manage MDA-scoped portal access for one collection code and an optional service code.',
   onInviteClick,
   onResendInvite,
   onDeactivate,
@@ -97,7 +97,7 @@ export function MDATable({
                   </td>
                   <td className="px-5 py-4 font-semibold text-slate-700">{user.mdaCode}</td>
                   <td className="px-5 py-4 font-semibold text-slate-700">{user.collectionCode}</td>
-                  <td className="px-5 py-4 font-semibold text-slate-700">{user.serviceCode}</td>
+                  <td className="px-5 py-4 font-semibold text-slate-700">{user.serviceCode || '—'}</td>
                   <td className="px-5 py-4">
                     <MDAStatusBadge status={user.status} />
                   </td>

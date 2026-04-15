@@ -45,10 +45,10 @@ export function Modal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 px-0 backdrop-blur-sm sm:items-center sm:px-4">
       <div className="absolute inset-0" onClick={onClose} />
 
-      <div className={`relative z-10 w-full rounded-lg border border-gray-300 bg-white ${sizeClasses[size]}`}>
+      <div className={`relative z-10 w-full max-h-[92dvh] rounded-t-xl border border-gray-300 bg-white sm:max-h-[85vh] sm:rounded-lg ${sizeClasses[size]}`}>
         <div className="flex items-start justify-between border-b border-gray-300 px-5 py-4">
           <div>
             <h2 className="text-lg font-semibold tracking-tight text-gray-950">{title}</h2>
@@ -63,9 +63,9 @@ export function Modal({
           </button>
         </div>
 
-        <div className="max-h-[70vh] overflow-y-auto px-5 py-5">{children}</div>
+        <div className="max-h-[68dvh] overflow-y-auto px-4 py-4 sm:max-h-[62vh] sm:px-5 sm:py-5">{children}</div>
 
-        {footer && <div className="border-t border-gray-300 px-5 py-4">{footer}</div>}
+        {footer && <div className="border-t border-gray-300 px-4 py-4 sm:px-5">{footer}</div>}
       </div>
     </div>
   );

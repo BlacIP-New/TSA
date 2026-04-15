@@ -18,7 +18,8 @@ const TAB_OPTIONS: TabOption[] = [
 
 export function MDATabNavigation({ activeTab, onChange }: MDATabNavigationProps) {
   return (
-    <div className="app-panel border-gray-300 inline-flex w-full flex-wrap gap-2 p-2">
+    <div className="app-panel border-gray-300 w-full overflow-x-auto p-2">
+      <div className="inline-flex min-w-max gap-2">
       {TAB_OPTIONS.map((tab) => {
         const isActive = tab.key === activeTab;
 
@@ -26,7 +27,7 @@ export function MDATabNavigation({ activeTab, onChange }: MDATabNavigationProps)
           <button
             key={tab.key}
             type="button"
-            className={`rounded px-4 py-2.5 text-sm font-semibold transition-colors ${
+            className={`rounded px-4 py-2.5 text-sm font-semibold whitespace-nowrap transition-colors ${
               isActive
                 ? 'border border-gray-300 bg-[#335CFF] text-white'
                 : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
@@ -37,6 +38,7 @@ export function MDATabNavigation({ activeTab, onChange }: MDATabNavigationProps)
           </button>
         );
       })}
+      </div>
     </div>
   );
 }

@@ -127,6 +127,18 @@ export default function LoginPage() {
                 <span className="font-medium">MDA User:</span>{' '}
                 finance@fmf.gov.ng / Viewer@1234
               </div>
+              <div>
+                <span className="font-medium">MDA User:</span>{' '}
+                director@works.gov.ng / Viewer@1234
+              </div>
+              <div>
+                <span className="font-medium">MDA User:</span>{' '}
+                audit@lirs.gov.ng / Viewer@1234
+              </div>
+              <div>
+                <span className="font-medium">MDA User:</span>{' '}
+                collections@vis.gov.ng / Viewer@1234
+              </div>
             </div>
           </div>
 

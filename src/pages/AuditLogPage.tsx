@@ -1,4 +1,4 @@
-import { Filter, X } from 'lucide-react';
+import { Filter } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { AuditFilters } from '../components/audit/AuditFilters';
 import { AuditLogTable } from '../components/audit/AuditLogTable';
@@ -8,6 +8,13 @@ import { DateRangeDropdown } from '../components/ui/DateRangeDropdown';
 import { TransactionPagination } from '../components/transactions/TransactionPagination';
 import { useAuth } from '../context/AuthContext';
 import { useAuditLog, AuditLogFilters } from '../hooks/useAuditLog';
+
+function toDateInput(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
 export default function AuditLogPage() {
   const { user } = useAuth();
@@ -26,8 +33,8 @@ export default function AuditLogPage() {
     const from = new Date(to);
     from.setDate(to.getDate() - 29);
     return {
-      from: from.toISOString().split('T')[0],
-      to: to.toISOString().split('T')[0],
+      from: toDateInput(from),
+      to: toDateInput(to),
     };
   });
   const { result, isLoading, error, userOptions } = useAuditLog(
@@ -71,21 +78,55 @@ export default function AuditLogPage() {
   if (!user) return null;
 
   return (
-    <div className="space-y-6 p-5 lg:p-8">
+    <div className="space-y-6 p-4 sm:p-5 lg:p-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="rounded-full border border-slate-200/80 bg-white/80 px-3.5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
           {user.aggregatorName}
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <DateRangeDropdown dateRange={dateRange} onDateRangeChange={setDateRange} />
-          <Button
-            variant="secondary"
-            size="sm"
-            leftIcon={<Filter className="h-4 w-4" />}
-            onClick={() => setIsFilterPanelOpen(true)}
-          >
-            Filter
-          </Button>
+          <div className="relative inline-block">
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<Filter className="h-4 w-4" />}
+              onClick={() => setIsFilterPanelOpen(true)}
+            >
+              Filter
+            </Button>
+
+            {isFilterPanelOpen && (
+              <>
+                <div className="fixed inset-0 z-20" onClick={() => setIsFilterPanelOpen(false)} />
+                <div className="absolute right-0 top-full z-30 mt-2 w-[min(92vw,42rem)] rounded-2xl border border-gray-300 bg-white p-5 shadow-xl">
+                  <div className="mb-5 flex items-center justify-between border-b border-gray-300 pb-3">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-950">Audit filters</p>
+                      <p className="mt-1 text-xs text-slate-500">Filter by period, action, and initiating user</p>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => setIsFilterPanelOpen(false)}>
+                      Close
+                    </Button>
+                  </div>
+
+                  <AuditFilters
+                    embedded
+                    filters={filters}
+                    users={userOptions}
+                    isLoading={isLoading}
+                    onChange={handleFilterChange}
+                    onReset={handleResetFilters}
+                  />
+
+                  <div className="mt-6 flex justify-end">
+                    <Button variant="secondary" onClick={() => setIsFilterPanelOpen(false)}>
+                      Done
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
@@ -104,44 +145,6 @@ export default function AuditLogPage() {
         onLimitChange={() => undefined}
       />
 
-      {isFilterPanelOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-40 bg-black/20"
-            onClick={() => setIsFilterPanelOpen(false)}
-          />
-          <aside className="fixed inset-y-0 right-0 z-50 w-full max-w-xl border-l border-gray-300 bg-white p-5">
-            <div className="mb-5 flex items-center justify-between border-b border-gray-300 pb-3">
-              <div>
-                <p className="text-sm font-semibold text-slate-950">Audit filters</p>
-                <p className="mt-1 text-xs text-slate-500">Filter by period, action, and initiating user</p>
-              </div>
-              <button
-                type="button"
-                className="rounded border border-gray-300 p-2 text-slate-500 hover:bg-gray-50 hover:text-slate-800"
-                onClick={() => setIsFilterPanelOpen(false)}
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            <AuditFilters
-              embedded
-              filters={filters}
-              users={userOptions}
-              isLoading={isLoading}
-              onChange={handleFilterChange}
-              onReset={handleResetFilters}
-            />
-
-            <div className="mt-6 flex justify-end">
-              <Button variant="secondary" onClick={() => setIsFilterPanelOpen(false)}>
-                Done
-              </Button>
-            </div>
-          </aside>
-        </>
-      )}
     </div>
   );
 }

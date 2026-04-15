@@ -37,6 +37,20 @@ export const mockMDARegistry = [
     aggregatorId: appConfig.aggregatorId,
     status: 'active' as const,
   },
+  {
+    id: 'mda_health',
+    mdaCode: 'MDA-HEALTH',
+    mdaName: 'Federal Ministry of Health',
+    aggregatorId: appConfig.aggregatorId,
+    status: 'active' as const,
+  },
+  {
+    id: 'mda_immigration',
+    mdaCode: 'MDA-NIS',
+    mdaName: 'Nigeria Immigration Service',
+    aggregatorId: appConfig.aggregatorId,
+    status: 'active' as const,
+  },
 ] as const;
 
 export const mockMDACollections: MDACollectionCode[] = [
@@ -103,12 +117,41 @@ export const mockMDACollections: MDACollectionCode[] = [
     name: 'Examination Processing Collections',
     aggregatorId: appConfig.aggregatorId,
   },
+  {
+    id: 'mda_col_health_071',
+    mdaId: 'mda_health',
+    code: 'HEALTH-071',
+    name: 'Primary Healthcare Facility Fees',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_col_health_072',
+    mdaId: 'mda_health',
+    code: 'HEALTH-072',
+    name: 'Public Health Inspection Levies',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_col_nis_301',
+    mdaId: 'mda_immigration',
+    code: 'NIS-301',
+    name: 'Passport Processing Collections',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_col_nis_302',
+    mdaId: 'mda_immigration',
+    code: 'NIS-302',
+    name: 'Residence Permit Collections',
+    aggregatorId: appConfig.aggregatorId,
+  },
 ];
 
 export const mockMDAServiceCodes: MDAServiceCode[] = [
   {
     id: 'mda_svc_fmf_001',
     mdaId: 'mda_fmf',
+    collectionCode: 'FMF-001',
     code: 'FMF-SVC-001',
     name: 'Budget Release Processing',
     aggregatorId: appConfig.aggregatorId,
@@ -116,6 +159,7 @@ export const mockMDAServiceCodes: MDAServiceCode[] = [
   {
     id: 'mda_svc_fmf_004',
     mdaId: 'mda_fmf',
+    collectionCode: 'FMF-001',
     code: 'FMF-SVC-004',
     name: 'Treasury Remittance Clearance',
     aggregatorId: appConfig.aggregatorId,
@@ -123,6 +167,7 @@ export const mockMDAServiceCodes: MDAServiceCode[] = [
   {
     id: 'mda_svc_fmf_009',
     mdaId: 'mda_fmf',
+    collectionCode: 'FMF-017',
     code: 'FMF-SVC-009',
     name: 'Capital Disbursement Validation',
     aggregatorId: appConfig.aggregatorId,
@@ -130,6 +175,7 @@ export const mockMDAServiceCodes: MDAServiceCode[] = [
   {
     id: 'mda_svc_mw_014',
     mdaId: 'mda_mw',
+    collectionCode: 'MW-002',
     code: 'MW-SVC-014',
     name: 'Contract Payment Verification',
     aggregatorId: appConfig.aggregatorId,
@@ -137,6 +183,7 @@ export const mockMDAServiceCodes: MDAServiceCode[] = [
   {
     id: 'mda_svc_mw_018',
     mdaId: 'mda_mw',
+    collectionCode: 'MW-005',
     code: 'MW-SVC-018',
     name: 'Road Maintenance Levy',
     aggregatorId: appConfig.aggregatorId,
@@ -144,6 +191,7 @@ export const mockMDAServiceCodes: MDAServiceCode[] = [
   {
     id: 'mda_svc_lirs_120',
     mdaId: 'mda_lirs',
+    collectionCode: 'LIRS-010',
     code: 'LIRS-SVC-120',
     name: 'PAYE Settlement',
     aggregatorId: appConfig.aggregatorId,
@@ -151,6 +199,7 @@ export const mockMDAServiceCodes: MDAServiceCode[] = [
   {
     id: 'mda_svc_lirs_121',
     mdaId: 'mda_lirs',
+    collectionCode: 'LIRS-022',
     code: 'LIRS-SVC-121',
     name: 'Withholding Tax Remittance',
     aggregatorId: appConfig.aggregatorId,
@@ -158,6 +207,7 @@ export const mockMDAServiceCodes: MDAServiceCode[] = [
   {
     id: 'mda_svc_vis_088',
     mdaId: 'mda_vis',
+    collectionCode: 'VIS-031',
     code: 'VIS-SVC-088',
     name: 'Vehicle Inspection Fee',
     aggregatorId: appConfig.aggregatorId,
@@ -165,6 +215,7 @@ export const mockMDAServiceCodes: MDAServiceCode[] = [
   {
     id: 'mda_svc_vis_092',
     mdaId: 'mda_vis',
+    collectionCode: 'VIS-041',
     code: 'VIS-SVC-092',
     name: 'Roadworthiness Certificate',
     aggregatorId: appConfig.aggregatorId,
@@ -172,6 +223,7 @@ export const mockMDAServiceCodes: MDAServiceCode[] = [
   {
     id: 'mda_svc_edu_020',
     mdaId: 'mda_edu',
+    collectionCode: 'EDU-120',
     code: 'EDU-SVC-020',
     name: 'School Charges Collection',
     aggregatorId: appConfig.aggregatorId,
@@ -179,8 +231,41 @@ export const mockMDAServiceCodes: MDAServiceCode[] = [
   {
     id: 'mda_svc_edu_024',
     mdaId: 'mda_edu',
+    collectionCode: 'EDU-120',
     code: 'EDU-SVC-024',
     name: 'Examination Processing',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_svc_health_031',
+    mdaId: 'mda_health',
+    collectionCode: 'HEALTH-071',
+    code: 'HEALTH-SVC-031',
+    name: 'Healthcare Service Licensing',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_svc_health_034',
+    mdaId: 'mda_health',
+    collectionCode: 'HEALTH-072',
+    code: 'HEALTH-SVC-034',
+    name: 'Public Health Compliance Processing',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_svc_nis_101',
+    mdaId: 'mda_immigration',
+    collectionCode: 'NIS-301',
+    code: 'NIS-SVC-101',
+    name: 'Passport Issuance Service',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_svc_nis_105',
+    mdaId: 'mda_immigration',
+    collectionCode: 'NIS-302',
+    code: 'NIS-SVC-105',
+    name: 'Residence Permit Renewal',
     aggregatorId: appConfig.aggregatorId,
   },
 ];

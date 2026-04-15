@@ -13,12 +13,21 @@
  */
 
 import { AuthUser, LoginCredentials, LoginResponse } from '../types/auth';
-import { MOCK_ADMIN_USER, MOCK_MDA_USER } from '../data/mockUsers';
+import {
+  MOCK_ADMIN_USER,
+  MOCK_MDA_USER,
+  MOCK_MDA_USER_LIRS,
+  MOCK_MDA_USER_VIS,
+  MOCK_MDA_USER_WORKS,
+} from '../data/mockUsers';
 import { logAuditEntry } from './auditService';
 
 const DEMO_CREDENTIALS: Record<string, { password: string; user: AuthUser }> = {
   'admin@nsw.gov.ng': { password: 'Admin@1234', user: MOCK_ADMIN_USER },
   'finance@fmf.gov.ng': { password: 'Viewer@1234', user: MOCK_MDA_USER },
+  'director@works.gov.ng': { password: 'Viewer@1234', user: MOCK_MDA_USER_WORKS },
+  'audit@lirs.gov.ng': { password: 'Viewer@1234', user: MOCK_MDA_USER_LIRS },
+  'collections@vis.gov.ng': { password: 'Viewer@1234', user: MOCK_MDA_USER_VIS },
 };
 
 export async function login(credentials: LoginCredentials): Promise<LoginResponse> {

@@ -11,7 +11,6 @@ import {
 import { PaginatedSettlementBatches } from '../types/transaction';
 import {
   deactivateMDAUser,
-  getMDACollectionSettlementBatches,
   getMDADetail,
   getMDAs,
   getMDAServiceCodes,
@@ -21,6 +20,7 @@ import {
   reactivateMDAUser,
   resendMDAInvite,
 } from '../services/mdaService';
+import { getSettlementBatches } from '../services/transactionService';
 import { logAuditEntry } from '../services/auditService';
 
 const EMPTY_SETTLEMENT_RESULT: PaginatedSettlementBatches = {
@@ -33,6 +33,7 @@ const EMPTY_SETTLEMENT_RESULT: PaginatedSettlementBatches = {
 
 export function useMDAs(user: AuthUser | null) {
   const [mdas, setMdas] = useState<MDARecord[]>([]);
+  const [allCollections, setAllCollections] = useState<MDACollectionCode[]>([]);
   const [selectedMDAId, setSelectedMDAId] = useState<string | null>(null);
   const [selectedMDADetail, setSelectedMDADetail] = useState<MDADetail | null>(null);
   const [selectedCollectionCode, setSelectedCollectionCode] = useState<string | null>(null);
@@ -48,14 +49,15 @@ export function useMDAs(user: AuthUser | null) {
     return getMDACollections(mdaId);
   }, []);
 
-  const loadMDAServiceCodes = useCallback(async (mdaId: string): Promise<MDAServiceCode[]> => {
+  const loadMDAServiceCodes = useCallback(async (mdaId: string, collectionCode?: string): Promise<MDAServiceCode[]> => {
     if (!mdaId) return [];
-    return getMDAServiceCodes(mdaId);
+    return getMDAServiceCodes(mdaId, collectionCode);
   }, []);
 
   const refresh = useCallback(async () => {
     if (!user?.aggregatorId) {
       setMdas([]);
+      setAllCollections([]);
       setSelectedMDAId(null);
       setSelectedMDADetail(null);
       setSelectedCollectionCode(null);
@@ -74,8 +76,12 @@ export function useMDAs(user: AuthUser | null) {
         selectedMDAId && nextMdas.some((entry) => entry.id === selectedMDAId)
           ? selectedMDAId
           : nextMdas[0]?.id ?? null;
+      const collectionsByMda = await Promise.all(
+        nextMdas.map((entry) => getMDACollections(entry.id)),
+      );
 
       setMdas(nextMdas);
+      setAllCollections(collectionsByMda.flat());
 
       if (!nextSelectedMDAId) {
         setSelectedMDAId(null);
@@ -88,17 +94,17 @@ export function useMDAs(user: AuthUser | null) {
 
       const [detail, nextUsers] = await Promise.all([
         getMDADetail(nextSelectedMDAId),
-        getMDAUsers(user.aggregatorId, nextSelectedMDAId),
+        getMDAUsers(user.aggregatorId),
       ]);
 
       setSelectedMDAId(nextSelectedMDAId);
       setSelectedMDADetail(detail);
       setUsers(nextUsers);
       setSelectedCollectionCode((current) => {
-        if (current && detail.collections.some((entry) => entry.code === current)) {
+        if (current && collectionsByMda.flat().some((entry) => entry.code === current)) {
           return current;
         }
-        return detail.collections[0]?.code ?? null;
+        return collectionsByMda.flat()[0]?.code ?? null;
       });
     } catch (caughtError) {
       setError(
@@ -107,6 +113,7 @@ export function useMDAs(user: AuthUser | null) {
           : 'Unable to load MDA records right now.',
       );
       setMdas([]);
+      setAllCollections([]);
       setSelectedMDAId(null);
       setSelectedMDADetail(null);
       setUsers([]);
@@ -119,7 +126,6 @@ export function useMDAs(user: AuthUser | null) {
   const loadSelectedContext = useCallback(async () => {
     if (!user?.aggregatorId || !selectedMDAId) {
       setSelectedMDADetail(null);
-      setUsers([]);
       return;
     }
 
@@ -127,19 +133,9 @@ export function useMDAs(user: AuthUser | null) {
     setError(null);
 
     try {
-      const [detail, nextUsers] = await Promise.all([
-        getMDADetail(selectedMDAId),
-        getMDAUsers(user.aggregatorId, selectedMDAId),
-      ]);
+      const detail = await getMDADetail(selectedMDAId);
 
       setSelectedMDADetail(detail);
-      setUsers(nextUsers);
-      setSelectedCollectionCode((current) => {
-        if (current && detail.collections.some((entry) => entry.code === current)) {
-          return current;
-        }
-        return detail.collections[0]?.code ?? null;
-      });
     } catch (caughtError) {
       setError(
         caughtError instanceof Error
@@ -147,15 +143,13 @@ export function useMDAs(user: AuthUser | null) {
           : 'Unable to load the selected MDA context right now.',
       );
       setSelectedMDADetail(null);
-      setUsers([]);
-      setSelectedCollectionCode(null);
     } finally {
       setIsLoading(false);
     }
   }, [selectedMDAId, user?.aggregatorId]);
 
   const loadSelectedCollectionSettlements = useCallback(async () => {
-    if (!user?.aggregatorId || !selectedMDAId || !selectedCollectionCode) {
+    if (!user?.aggregatorId || !selectedCollectionCode) {
       setSettlementResult(EMPTY_SETTLEMENT_RESULT);
       setSettlementError(null);
       setIsSettlementLoading(false);
@@ -166,9 +160,8 @@ export function useMDAs(user: AuthUser | null) {
     setSettlementError(null);
 
     try {
-      const response = await getMDACollectionSettlementBatches({
+      const response = await getSettlementBatches({
         aggregatorId: user.aggregatorId,
-        mdaId: selectedMDAId,
         collectionCode: selectedCollectionCode,
         page: 1,
         limit: 100,
@@ -184,7 +177,7 @@ export function useMDAs(user: AuthUser | null) {
     } finally {
       setIsSettlementLoading(false);
     }
-  }, [selectedCollectionCode, selectedMDAId, user?.aggregatorId]);
+  }, [selectedCollectionCode, user?.aggregatorId]);
 
   useEffect(() => {
     void refresh();
@@ -215,7 +208,7 @@ export function useMDAs(user: AuthUser | null) {
         userEmail: user.email,
         userName: user.name,
         action: 'mda_invited',
-        details: `Invitation sent for ${detail.record.mdaCode} (${payload.collectionCode} / ${payload.serviceCode}) to ${payload.email}.`,
+        details: `Invitation sent for ${detail.record.mdaCode} (${payload.collectionCode}${payload.serviceCode ? ` / ${payload.serviceCode}` : ''}) to ${payload.email}.`,
         aggregatorId: user.aggregatorId,
       });
       await refresh();
@@ -235,7 +228,7 @@ export function useMDAs(user: AuthUser | null) {
             userEmail: user.email,
             userName: user.name,
             action: 'invitation_resent',
-            details: `Invitation resent to ${target.email} for ${target.mdaCode} (${target.collectionCode} / ${target.serviceCode}).`,
+            details: `Invitation resent to ${target.email} for ${target.mdaCode} (${target.collectionCode}${target.serviceCode ? ` / ${target.serviceCode}` : ''}).`,
             aggregatorId: user.aggregatorId,
           });
         }
@@ -254,7 +247,7 @@ export function useMDAs(user: AuthUser | null) {
           userEmail: user.email,
           userName: user.name,
           action: 'mda_deactivated',
-          details: `${updated.email} was deactivated for ${updated.mdaCode} (${updated.collectionCode} / ${updated.serviceCode}).`,
+          details: `${updated.email} was deactivated for ${updated.mdaCode} (${updated.collectionCode}${updated.serviceCode ? ` / ${updated.serviceCode}` : ''}).`,
           aggregatorId: user.aggregatorId,
         });
       }
@@ -272,7 +265,7 @@ export function useMDAs(user: AuthUser | null) {
           userEmail: user.email,
           userName: user.name,
           action: 'mda_reactivated',
-          details: `${updated.email} was reactivated for ${updated.mdaCode} (${updated.collectionCode} / ${updated.serviceCode}).`,
+          details: `${updated.email} was reactivated for ${updated.mdaCode} (${updated.collectionCode}${updated.serviceCode ? ` / ${updated.serviceCode}` : ''}).`,
           aggregatorId: user.aggregatorId,
         });
       }
@@ -288,6 +281,7 @@ export function useMDAs(user: AuthUser | null) {
 
   return {
     mdas,
+    allCollections,
     selectedMDAId,
     selectedMDA,
     selectedMDADetail,
