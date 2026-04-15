@@ -1,4 +1,5 @@
 import { ChevronRight } from 'lucide-react';
+import { SettlementStatusBadge } from './SettlementStatusBadge';
 import { SettlementBatch } from '../../types/transaction';
 import { formatCompactCurrency, formatDate } from '../../utils/formatters';
 
@@ -15,7 +16,7 @@ export function SettlementBatchTable({
   isLoading = false,
   onSelect,
 }: SettlementBatchTableProps) {
-  const columnCount = isAdmin ? 7 : 6;
+  const columnCount = isAdmin ? 8 : 7;
 
   return (
     <section className="app-panel border-gray-300">
@@ -28,6 +29,7 @@ export function SettlementBatchTable({
               {isAdmin && <th className="px-5 py-4">MDA Name</th>}
               <th className="px-5 py-4">Collection Code</th>
               <th className="px-5 py-4">Service Code</th>
+              <th className="px-5 py-4">Status</th>
               <th className="px-5 py-4">Item Count</th>
               <th className="px-5 py-4">Total Amount</th>
             </tr>
@@ -75,6 +77,9 @@ export function SettlementBatchTable({
                   {isAdmin && <td className="px-5 py-4 font-medium text-slate-700">{batch.mdaName}</td>}
                   <td className="px-5 py-4 font-medium text-slate-700">{batch.collectionCode}</td>
                   <td className="px-5 py-4 font-medium text-slate-700">{batch.serviceCode}</td>
+                  <td className="px-5 py-4">
+                    <SettlementStatusBadge status={batch.status} />
+                  </td>
                   <td className="px-5 py-4 text-slate-600 tabular-nums">{batch.itemCount.toLocaleString()}</td>
                   <td className="px-5 py-4 font-semibold text-slate-950 tabular-nums">{formatCompactCurrency(batch.totalAmount)}</td>
                 </tr>

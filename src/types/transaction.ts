@@ -1,5 +1,15 @@
 export type ChartGroupBy = 'day' | 'week';
 
+export type SettlementStatus =
+  | 'Settled'
+  | 'Pending'
+  | 'Failed'
+  | 'Queued'
+  | 'Partially Settled'
+  | 'Refunded'
+  | 'Offline Settlement'
+  | 'Paused Settlement';
+
 export interface SettlementLine {
   id: string;
   batchId: string;
@@ -12,6 +22,7 @@ export interface SettlementLine {
   serviceCode: string;
   mdaName: string;
   aggregatorId: string;
+  status: SettlementStatus;
 }
 
 export interface SettlementBatch {
@@ -24,6 +35,7 @@ export interface SettlementBatch {
   itemCount: number;
   totalAmount: number;
   aggregatorId: string;
+  status: SettlementStatus;
 }
 
 export interface SettlementBatchDetail {

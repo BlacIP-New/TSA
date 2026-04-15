@@ -1,6 +1,6 @@
 import { appConfig } from '../config/env';
 import { mockMDACollections, mockMDARegistry, mockMDAServiceCodes } from './mockMDARegistry';
-import { SettlementBatch, SettlementBatchDetail, SettlementLine } from '../types/transaction';
+import { SettlementBatch, SettlementBatchDetail, SettlementLine, SettlementStatus } from '../types/transaction';
 
 const BANKS = [
   'Access Bank Plc',
@@ -30,6 +30,17 @@ const SETTLEMENT_MDA_IDS = [
   'mda_health',
   'mda_immigration',
 ] as const;
+
+const SETTLEMENT_STATUSES: SettlementStatus[] = [
+  'Settled',
+  'Pending',
+  'Failed',
+  'Queued',
+  'Partially Settled',
+  'Refunded',
+  'Offline Settlement',
+  'Paused Settlement',
+];
 
 function toIsoDate(year: number, month: number, day: number, hour: number, minute: number) {
   return new Date(Date.UTC(year, month, day, hour, minute, 0)).toISOString();
@@ -86,6 +97,7 @@ function buildBatchDetailsForMonth(monthOffset: number, batchCountPerMDA: number
       const collection = profile.collections[batchIndex % profile.collections.length];
       // Keep collection/service pairing stable so MDA viewer scope combinations always have data.
       const service = profile.services[batchIndex % profile.services.length];
+      const batchStatus = SETTLEMENT_STATUSES[(mdaIndex + batchIndex) % SETTLEMENT_STATUSES.length];
       const settledDay = Math.max(1, referenceDays[batchIndex] ?? daysInMonth - batchIndex * 2);
       const settledDate = toIsoDate(year, month, settledDay, 9 + mdaIndex, 15);
       const batchId = `${year}${pad(month + 1)}${pad(settledDay)}${mdaIndex + 1}${batchIndex + 1}`;
@@ -108,6 +120,7 @@ function buildBatchDetailsForMonth(monthOffset: number, batchCountPerMDA: number
           serviceCode: service.code,
           mdaName: profile.record.mdaName,
           aggregatorId: appConfig.aggregatorId,
+          status: SETTLEMENT_STATUSES[(mdaIndex + batchIndex + lineIndex) % SETTLEMENT_STATUSES.length],
         };
       });
 
@@ -121,6 +134,7 @@ function buildBatchDetailsForMonth(monthOffset: number, batchCountPerMDA: number
         itemCount: lines.length,
         totalAmount: lines.reduce((sum, line) => sum + line.amount, 0),
         aggregatorId: appConfig.aggregatorId,
+        status: batchStatus,
       };
 
       return {

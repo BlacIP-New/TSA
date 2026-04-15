@@ -3,6 +3,7 @@ import { AuthUser } from '../../types/auth';
 import { useSettlementBatchDetail } from '../../hooks/useTransactions';
 import { Alert } from '../ui/Alert';
 import { formatCurrency, formatDate } from '../../utils/formatters';
+import { SettlementStatusBadge } from './SettlementStatusBadge';
 
 interface SettlementBatchDetailDrawerProps {
   batchId: string | null;
@@ -76,6 +77,7 @@ export function SettlementBatchDetailDrawer({
               <DetailItem label="Settled date" value={formatDate(detail.batch.settledDate)} />
               <DetailItem label="Collection code" value={detail.batch.collectionCode} />
               <DetailItem label="Service code" value={detail.batch.serviceCode} />
+              <DetailItem label="Status" value={detail.batch.status} />
               <DetailItem label="Item count" value={detail.batch.itemCount.toLocaleString()} />
               <DetailItem label="Total amount" value={formatCurrency(detail.batch.totalAmount)} />
               <DetailItem label="Aggregator ID" value={detail.batch.aggregatorId} />
@@ -127,6 +129,7 @@ export function SettlementBatchDetailDrawer({
                     <th className="px-5 py-4">Bank</th>
                     <th className="px-5 py-4">Account Number</th>
                     <th className="px-5 py-4">Account Name</th>
+                    <th className="px-5 py-4">Status</th>
                     <th className="px-5 py-4">Amount</th>
                   </tr>
                 </thead>
@@ -136,6 +139,9 @@ export function SettlementBatchDetailDrawer({
                       <td className="px-5 py-4 text-slate-700">{line.bankName}</td>
                       <td className="px-5 py-4 font-medium text-slate-700 tabular-nums">{line.accountNumber}</td>
                       <td className="px-5 py-4 text-slate-700">{line.accountName}</td>
+                      <td className="px-5 py-4">
+                        <SettlementStatusBadge status={line.status} />
+                      </td>
                       <td className="px-5 py-4 font-semibold text-slate-950 tabular-nums">{formatCurrency(line.amount)}</td>
                     </tr>
                   ))}
