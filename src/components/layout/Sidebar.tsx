@@ -46,7 +46,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     <div className="flex h-full flex-col border-r border-slate-200/80 bg-white/72 text-slate-900 backdrop-blur-xl">
       <div className="flex items-center justify-between border-b border-slate-200/70 px-5 py-5">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-sky-200/80 bg-sky-100 text-sm font-extrabold text-sky-800 shadow-[0_10px_20px_rgba(125,183,255,0.18)]">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 bg-blue-600 text-sm font-extrabold text-white">
             e
           </div>
           <div>
@@ -103,7 +103,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             className={({ isActive }) =>
               `group flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold tracking-[-0.01em] transition-all ${
                 isActive
-                  ? 'border border-sky-200/80 bg-sky-50 text-sky-900 shadow-[0_10px_22px_rgba(125,183,255,0.14)]'
+                  ? 'border border-gray-300 bg-blue-600 text-white'
                   : 'border border-transparent text-slate-600 hover:border-slate-200/80 hover:bg-white/75 hover:text-slate-900'
               }`
             }

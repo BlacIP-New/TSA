@@ -24,7 +24,7 @@ export function TopBar({ onMenuClick, title }: TopBarProps) {
       </div>
 
       <div className="flex items-center gap-2">
-        <div className="hidden items-center gap-2 rounded-2xl border border-slate-200/80 bg-white/70 px-3 py-2 text-sm text-slate-400 shadow-[0_10px_24px_rgba(15,23,42,0.04)] md:flex">
+        <div className="hidden items-center gap-2 rounded-lg border border-gray-300 bg-white/70 px-3 py-2 text-sm text-slate-400 md:flex">
           <Search className="h-4 w-4" />
           Search coming soon
         </div>

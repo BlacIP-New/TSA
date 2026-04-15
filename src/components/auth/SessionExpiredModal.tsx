@@ -17,7 +17,7 @@ export function SessionExpiredModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 max-w-sm w-full mx-4 text-center space-y-4">
+      <div className="bg-white rounded-lg border border-gray-300 p-8 max-w-sm w-full mx-4 text-center space-y-4">
         <div className="flex justify-center">
           <div className="w-14 h-14 rounded-full bg-amber-50 flex items-center justify-center">
             <Clock className="w-7 h-7 text-amber-500" />

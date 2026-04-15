@@ -8,15 +8,15 @@
   :root {
     color-scheme: light;
     --app-bg: #f6f8fb;
-    --app-bg-accent: rgba(96, 165, 250, 0.08);
+    --app-bg-accent: rgba(51, 92, 255, 0.08);
     --app-panel: rgba(255, 255, 255, 0.84);
     --app-panel-strong: rgba(255, 255, 255, 0.96);
     --app-line: rgba(15, 23, 42, 0.08);
     --app-line-strong: rgba(15, 23, 42, 0.14);
     --app-text: #0f172a;
     --app-muted: #64748b;
-    --app-accent: #7db7ff;
-    --app-accent-deep: #5298f4;
+    --app-accent: #335CFF;
+    --app-accent-deep: #1e40af;
     --app-sidebar: #f8fafc;
     --app-sidebar-line: rgba(148, 163, 184, 0.18);
   }
@@ -58,11 +58,11 @@
   }
 
   ::selection {
-    background: rgba(125, 183, 255, 0.25);
+    background: rgba(51, 92, 255, 0.25);
   }
 
   :focus-visible {
-    outline: 2px solid rgba(82, 152, 244, 0.55);
+    outline: 2px solid rgba(30, 64, 175, 0.55);
     outline-offset: 2px;
   }
 }
@@ -77,23 +77,23 @@
   }
 
   .app-panel {
-    @apply rounded-[28px] border shadow-[0_18px_50px_rgba(15,23,42,0.07)];
+    @apply rounded-lg border border-gray-300;
     background: var(--app-panel);
-    border-color: var(--app-line);
+    border-color: rgba(209, 213, 219, 1);
     backdrop-filter: blur(18px);
   }
 
   .app-panel-strong {
-    @apply rounded-[28px] border shadow-[0_20px_60px_rgba(15,23,42,0.09)];
+    @apply rounded-lg border border-gray-300;
     background: var(--app-panel-strong);
-    border-color: var(--app-line-strong);
+    border-color: rgba(209, 213, 219, 1);
     backdrop-filter: blur(20px);
   }
 
   .app-card {
-    @apply rounded-[24px] border;
+    @apply rounded-lg border border-gray-300;
     background: rgba(255, 255, 255, 0.72);
-    border-color: rgba(15, 23, 42, 0.08);
+    border-color: rgba(209, 213, 219, 1);
   }
 
   .app-data-table {

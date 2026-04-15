@@ -14,13 +14,13 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    'border border-sky-200/80 bg-sky-100 text-sky-900 shadow-[0_10px_24px_rgba(125,183,255,0.18)] hover:bg-sky-200/70 focus-visible:ring-sky-200 disabled:bg-sky-100/60 disabled:text-sky-700/60 disabled:shadow-none',
+    'border border-gray-300 bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500 disabled:bg-blue-400 disabled:text-blue-200',
   secondary:
-    'border border-slate-200/80 bg-white/80 text-slate-700 shadow-[0_10px_24px_rgba(15,23,42,0.05)] hover:bg-white focus-visible:ring-slate-300 disabled:opacity-50',
+    'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus-visible:ring-gray-300 disabled:opacity-50',
   ghost:
-    'border border-transparent bg-transparent text-slate-600 hover:border-slate-200/80 hover:bg-white/70 hover:text-slate-900 focus-visible:ring-slate-300 disabled:opacity-50',
+    'border border-transparent bg-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900 focus-visible:ring-gray-300 disabled:opacity-50',
   danger:
-    'border border-red-200 bg-red-50 text-red-700 shadow-[0_10px_24px_rgba(220,38,38,0.08)] hover:bg-red-100 focus-visible:ring-red-200 disabled:opacity-50 disabled:shadow-none',
+    'border border-gray-300 bg-red-50 text-red-700 hover:bg-red-100 focus-visible:ring-red-500 disabled:opacity-50',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -43,7 +43,7 @@ export function Button({
   return (
     <button
       className={`
-        inline-flex items-center justify-center rounded-2xl font-semibold tracking-[-0.01em]
+        inline-flex items-center justify-center rounded-md font-semibold tracking-[-0.01em]
         transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1
         cursor-pointer disabled:cursor-not-allowed
         ${variantClasses[variant]}

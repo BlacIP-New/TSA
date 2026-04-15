@@ -77,13 +77,13 @@ export function DateRangeSelector({
             </Button>
           </div>
 
-          <div className="inline-flex items-center gap-2 rounded-[20px] border border-slate-200/80 bg-white/75 p-1.5 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
+          <div className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white/75 p-1.5">
             <button
               type="button"
               disabled={isLoading}
-              className={`inline-flex items-center gap-2 rounded-2xl px-3.5 py-2 text-sm font-semibold transition-all ${
+              className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition-all ${
                 groupBy === 'day'
-                  ? 'bg-slate-900 text-white shadow-sm'
+                  ? 'bg-slate-900 text-white'
                   : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
               }`}
               onClick={() => onGroupByChange('day')}
@@ -94,9 +94,9 @@ export function DateRangeSelector({
             <button
               type="button"
               disabled={isLoading}
-              className={`inline-flex items-center gap-2 rounded-2xl px-3.5 py-2 text-sm font-semibold transition-all ${
+              className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition-all ${
                 groupBy === 'week'
-                  ? 'bg-slate-900 text-white shadow-sm'
+                  ? 'bg-slate-900 text-white'
                   : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
               }`}
               onClick={() => onGroupByChange('week')}

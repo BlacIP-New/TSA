@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
           <Logo />
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
+        <div className="bg-white rounded-lg border border-gray-300 p-8">
           {submitted ? (
             <div className="text-center space-y-4">
               <div className="flex justify-center">

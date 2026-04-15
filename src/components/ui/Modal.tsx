@@ -48,7 +48,7 @@ export function Modal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
       <div className="absolute inset-0" onClick={onClose} />
 
-      <div className={`relative z-10 w-full rounded-3xl border border-gray-200 bg-white shadow-2xl ${sizeClasses[size]}`}>
+      <div className={`relative z-10 w-full rounded-lg border border-gray-300 bg-white ${sizeClasses[size]}`}>
         <div className="flex items-start justify-between border-b border-gray-100 px-5 py-4">
           <div>
             <h2 className="text-lg font-semibold tracking-tight text-gray-950">{title}</h2>

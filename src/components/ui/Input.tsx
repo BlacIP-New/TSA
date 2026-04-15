@@ -34,7 +34,7 @@ export function Input({
         <input
           id={inputId}
           className={`
-            h-11 w-full rounded-2xl border bg-white/80 text-sm font-medium text-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]
+            h-11 w-full rounded-lg border bg-white/80 text-sm font-medium text-slate-900
             placeholder:text-slate-400 outline-none transition-all
             focus:ring-4 focus:ring-offset-0
             ${error

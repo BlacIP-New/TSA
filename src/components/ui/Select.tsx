@@ -35,7 +35,7 @@ export function Select({
         <select
           id={selectId}
           className={`
-            h-11 w-full appearance-none rounded-2xl border bg-white/80 pl-4 pr-11 text-sm font-medium text-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] outline-none transition-all
+            h-11 w-full appearance-none rounded-lg border bg-white/80 pl-4 pr-11 text-sm font-medium text-slate-900 outline-none transition-all
             ${error
               ? 'border-red-300 focus:border-red-400 focus:ring-4 focus:ring-red-100'
               : 'border-slate-200/80 focus:border-sky-300 focus:ring-4 focus:ring-sky-100'

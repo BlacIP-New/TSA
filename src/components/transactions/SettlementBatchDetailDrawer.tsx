@@ -56,7 +56,7 @@ export function SettlementBatchDetailDrawer({
     <>
       <div className="fixed inset-0 z-40 bg-slate-950/18 backdrop-blur-sm" onClick={onClose} />
 
-      <aside className="fixed inset-y-0 right-0 z-50 flex h-full w-full flex-col border-l border-slate-200/80 bg-white/92 shadow-[0_24px_70px_rgba(15,23,42,0.12)] backdrop-blur-xl sm:max-w-2xl">
+      <aside className="fixed inset-y-0 right-0 z-50 flex h-full w-full flex-col border-l border-gray-300 bg-white/92 backdrop-blur-xl sm:max-w-2xl">
         <div className="flex items-start justify-between border-b border-slate-200/80 px-5 py-4">
           <div>
             <p className="text-base font-semibold text-slate-950">Settlement batch detail</p>

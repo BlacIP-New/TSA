@@ -14,15 +14,11 @@ export default {
           300: '#fda4af',
           400: '#fb7185',
           500: '#f43f5e',
-          600: '#e8001c',
+          600: '#335CFF',
           700: '#c4001a',
           800: '#9f1239',
           900: '#881337',
         },
-      },
-      boxShadow: {
-        xs: '0 1px 2px 0 rgb(0 0 0 / 0.04)',
-        card: '0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04)',
       },
       borderRadius: {
         '2xl': '1rem',
