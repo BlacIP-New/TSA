@@ -1,16 +1,13 @@
 import { Building2, CalendarClock, ChevronLeft, Hash, Layers3, Wallet } from 'lucide-react';
 import { AuthUser } from '../../types/auth';
 import { useSettlementBatchDetail } from '../../hooks/useTransactions';
-import { ExportButton } from '../export/ExportButton';
 import { Alert } from '../ui/Alert';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 
 interface SettlementBatchDetailDrawerProps {
   batchId: string | null;
   user: AuthUser | null;
-  isExporting?: boolean;
   onClose: () => void;
-  onExport?: (batchId: string) => void;
 }
 
 function DetailItem({ label, value }: { label: string; value: string }) {
@@ -25,9 +22,7 @@ function DetailItem({ label, value }: { label: string; value: string }) {
 export function SettlementBatchDetailDrawer({
   batchId,
   user,
-  isExporting = false,
   onClose,
-  onExport,
 }: SettlementBatchDetailDrawerProps) {
   const isOpen = batchId !== null;
   const { detail, isLoading, error } = useSettlementBatchDetail(batchId, user);
@@ -48,13 +43,6 @@ export function SettlementBatchDetailDrawer({
               Back to settlement list
             </button>
           </div>
-          <p className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-slate-950">Settlement batch detail</p>
-          <p className="mt-1 text-sm text-slate-500">
-            Batch summary and settlement lines for the selected payout batch.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {detail && onExport && <ExportButton isLoading={isExporting} onClick={() => onExport(detail.batch.id)} />}
         </div>
       </div>
 

@@ -10,6 +10,7 @@ import { Alert } from '../components/ui/Alert';
 import { Button } from '../components/ui/Button';
 import { DateRangeDropdown } from '../components/ui/DateRangeDropdown';
 import { useAuth } from '../context/AuthContext';
+import { usePageTitle } from '../context/PageTitleContext';
 import { useExport } from '../hooks/useExport';
 import { useFilters } from '../hooks/useFilters';
 import { useSettlementBatchLedger } from '../hooks/useTransactions';
@@ -25,6 +26,7 @@ function toDateInput(date: Date) {
 
 export default function TransactionsPage() {
   const { user } = useAuth();
+  const { setTitleOverride } = usePageTitle();
   const {
     settlementFilters,
     settlementPageSize,
@@ -35,8 +37,8 @@ export default function TransactionsPage() {
 
   const [page, setPage] = useState(1);
   const [selectedBatchId, setSelectedBatchId] = useState<string | null>(null);
-  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [dateRange, setDateRange] = useState(() => {
     const to = new Date();
     to.setHours(0, 0, 0, 0);
@@ -47,7 +49,6 @@ export default function TransactionsPage() {
       to: toDateInput(to),
     };
   });
-  const [exportTarget, setExportTarget] = useState<SettlementExportTarget>({ type: 'batch-list' });
   const effectiveSettlementFilters = useMemo(
     () => ({
       ...settlementFilters,
@@ -56,6 +57,7 @@ export default function TransactionsPage() {
     }),
     [dateRange.from, dateRange.to, settlementFilters],
   );
+  const [exportTarget, setExportTarget] = useState<SettlementExportTarget>({ type: 'batch-list' });
 
   const { result, isLoading, error } = useSettlementBatchLedger(
     user,
@@ -71,6 +73,14 @@ export default function TransactionsPage() {
       setPage(result.totalPages);
     }
   }, [page, result.totalPages]);
+
+  useEffect(() => {
+    setTitleOverride(selectedBatchId ? 'Settlement batch detail' : null);
+
+    return () => {
+      setTitleOverride(null);
+    };
+  }, [selectedBatchId, setTitleOverride]);
 
   useEffect(() => {
     if (lastExportMessage) {
@@ -96,13 +106,9 @@ export default function TransactionsPage() {
   return (
     <>
       <div className="space-y-6 p-4 sm:p-5 lg:p-8">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="rounded-full border border-slate-200/80 bg-white/80 px-3.5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
-              {user?.role === 'aggregator_admin'
-                ? 'Aggregator-wide settlements'
-                : `${user?.collectionCode} / ${user?.serviceCode}`}
-            </div>
+        {!selectedBatchId && (
+          <div className="flex flex-wrap items-center justify-end gap-3">
+            <DateRangeDropdown dateRange={dateRange} onDateRangeChange={setDateRange} />
             <ExportButton
               disabled={result.total === 0}
               isLoading={isExporting}
@@ -112,15 +118,12 @@ export default function TransactionsPage() {
                 setIsExportModalOpen(true);
               }}
             />
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <DateRangeDropdown dateRange={dateRange} onDateRangeChange={setDateRange} />
             <div className="relative inline-block">
               <Button
                 variant="secondary"
                 size="sm"
                 leftIcon={<Filter className="h-4 w-4" />}
-                onClick={() => setIsFilterPanelOpen(true)}
+                onClick={() => setIsFilterPanelOpen((current) => !current)}
               >
                 Filter
               </Button>
@@ -157,7 +160,7 @@ export default function TransactionsPage() {
               )}
             </div>
           </div>
-        </div>
+        )}
 
         {lastExportMessage && <Alert variant="success" message={lastExportMessage} />}
         {exportError && <Alert variant="error" message={exportError} />}
@@ -167,13 +170,7 @@ export default function TransactionsPage() {
           <SettlementBatchDetailDrawer
             batchId={selectedBatchId}
             user={user}
-            isExporting={isExporting && exportTarget.type === 'batch-detail'}
             onClose={() => setSelectedBatchId(null)}
-            onExport={(batchId) => {
-              clearExportMessages();
-              setExportTarget({ type: 'batch-detail', batchId });
-              setIsExportModalOpen(true);
-            }}
           />
         ) : (
           <>
@@ -199,12 +196,8 @@ export default function TransactionsPage() {
 
       <ExportModal
         open={isExportModalOpen}
-        title={exportTarget.type === 'batch-list' ? 'Export settlement batches' : `Export batch ${exportTarget.batchId}`}
-        description={
-          exportTarget.type === 'batch-list'
-            ? 'Generate a CSV or PDF from the current filtered settlement batch view.'
-            : 'Generate a CSV or PDF for the selected settlement batch lines.'
-        }
+        title="Export settlement batches"
+        description="Generate a CSV or PDF from the current filtered settlement batch view."
         isExporting={isExporting}
         onClose={() => {
           if (isExporting) return;

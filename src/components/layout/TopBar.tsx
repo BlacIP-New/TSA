@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, ChevronDown, CircleUserRound, LogOut, Menu, Search, Settings } from 'lucide-react';
+import { ChevronDown, CircleUserRound, LogOut, Menu, Settings } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { ProfileSettingsModal } from '../ui/ProfileSettingsModal';
 
@@ -69,15 +69,6 @@ export function TopBar({ onMenuClick, title }: TopBarProps) {
       </div>
 
       <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-        <div className="hidden items-center gap-2 rounded-lg border border-gray-300 bg-white/70 px-3 py-2 text-sm text-slate-400 md:flex">
-          <Search className="h-4 w-4" />
-          Search coming soon
-        </div>
-        <button className="relative rounded border border-gray-300 bg-white/80 p-2.5 text-slate-400 transition-colors hover:text-slate-700">
-          <Bell className="h-4.5 w-4.5" />
-          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[#335CFF]" />
-        </button>
-
         <div ref={menuRef} className="relative">
           <button
             type="button"

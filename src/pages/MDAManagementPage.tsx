@@ -9,7 +9,6 @@ import { useMDAs } from '../hooks/useMDAs';
 import { InviteMDAPayload, MDAUser } from '../types/mda';
 import { MDATabNavigation } from '../components/mda/MDATabNavigation';
 import { MDARegistryTable } from '../components/mda/MDARegistryTable';
-import { MDADetailPanel } from '../components/mda/MDADetailPanel';
 import { MDACollectionList } from '../components/mda/MDACollectionList';
 import { SettlementBatchTable } from '../components/transactions/SettlementBatchTable';
 import { SettlementBatchDetailDrawer } from '../components/transactions/SettlementBatchDetailDrawer';
@@ -38,7 +37,6 @@ export default function MDAManagementPage() {
     mdas,
     allCollections,
     selectedMDAId,
-    selectedMDADetail,
     selectedCollectionCode,
     users,
     settlementResult,
@@ -262,14 +260,13 @@ export default function MDAManagementPage() {
         <MDATabNavigation activeTab={activeTab} onChange={setActiveTab} />
 
         {activeTab === 'mdas' && (
-          <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+          <div className="space-y-6">
             <MDARegistryTable
               mdas={mdas}
               selectedMDAId={selectedMDAId}
               isLoading={isLoading}
               onSelect={setSelectedMDAId}
             />
-            <MDADetailPanel detail={selectedMDADetail} isLoading={isLoading} />
           </div>
         )}
 
