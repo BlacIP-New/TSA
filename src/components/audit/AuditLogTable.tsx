@@ -22,7 +22,7 @@ const actionLabels: Record<AuditEntry['action'], { label: string; variant: 'info
 
 export function AuditLogTable({ entries, isLoading = false }: AuditLogTableProps) {
   return (
-    <section className="app-panel border-white/70">
+    <section className="app-panel border-gray-300">
       <div className="overflow-x-auto">
         <table className="app-data-table">
           <thead>
@@ -39,7 +39,7 @@ export function AuditLogTable({ entries, isLoading = false }: AuditLogTableProps
               Array.from({ length: 8 }, (_, index) => (
                 <tr key={index}>
                   <td className="px-5 py-4" colSpan={5}>
-                    <div className="h-12 animate-pulse rounded-2xl bg-slate-100" />
+                    <div className="h-12 animate-pulse rounded-lg bg-slate-100" />
                   </td>
                 </tr>
               ))}

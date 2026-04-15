@@ -76,17 +76,17 @@ export default function AuditLogPage() {
       </section>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <div className="app-panel border-white/70 p-5">
+        <div className="app-panel border-gray-300 p-5">
           <p className="app-kicker">Visible records</p>
           <p className="mt-3 text-[30px] font-semibold tracking-[-0.05em] text-slate-950 tabular-nums">{result.total}</p>
           <p className="mt-2 text-sm text-slate-500">Matching the current audit filters</p>
         </div>
-        <div className="app-panel border-white/70 p-5">
+        <div className="app-panel border-gray-300 p-5">
           <p className="app-kicker">Tracked users</p>
           <p className="mt-3 text-[30px] font-semibold tracking-[-0.05em] text-slate-950 tabular-nums">{userOptions.length}</p>
           <p className="mt-2 text-sm text-slate-500">Unique users with logged portal activity</p>
         </div>
-        <div className="app-panel border-white/70 p-5">
+        <div className="app-panel border-gray-300 p-5">
           <div className="flex items-center gap-2 text-slate-600">
             <ClipboardList className="h-4 w-4" />
             <p className="app-kicker">Compliance note</p>

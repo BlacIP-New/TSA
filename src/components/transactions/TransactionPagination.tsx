@@ -33,7 +33,7 @@ export function TransactionPagination({
   const visiblePages = getVisiblePages(page, totalPages);
 
   return (
-    <div className="app-panel border-white/70 flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between">
+    <div className="app-panel border-gray-300 flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between">
       <div>
         <p className="text-sm font-semibold text-slate-950">
           Showing {start}-{end} of {total.toLocaleString()} records
@@ -48,7 +48,7 @@ export function TransactionPagination({
             <select
               value={limit}
               disabled={isLoading}
-              className="h-9 rounded-2xl border border-slate-200/80 bg-white/80 px-3 text-sm font-medium text-slate-900 outline-none focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
+              className="h-9 rounded border border-gray-300 bg-white/80 px-3 text-sm font-medium text-slate-900 outline-none focus:border-[#335CFF] focus:ring-4 focus:ring-[#335CFF]/12"
               onChange={(event) => onLimitChange(Number(event.target.value) as PageSizeOption)}
             >
               <option value={25}>25</option>
@@ -75,9 +75,9 @@ export function TransactionPagination({
                 key={visiblePage}
                 type="button"
                 disabled={isLoading}
-                className={`h-9 min-w-9 rounded-2xl px-3 text-sm font-semibold transition-colors ${
+                className={`h-9 min-w-9 rounded px-3 text-sm font-semibold transition-colors ${
                   visiblePage === page
-                    ? 'border border-sky-200/80 bg-sky-100 text-sky-900'
+                    ? 'border border-gray-300 bg-[#335CFF] text-white'
                     : 'bg-white/70 text-slate-600 hover:bg-slate-100'
                 }`}
                 onClick={() => onPageChange(visiblePage)}

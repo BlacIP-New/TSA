@@ -19,9 +19,9 @@ function DetailList({
   emptyLabel: string;
 }) {
   return (
-    <section className="app-panel border-white/70 p-5">
+    <section className="app-panel border-gray-300 p-5">
       <div className="flex items-center gap-2">
-        <div className="rounded-2xl border border-slate-200/80 bg-slate-50 p-2 text-slate-600">{icon}</div>
+        <div className="rounded-lg border border-gray-300 bg-white p-2 text-slate-600">{icon}</div>
         <div>
           <h3 className="text-sm font-semibold text-slate-950">{title}</h3>
           <p className="mt-1 text-sm text-slate-500">{items.length} configured</p>
@@ -30,7 +30,7 @@ function DetailList({
 
       <div className="mt-4 space-y-3">
         {items.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-200 px-4 py-6 text-sm text-slate-500">
+          <div className="rounded-lg border border-dashed border-gray-300 px-4 py-6 text-sm text-slate-500">
             {emptyLabel}
           </div>
         ) : (
@@ -67,7 +67,7 @@ export function MDADetailPanel({ detail, isLoading = false }: MDADetailPanelProp
 
   return (
     <div className="space-y-4">
-      <section className="app-panel border-white/70 p-5">
+      <section className="app-panel border-gray-300 p-5">
         <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
           <div>
             <p className="app-kicker">Active MDA</p>
@@ -118,9 +118,9 @@ export function MDADetailPanel({ detail, isLoading = false }: MDADetailPanelProp
         />
       </div>
 
-      <div className="app-panel border-white/70 p-5">
+      <div className="app-panel border-gray-300 p-5">
         <div className="flex items-start gap-3">
-          <div className="rounded-2xl border border-slate-200/80 bg-slate-50 p-2 text-slate-600">
+          <div className="rounded-lg border border-gray-300 bg-white p-2 text-slate-600">
             <UserRound className="h-5 w-5" />
           </div>
           <div>

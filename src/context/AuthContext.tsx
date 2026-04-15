@@ -40,9 +40,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const setUser = useCallback((u: AuthUser | null) => {
     setUserState(u);
     if (u) {
+      sessionStorage.setItem('tsa_user', JSON.stringify(u));
       resetIdleTimer();
     } else {
       clearIdleTimer();
+      sessionStorage.removeItem('tsa_user');
     }
   }, [resetIdleTimer, clearIdleTimer]);
 

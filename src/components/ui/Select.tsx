@@ -38,7 +38,7 @@ export function Select({
             h-11 w-full appearance-none rounded-lg border bg-white/80 pl-4 pr-11 text-sm font-medium text-slate-900 outline-none transition-all
             ${error
               ? 'border-red-300 focus:border-red-400 focus:ring-4 focus:ring-red-100'
-              : 'border-slate-200/80 focus:border-sky-300 focus:ring-4 focus:ring-sky-100'
+              : 'border-gray-300 focus:border-[#335CFF] focus:ring-4 focus:ring-[#335CFF]/12'
             }
             disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400
             ${className}

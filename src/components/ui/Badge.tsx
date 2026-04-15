@@ -12,7 +12,7 @@ const variantClasses: Record<BadgeVariant, string> = {
   warning: 'bg-amber-50/80 text-amber-800 border-amber-200/80',
   error: 'bg-red-50/80 text-red-800 border-red-200/80',
   neutral: 'bg-slate-100/80 text-slate-700 border-slate-200/80',
-  info: 'bg-blue-50/80 text-blue-800 border-blue-200/80',
+  info: 'bg-white text-slate-700 border-gray-300',
 };
 
 const dotClasses: Record<BadgeVariant, string> = {
@@ -20,7 +20,7 @@ const dotClasses: Record<BadgeVariant, string> = {
   warning: 'bg-amber-500',
   error: 'bg-red-500',
   neutral: 'bg-gray-400',
-  info: 'bg-blue-500',
+  info: 'bg-[#335CFF]',
 };
 
 export function Badge({ variant = 'neutral', children, dot = false, className = '' }: BadgeProps) {

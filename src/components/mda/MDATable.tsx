@@ -28,7 +28,7 @@ export function MDATable({
   onReactivate,
 }: MDATableProps) {
   return (
-    <section className="app-panel border-white/70">
+    <section className="app-panel border-gray-300">
       <div className="flex flex-col gap-3 border-b border-slate-200/80 px-5 py-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h2 className="text-sm font-semibold text-slate-950">{title}</h2>
@@ -58,7 +58,7 @@ export function MDATable({
               Array.from({ length: 5 }, (_, index) => (
                 <tr key={index}>
                   <td className="px-5 py-4" colSpan={8}>
-                    <div className="h-12 animate-pulse rounded-2xl bg-slate-100" />
+                    <div className="h-12 animate-pulse rounded-lg bg-slate-100" />
                   </td>
                 </tr>
               ))}
@@ -76,7 +76,7 @@ export function MDATable({
                 <tr key={user.id} className="align-top">
                   <td className="px-5 py-4">
                     <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200/80 bg-slate-50 text-sm font-semibold text-slate-700">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 bg-white text-sm font-semibold text-slate-700">
                         {user.name
                           .split(' ')
                           .slice(0, 2)

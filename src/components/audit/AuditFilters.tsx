@@ -32,7 +32,7 @@ export function AuditFilters({
   onReset,
 }: AuditFiltersProps) {
   return (
-    <section className="app-panel border-white/70 p-5">
+    <section className="app-panel border-gray-300 p-5">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
           <div className="flex items-center gap-2">

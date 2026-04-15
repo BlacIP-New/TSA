@@ -68,7 +68,7 @@ export function SettlementBatchDetailDrawer({
             {detail && onExport && <ExportButton isLoading={isExporting} onClick={() => onExport(detail.batch.id)} />}
             <button
               type="button"
-              className="rounded-2xl border border-slate-200/80 bg-white/80 p-2 text-slate-500 transition-colors hover:text-slate-800"
+              className="rounded border border-gray-300 bg-white/80 p-2 text-slate-500 transition-colors hover:text-slate-800"
               onClick={onClose}
             >
               <X className="h-5 w-5" />
@@ -89,7 +89,7 @@ export function SettlementBatchDetailDrawer({
 
           {!isLoading && detail && (
             <>
-              <section className="app-panel border-white/70 p-5">
+              <section className="app-panel border-gray-300 p-5">
                 <div className="flex items-start gap-3">
                   <div className="flex h-12 w-12 items-center justify-center rounded-[20px] border border-slate-200/80 bg-slate-50 text-slate-700">
                     <Hash className="h-5 w-5" />
@@ -131,7 +131,7 @@ export function SettlementBatchDetailDrawer({
                     value: formatCurrency(detail.batch.totalAmount),
                   },
                 ].map((item) => (
-                  <div key={item.label} className="app-panel border-white/70 p-4">
+                  <div key={item.label} className="app-panel border-gray-300 p-4">
                     <div className="flex items-center gap-2 text-slate-600">
                       {item.icon}
                       <p className="app-kicker">{item.label}</p>
@@ -141,7 +141,7 @@ export function SettlementBatchDetailDrawer({
                 ))}
               </section>
 
-              <section className="app-panel border-white/70">
+              <section className="app-panel border-gray-300">
                 <div className="border-b border-slate-200/80 px-5 py-4">
                   <div className="flex items-center gap-2">
                     <Building2 className="h-4 w-4 text-slate-600" />

@@ -15,7 +15,7 @@ export function MDARegistryTable({
   onSelect,
 }: MDARegistryTableProps) {
   return (
-    <section className="app-panel border-white/70">
+    <section className="app-panel border-gray-300">
       <div className="border-b border-slate-200/80 px-5 py-4">
         <h2 className="text-sm font-semibold text-slate-950">MDA registry</h2>
         <p className="mt-1 text-sm text-slate-500">
@@ -39,7 +39,7 @@ export function MDARegistryTable({
               Array.from({ length: 5 }, (_, index) => (
                 <tr key={index}>
                   <td className="px-5 py-4" colSpan={5}>
-                    <div className="h-12 animate-pulse rounded-2xl bg-slate-100" />
+                    <div className="h-12 animate-pulse rounded-lg bg-slate-100" />
                   </td>
                 </tr>
               ))}
@@ -62,7 +62,7 @@ export function MDARegistryTable({
                   role="button"
                   tabIndex={0}
                     className={`cursor-pointer transition-colors hover:bg-slate-50 ${
-                      isSelected ? 'bg-sky-50/50' : ''
+                      isSelected ? 'bg-[#335CFF]/8' : ''
                     }`}
                     onClick={() => onSelect(mda.id)}
                     onKeyDown={(event) => {
@@ -74,7 +74,7 @@ export function MDARegistryTable({
                   >
                     <td className="px-5 py-4">
                       <div className="flex items-start gap-3">
-                        <div className="rounded-2xl border border-slate-200/80 bg-slate-50 p-2 text-slate-600">
+                        <div className="rounded-lg border border-gray-300 bg-white p-2 text-slate-600">
                           <Building2 className="h-4 w-4" />
                         </div>
                         <div>

@@ -13,7 +13,7 @@ function buildLinePath(points: { x: number; y: number }[]) {
 export function SettlementTrendChart({ chart, isLoading = false }: SettlementTrendChartProps) {
   if (isLoading) {
     return (
-      <section className="app-panel border-white/70 p-5">
+      <section className="app-panel border-gray-300 p-5">
         <div className="animate-pulse space-y-4">
           <div className="h-4 w-36 rounded-full bg-slate-200" />
           <div className="h-8 w-48 rounded-full bg-slate-200" />
@@ -25,7 +25,7 @@ export function SettlementTrendChart({ chart, isLoading = false }: SettlementTre
 
   if (!chart || chart.points.length === 0) {
     return (
-      <section className="app-panel border-white/70 p-5">
+      <section className="app-panel border-gray-300 p-5">
         <p className="text-base font-semibold text-slate-950">Settlement trend</p>
         <p className="mt-2 text-sm text-slate-500">No settled transactions were found for the selected range.</p>
       </section>
@@ -50,7 +50,7 @@ export function SettlementTrendChart({ chart, isLoading = false }: SettlementTre
   const labelInterval = Math.max(1, Math.ceil(chart.points.length / 6));
 
   return (
-    <section className="app-panel border-white/70 p-5">
+    <section className="app-panel border-gray-300 p-5">
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-base font-semibold text-slate-950">Settlement trend</p>
@@ -58,7 +58,7 @@ export function SettlementTrendChart({ chart, isLoading = false }: SettlementTre
             {chart.groupBy === 'day' ? 'Daily' : 'Weekly'} settled volume across the selected range
           </p>
         </div>
-        <div className="rounded-[22px] border border-slate-200/80 bg-slate-50/80 px-4 py-3">
+        <div className="rounded-lg border border-gray-300 bg-white px-4 py-3">
           <p className="app-kicker">Range total</p>
           <p className="mt-1 text-lg font-semibold text-slate-950 tabular-nums">
             {formatCompactCurrency(chart.totalAmount)}
@@ -123,7 +123,7 @@ export function SettlementTrendChart({ chart, isLoading = false }: SettlementTre
           }
 
           return (
-            <span key={`${point.label}-axis`} className="rounded-full border border-slate-200/80 bg-white/70 px-2.5 py-1">
+            <span key={`${point.label}-axis`} className="rounded-full border border-gray-300 bg-white px-2.5 py-1">
               {point.label}
             </span>
           );

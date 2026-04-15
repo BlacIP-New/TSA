@@ -10,17 +10,12 @@ interface SummaryCardProps {
 }
 
 export function SummaryCard({ label, value, helper, icon, change }: SummaryCardProps) {
-  const changeTone =
-    change == null
-      ? 'border-slate-200/80 bg-slate-100/70 text-slate-500'
-      : change >= 0
-        ? 'border-emerald-200/80 bg-emerald-50/80 text-emerald-700'
-        : 'border-red-200/80 bg-red-50/80 text-red-700';
+  const changeTone = 'border-gray-300 bg-white text-slate-600';
 
   return (
-    <article className="app-panel border-white/70 p-5">
+    <article className="app-panel border-gray-300 p-5">
       <div className="mb-5 flex items-start justify-between gap-3">
-        <div className="flex h-12 w-12 items-center justify-center rounded-[20px] border border-slate-200/80 bg-slate-50 text-slate-700">
+        <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-gray-300 bg-white text-slate-700">
           {icon}
         </div>
         {change != null && (

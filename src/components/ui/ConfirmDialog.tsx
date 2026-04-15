@@ -39,8 +39,8 @@ export function ConfirmDialog({
         </div>
       }
     >
-      <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4">
-        <div className="rounded-2xl bg-white p-2 text-amber-600">
+      <div className="flex items-start gap-3 rounded-lg border border-gray-300 bg-white p-4">
+        <div className="rounded bg-white p-2 text-slate-600">
           <AlertTriangle className="h-5 w-5" />
         </div>
         <p className="text-sm text-amber-900">{message}</p>

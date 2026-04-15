@@ -237,7 +237,7 @@ export function InviteMDAModal({
         {selectedMDA && (
           <div className="app-card p-4">
             <div className="flex items-start gap-3">
-              <div className="rounded-2xl border border-slate-200/80 bg-white p-2 text-slate-600">
+              <div className="rounded-lg border border-gray-300 bg-white p-2 text-slate-600">
                 <Building2 className="h-5 w-5" />
               </div>
               <div>

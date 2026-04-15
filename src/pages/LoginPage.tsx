@@ -80,9 +80,9 @@ export default function LoginPage() {
               { label: 'Transactions Tracked', value: '1.2M+' },
               { label: 'Settled Volume', value: '₦890B+' },
             ].map((stat) => (
-              <div key={stat.label} className="bg-white/5 rounded-xl p-4 border border-white/10">
-                <div className="text-xl font-bold text-white">{stat.value}</div>
-                <div className="text-xs text-gray-500 mt-0.5">{stat.label}</div>
+              <div key={stat.label} className="rounded-lg border border-gray-300 bg-white p-4">
+                <div className="text-xl font-bold text-slate-900">{stat.value}</div>
+                <div className="mt-0.5 text-xs text-slate-500">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -167,9 +167,9 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="mt-8 p-4 bg-blue-50 rounded-xl border border-blue-100">
-            <p className="text-xs font-semibold text-blue-700 mb-2">Demo credentials</p>
-            <div className="space-y-1.5 text-xs text-blue-600">
+          <div className="mt-8 rounded-lg border border-gray-300 bg-white p-4">
+            <p className="mb-2 text-xs font-semibold text-slate-700">Demo credentials</p>
+            <div className="space-y-1.5 text-xs text-slate-600">
               <div>
                 <span className="font-medium">Aggregator Admin:</span>{' '}
                 admin@nsw.gov.ng / Admin@1234

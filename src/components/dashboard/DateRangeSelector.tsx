@@ -34,7 +34,7 @@ export function DateRangeSelector({
   }
 
   return (
-    <section className="app-panel border-white/70 px-5 py-5">
+    <section className="app-panel border-gray-300 px-5 py-5">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div className="grid gap-4 sm:grid-cols-2 xl:min-w-[440px]">
           <Input

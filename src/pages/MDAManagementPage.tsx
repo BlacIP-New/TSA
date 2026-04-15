@@ -185,7 +185,7 @@ export default function MDAManagementPage() {
         </section>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <div className="app-panel border-white/70 p-5">
+          <div className="app-panel border-gray-300 p-5">
             <div className="flex items-center gap-2 text-slate-600">
               <Building2 className="h-4 w-4" />
               <p className="app-kicker">Total MDAs</p>
@@ -193,7 +193,7 @@ export default function MDAManagementPage() {
             <p className="mt-3 text-[30px] font-semibold tracking-[-0.05em] text-slate-950 tabular-nums">{mdas.length}</p>
             <p className="mt-2 text-sm text-slate-500">Admin-visible MDA registry entries</p>
           </div>
-          <div className="app-panel border-white/70 p-5">
+          <div className="app-panel border-gray-300 p-5">
             <div className="flex items-center gap-2 text-slate-600">
               <FolderKanban className="h-4 w-4" />
               <p className="app-kicker">Selected collections</p>
@@ -205,7 +205,7 @@ export default function MDAManagementPage() {
               {selectedMDA ? `Under ${selectedMDA.mdaCode}` : 'Choose an MDA to inspect its collections'}
             </p>
           </div>
-          <div className="app-panel border-white/70 p-5">
+          <div className="app-panel border-gray-300 p-5">
             <div className="flex items-center gap-2 text-slate-600">
               <Activity className="h-4 w-4" />
               <p className="app-kicker">Settlement batches</p>
@@ -215,7 +215,7 @@ export default function MDAManagementPage() {
               {selectedCollection ? `${selectedCollection.code} currently selected` : 'Select a collection code'}
             </p>
           </div>
-          <div className="app-panel border-white/70 p-5">
+          <div className="app-panel border-gray-300 p-5">
             <div className="flex items-center gap-2 text-slate-600">
               <UsersRound className="h-4 w-4" />
               <p className="app-kicker">Scoped users</p>
@@ -232,9 +232,9 @@ export default function MDAManagementPage() {
           />
         )}
 
-        <section className="app-panel border-white/70 p-5">
+        <section className="app-panel border-gray-300 p-5">
           <div className="flex items-start gap-3">
-            <div className="rounded-2xl border border-slate-200/80 bg-slate-50 p-2 text-slate-600">
+            <div className="rounded-lg border border-gray-300 bg-white p-2 text-slate-600">
               <ShieldCheck className="h-5 w-5" />
             </div>
             <div>
@@ -263,7 +263,7 @@ export default function MDAManagementPage() {
         {activeTab === 'collections' && (
           <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
             <div className="space-y-4">
-              <section className="app-panel border-white/70 p-5">
+              <section className="app-panel border-gray-300 p-5">
                 <p className="app-kicker">Selected MDA</p>
                 <h2 className="mt-3 text-xl font-semibold tracking-[-0.04em] text-slate-950">
                   {selectedMDA?.mdaCode ?? 'No MDA selected'}
@@ -282,7 +282,7 @@ export default function MDAManagementPage() {
             </div>
 
             <div className="space-y-4">
-              <section className="app-panel border-white/70 p-5">
+              <section className="app-panel border-gray-300 p-5">
                 <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div>
                     <p className="app-kicker">Collection settlement scope</p>
@@ -319,24 +319,24 @@ export default function MDAManagementPage() {
         {activeTab === 'users' && (
           <div className="space-y-6">
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <div className="app-panel border-white/70 p-5">
+              <div className="app-panel border-gray-300 p-5">
                 <p className="app-kicker">Selected MDA</p>
                 <p className="mt-3 text-lg font-semibold tracking-[-0.04em] text-slate-950">
                   {selectedMDA?.mdaCode ?? 'Not selected'}
                 </p>
                 <p className="mt-2 text-sm text-slate-500">{selectedMDA?.mdaName ?? 'Select an MDA to scope this tab.'}</p>
               </div>
-              <div className="app-panel border-white/70 p-5">
+              <div className="app-panel border-gray-300 p-5">
                 <p className="app-kicker">Pending invites</p>
                 <p className="mt-3 text-[30px] font-semibold tracking-[-0.05em] text-slate-950 tabular-nums">{statusSummary.pending}</p>
                 <p className="mt-2 text-sm text-slate-500">Awaiting first login and activation</p>
               </div>
-              <div className="app-panel border-white/70 p-5">
+              <div className="app-panel border-gray-300 p-5">
                 <p className="app-kicker">Active users</p>
                 <p className="mt-3 text-[30px] font-semibold tracking-[-0.05em] text-slate-950 tabular-nums">{statusSummary.active}</p>
                 <p className="mt-2 text-sm text-slate-500">Currently allowed into the portal</p>
               </div>
-              <div className="app-panel border-white/70 p-5">
+              <div className="app-panel border-gray-300 p-5">
                 <p className="app-kicker">Inactive users</p>
                 <p className="mt-3 text-[30px] font-semibold tracking-[-0.05em] text-slate-950 tabular-nums">{statusSummary.inactive}</p>
                 <p className="mt-2 text-sm text-slate-500">Disabled until reactivation</p>

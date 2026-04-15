@@ -39,7 +39,7 @@ export function Input({
             focus:ring-4 focus:ring-offset-0
             ${error
               ? 'border-red-300 focus:border-red-400 focus:ring-red-100'
-              : 'border-slate-200/80 focus:border-sky-300 focus:ring-sky-100'
+              : 'border-gray-300 focus:border-[#335CFF] focus:ring-[#335CFF]/12'
             }
             ${leftAddon ? 'pl-10' : 'pl-4'}
             ${rightAddon ? 'pr-11' : 'pr-4'}

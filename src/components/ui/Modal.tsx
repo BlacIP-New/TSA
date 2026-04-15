@@ -49,14 +49,14 @@ export function Modal({
       <div className="absolute inset-0" onClick={onClose} />
 
       <div className={`relative z-10 w-full rounded-lg border border-gray-300 bg-white ${sizeClasses[size]}`}>
-        <div className="flex items-start justify-between border-b border-gray-100 px-5 py-4">
+        <div className="flex items-start justify-between border-b border-gray-300 px-5 py-4">
           <div>
             <h2 className="text-lg font-semibold tracking-tight text-gray-950">{title}</h2>
             {description && <p className="mt-1 text-sm text-gray-500">{description}</p>}
           </div>
           <button
             type="button"
-            className="rounded-xl p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+            className="rounded p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
             onClick={onClose}
           >
             <X className="h-5 w-5" />
@@ -65,7 +65,7 @@ export function Modal({
 
         <div className="max-h-[70vh] overflow-y-auto px-5 py-5">{children}</div>
 
-        {footer && <div className="border-t border-gray-100 px-5 py-4">{footer}</div>}
+        {footer && <div className="border-t border-gray-300 px-5 py-4">{footer}</div>}
       </div>
     </div>
   );

@@ -16,7 +16,7 @@ export function MDABreakdownTable({
   isLoading = false,
 }: MDABreakdownTableProps) {
   return (
-    <section className="app-panel border-white/70 p-5">
+    <section className="app-panel border-gray-300 p-5">
       <div className="mb-4">
         <p className="text-base font-semibold text-slate-950">{title}</p>
         <p className="mt-1 text-sm text-slate-500">{description}</p>
@@ -40,7 +40,7 @@ export function MDABreakdownTable({
               Array.from({ length: 4 }, (_, index) => (
                 <tr key={index}>
                   <td className="py-4 pr-4" colSpan={7}>
-                    <div className="h-10 animate-pulse rounded-2xl bg-slate-100" />
+                    <div className="h-10 animate-pulse rounded-lg bg-slate-100" />
                   </td>
                 </tr>
               ))}
@@ -58,7 +58,7 @@ export function MDABreakdownTable({
                 <tr key={`${row.collectionCode}-${row.serviceCode}`} className="align-top">
                   <td className="py-4 pr-4">
                     <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200/80 bg-slate-50 text-sm font-semibold text-slate-700">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 bg-white text-sm font-semibold text-slate-700">
                         {row.mdaName
                           .split(' ')
                           .slice(0, 2)

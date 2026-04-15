@@ -98,7 +98,7 @@ export default function DashboardPage() {
       />
 
       {error && (
-        <div className="rounded-2xl border border-red-200/80 bg-red-50/80 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-slate-700">
           {error}
         </div>
       )}
@@ -119,7 +119,7 @@ export default function DashboardPage() {
       <div className="grid gap-4 2xl:grid-cols-[minmax(0,1.7fr)_minmax(320px,0.8fr)]">
         <SettlementTrendChart chart={chart} isLoading={isLoading} />
 
-        <section className="app-panel border-white/70 p-5">
+        <section className="app-panel border-gray-300 p-5">
           <p className="text-base font-semibold text-slate-950">Current scope</p>
           <p className="mt-1 text-sm text-slate-500">
             {isAdmin
