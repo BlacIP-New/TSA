@@ -1,8 +1,7 @@
-import { Activity, Building2, BarChart3, LineChart, Rows3, Wallet } from 'lucide-react';
+import { Activity, Building2, Rows3, Wallet } from 'lucide-react';
 import { MDABreakdownTable } from '../components/dashboard/MDABreakdownTable';
 import { SettlementTrendChart } from '../components/dashboard/SettlementTrendChart';
 import { SummaryCard } from '../components/dashboard/SummaryCard';
-import { Button } from '../components/ui/Button';
 import { DateRangeDropdown } from '../components/ui/DateRangeDropdown';
 import { useAuth } from '../context/AuthContext';
 import { useTransactionDashboard } from '../hooks/useTransactions';
@@ -11,7 +10,7 @@ import { formatCompactCurrency, formatCurrency, formatDate } from '../utils/form
 export default function DashboardPage() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'aggregator_admin';
-  const { dateRange, setDateRange, groupBy, setGroupBy, summary, chart, isLoading, error } =
+  const { dateRange, setDateRange, summary, chart, isLoading, error } =
     useTransactionDashboard(user);
 
   if (!user) return null;
@@ -58,28 +57,8 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 p-5 lg:p-8">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-end gap-3">
         <DateRangeDropdown dateRange={dateRange} onDateRangeChange={setDateRange} />
-        <div className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white/75 p-1">
-          <Button
-            variant={groupBy === 'day' ? 'primary' : 'ghost'}
-            size="sm"
-            disabled={isLoading}
-            onClick={() => setGroupBy('day')}
-            leftIcon={<BarChart3 className="h-4 w-4" />}
-          >
-            Daily
-          </Button>
-          <Button
-            variant={groupBy === 'week' ? 'primary' : 'ghost'}
-            size="sm"
-            disabled={isLoading}
-            onClick={() => setGroupBy('week')}
-            leftIcon={<LineChart className="h-4 w-4" />}
-          >
-            Weekly
-          </Button>
-        </div>
       </div>
 
       {error && (
@@ -131,10 +110,6 @@ export default function DashboardPage() {
                 </dd>
               </div>
             )}
-            <div className="app-card px-4 py-3">
-              <dt className="app-kicker">Chart cadence</dt>
-              <dd className="mt-2 text-sm font-semibold capitalize text-slate-950">{groupBy}</dd>
-            </div>
           </dl>
         </section>
       </div>

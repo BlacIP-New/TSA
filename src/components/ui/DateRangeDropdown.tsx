@@ -20,40 +20,47 @@ function getDaysDifference(from: string, to: string): number {
   return Math.floor((toDate.getTime() - fromDate.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-function getPresetLabel(from: string, to: string): string {
-  const today = new Date();
+function toDateInput(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function getPresetRanges(baseDate = new Date()) {
+  const today = new Date(baseDate);
   today.setHours(0, 0, 0, 0);
-  
-  // Parse dates as UTC by adding 'T00:00:00Z'
-  const toDate = new Date(to + 'T00:00:00Z');
-  const fromDate = new Date(from + 'T00:00:00Z');
 
-  // Compare only the date parts
-  const toDateOnly = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate());
-  const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const makeRange = (daysAgo: number): DateRange => {
+    const from = new Date(today);
+    from.setDate(today.getDate() - daysAgo);
+    return {
+      from: toDateInput(from),
+      to: toDateInput(today),
+    };
+  };
 
-  if (toDateOnly.getTime() !== todayOnly.getTime()) {
-    return 'Custom';
-  }
+  return {
+    last7Days: makeRange(6),
+    lastWeek: makeRange(7),
+    last2Weeks: makeRange(13),
+    last30Days: makeRange(29),
+    lastMonth: makeRange(30),
+    last90Days: makeRange(89),
+  };
+}
 
-  const diffDays = Math.floor((todayOnly.getTime() - new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate()).getTime()) / (1000 * 60 * 60 * 24));
+function getPresetLabel(from: string, to: string): string {
+  const presets = getPresetRanges();
 
-  switch (diffDays) {
-    case 6:
-      return 'Last 7 days';
-    case 7:
-      return 'Last week';
-    case 13:
-      return 'Last 2 weeks';
-    case 29:
-      return 'Last 30 days';
-    case 30:
-      return 'Last month';
-    case 89:
-      return 'Last 90 days';
-    default:
-      return 'Custom';
-  }
+  if (from === presets.last7Days.from && to === presets.last7Days.to) return 'Last 7 days';
+  if (from === presets.lastWeek.from && to === presets.lastWeek.to) return 'Last week';
+  if (from === presets.last2Weeks.from && to === presets.last2Weeks.to) return 'Last 2 weeks';
+  if (from === presets.last30Days.from && to === presets.last30Days.to) return 'Last 30 days';
+  if (from === presets.lastMonth.from && to === presets.lastMonth.to) return 'Last month';
+  if (from === presets.last90Days.from && to === presets.last90Days.to) return 'Last 90 days';
+
+  return 'Custom';
 }
 
 function calculateDateRange(preset: string): DateRange {

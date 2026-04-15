@@ -1,5 +1,5 @@
 import { Filter, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ExportButton } from '../components/export/ExportButton';
 import { ExportModal } from '../components/export/ExportModal';
 import { SettlementBatchDetailDrawer } from '../components/transactions/SettlementBatchDetailDrawer';
@@ -25,7 +25,12 @@ export default function TransactionsPage() {
     resetSettlementFilters,
     setSettlementPageSize,
   } = useFilters();
-  const getDefaultDateRange = () => {
+
+  const [page, setPage] = useState(1);
+  const [selectedBatchId, setSelectedBatchId] = useState<string | null>(null);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const [dateRange, setDateRange] = useState(() => {
     const to = new Date();
     to.setHours(0, 0, 0, 0);
     const from = new Date(to);
@@ -34,22 +39,25 @@ export default function TransactionsPage() {
       from: from.toISOString().split('T')[0],
       to: to.toISOString().split('T')[0],
     };
-  };
-
-  const [page, setPage] = useState(1);
-  const [selectedBatchId, setSelectedBatchId] = useState<string | null>(null);
-  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
-  const [dateRange, setDateRange] = useState(getDefaultDateRange());
+  });
   const [exportTarget, setExportTarget] = useState<SettlementExportTarget>({ type: 'batch-list' });
+  const effectiveSettlementFilters = useMemo(
+    () => ({
+      ...settlementFilters,
+      from: dateRange.from,
+      to: dateRange.to,
+    }),
+    [dateRange.from, dateRange.to, settlementFilters],
+  );
+
   const { result, isLoading, error } = useSettlementBatchLedger(
     user,
-    { ...settlementFilters, from: dateRange.from, to: dateRange.to },
+    effectiveSettlementFilters,
     page,
     settlementPageSize,
   );
   const { exportSettlementData, isExporting, error: exportError, lastExportMessage, clearExportMessages } =
-    useExport(user, { ...settlementFilters, from: dateRange.from, to: dateRange.to });
+    useExport(user, effectiveSettlementFilters);
 
   useEffect(() => {
     if (page > result.totalPages) {

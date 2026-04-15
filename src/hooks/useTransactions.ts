@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { AuthUser } from '../types/auth';
 import {
-  ChartGroupBy,
   CollectionChart,
   PaginatedSettlementBatches,
   SettlementBatchDetail,
@@ -48,8 +47,7 @@ export function getLast30DayDateRange(baseDate = new Date()): DashboardDateRange
 }
 
 export function useTransactionDashboard(user: AuthUser | null) {
-  const [dateRange, setDateRange] = useState<DashboardDateRange>(() => getCurrentMonthDateRange());
-  const [groupBy, setGroupBy] = useState<ChartGroupBy>('day');
+  const [dateRange, setDateRange] = useState<DashboardDateRange>(() => getLast30DayDateRange());
   const [summary, setSummary] = useState<TransactionSummary | null>(null);
   const [chart, setChart] = useState<CollectionChart | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -77,7 +75,7 @@ export function useTransactionDashboard(user: AuthUser | null) {
 
       const [summaryResponse, chartResponse] = await Promise.all([
         getCollectionsSummary(scope),
-        getCollectionsChart({ ...scope, groupBy }),
+        getCollectionsChart({ ...scope, groupBy: 'day' }),
       ]);
 
       setSummary(summaryResponse);
@@ -94,7 +92,6 @@ export function useTransactionDashboard(user: AuthUser | null) {
   }, [
     dateRange.from,
     dateRange.to,
-    groupBy,
     user?.aggregatorId,
     user?.collectionCode,
     user?.role,
@@ -108,8 +105,6 @@ export function useTransactionDashboard(user: AuthUser | null) {
   return {
     dateRange,
     setDateRange,
-    groupBy,
-    setGroupBy,
     summary,
     chart,
     isLoading,
@@ -135,6 +130,7 @@ export function useSettlementBatchLedger(
   const [result, setResult] = useState<PaginatedSettlementBatches>(EMPTY_SETTLEMENT_BATCH_PAGE);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { from, to, batchId, minAmount, maxAmount } = filters;
 
   const loadSettlementBatches = useCallback(async () => {
     if (!user?.aggregatorId) {
@@ -153,7 +149,11 @@ export function useSettlementBatchLedger(
         serviceCode: user.role === 'mda_viewer' ? user.serviceCode : undefined,
         page,
         limit,
-        ...filters,
+        from,
+        to,
+        batchId,
+        minAmount,
+        maxAmount,
       });
 
       setResult(response);
@@ -167,7 +167,10 @@ export function useSettlementBatchLedger(
       setIsLoading(false);
     }
   }, [
-    filters,
+    batchId,
+    from,
+    maxAmount,
+    minAmount,
     limit,
     page,
     user?.aggregatorId,

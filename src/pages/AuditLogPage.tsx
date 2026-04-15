@@ -1,5 +1,5 @@
 import { Filter, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AuditFilters } from '../components/audit/AuditFilters';
 import { AuditLogTable } from '../components/audit/AuditLogTable';
 import { Alert } from '../components/ui/Alert';
@@ -17,7 +17,10 @@ export default function AuditLogPage() {
     action: '',
     userId: '',
   });
-  const getDefaultDateRange = () => {
+
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [dateRange, setDateRange] = useState(() => {
     const to = new Date();
     to.setHours(0, 0, 0, 0);
     const from = new Date(to);
@@ -26,14 +29,17 @@ export default function AuditLogPage() {
       from: from.toISOString().split('T')[0],
       to: to.toISOString().split('T')[0],
     };
-  };
-
-  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
-  const [page, setPage] = useState(1);
-  const [dateRange, setDateRange] = useState(getDefaultDateRange());
+  });
   const { result, isLoading, error, userOptions } = useAuditLog(
     user,
-    { ...filters, from: dateRange.from, to: dateRange.to },
+    useMemo(
+      () => ({
+        ...filters,
+        from: dateRange.from,
+        to: dateRange.to,
+      }),
+      [dateRange.from, dateRange.to, filters],
+    ),
     page,
     25
   );
