@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
+import { SessionExpiredModal } from '../auth/SessionExpiredModal';
 
 const PAGE_TITLES: Record<string, string> = {
   '/dashboard': 'Dashboard',
@@ -26,6 +27,8 @@ export function AppLayout() {
           <Outlet />
         </main>
       </div>
+
+      <SessionExpiredModal />
     </div>
   );
 }
