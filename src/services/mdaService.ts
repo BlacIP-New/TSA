@@ -1,19 +1,31 @@
 /**
- * MDA Service — integration-ready mock implementation for admin MDA management endpoints.
+ * MDA Service — integration-ready mock implementation for admin MDA management.
  *
  * Backend swap-in points:
+ *   GET  /admin/mdas
+ *   GET  /admin/mdas/:id
+ *   GET  /admin/mdas/:id/collection-codes
+ *   GET  /admin/mdas/:id/service-codes
  *   GET  /admin/mda-users
  *   POST /admin/mda-users/invite
  *   POST /admin/mda-users/:id/resend-invite
  *   PATCH /admin/mda-users/:id/deactivate
  *   PATCH /admin/mda-users/:id/reactivate
- *   GET /admin/collection-codes
- *   GET /admin/service-codes
+ *   GET  /admin/mdas/:id/collection-settlements
  */
 
-import { mockCollectionCodes, mockServiceCodes } from '../data/mockCollectionCodes';
+import { mockMDACollections, mockMDARegistry, mockMDAServiceCodes } from '../data/mockMDARegistry';
 import { mockMDAUsers } from '../data/mockMDAs';
-import { CollectionCode, InviteMDAPayload, MDAUser, ServiceCode } from '../types/mda';
+import {
+  InviteMDAPayload,
+  MDACollectionCode,
+  MDADetail,
+  MDARecord,
+  MDAServiceCode,
+  MDAUser,
+} from '../types/mda';
+import { PaginatedSettlementBatches } from '../types/transaction';
+import { getSettlementBatches } from './transactionService';
 
 const NETWORK_DELAY_MS = 520;
 let mdaUsersStore = [...mockMDAUsers];
@@ -31,60 +43,126 @@ function toDisplayName(email: string) {
     .join(' ');
 }
 
-function getCollectionOrThrow(collectionCode: string) {
-  const collection = mockCollectionCodes.find((entry) => entry.code === collectionCode);
+function getMDAOrThrow(mdaId: string) {
+  const record = mockMDARegistry.find((entry) => entry.id === mdaId);
+  if (!record) {
+    throw new Error('The selected MDA could not be found.');
+  }
+  return record;
+}
+
+function getCollectionOrThrow(mdaId: string, collectionCode: string) {
+  const collection = mockMDACollections.find(
+    (entry) => entry.mdaId === mdaId && entry.code === collectionCode,
+  );
 
   if (!collection) {
-    throw new Error('The selected collection code is not available.');
+    throw new Error('The selected collection code does not belong to this MDA.');
   }
 
   return collection;
 }
 
-function getServiceOrThrow(collectionCode: string, serviceCode: string) {
-  const service = mockServiceCodes.find(
-    (entry) => entry.collectionCode === collectionCode && entry.code === serviceCode
+function getServiceOrThrow(mdaId: string, serviceCode: string) {
+  const service = mockMDAServiceCodes.find(
+    (entry) => entry.mdaId === mdaId && entry.code === serviceCode,
   );
 
   if (!service) {
-    throw new Error('The selected service code is not valid for this collection.');
+    throw new Error('The selected service code does not belong to this MDA.');
   }
 
   return service;
 }
 
-export async function getMDAUsers(aggregatorId: string): Promise<MDAUser[]> {
+function buildMDARecordSummary(mdaId: string): MDARecord {
+  const record = getMDAOrThrow(mdaId);
+  const users = mdaUsersStore.filter((entry) => entry.mdaId === mdaId);
+  const collections = mockMDACollections.filter((entry) => entry.mdaId === mdaId);
+  const services = mockMDAServiceCodes.filter((entry) => entry.mdaId === mdaId);
+
+  return {
+    ...record,
+    collectionCount: collections.length,
+    serviceCount: services.length,
+    activeUserCount: users.filter((entry) => entry.status === 'active').length,
+    totalUserCount: users.length,
+  };
+}
+
+export async function getMDAs(aggregatorId: string): Promise<MDARecord[]> {
   await delay();
+
+  return mockMDARegistry
+    .filter((entry) => entry.aggregatorId === aggregatorId)
+    .map((entry) => buildMDARecordSummary(entry.id))
+    .sort((left, right) => left.mdaName.localeCompare(right.mdaName));
+}
+
+export async function getMDACollections(mdaId: string): Promise<MDACollectionCode[]> {
+  await delay(220);
+  getMDAOrThrow(mdaId);
+  return mockMDACollections.filter((entry) => entry.mdaId === mdaId);
+}
+
+export async function getMDAServiceCodes(mdaId: string): Promise<MDAServiceCode[]> {
+  await delay(220);
+  getMDAOrThrow(mdaId);
+  return mockMDAServiceCodes.filter((entry) => entry.mdaId === mdaId);
+}
+
+export async function getMDADetail(mdaId: string): Promise<MDADetail> {
+  await delay(280);
+
+  return {
+    record: buildMDARecordSummary(mdaId),
+    collections: mockMDACollections.filter((entry) => entry.mdaId === mdaId),
+    services: mockMDAServiceCodes.filter((entry) => entry.mdaId === mdaId),
+  };
+}
+
+export async function getMDAUsers(aggregatorId: string, mdaId?: string): Promise<MDAUser[]> {
+  await delay();
+
   return mdaUsersStore
-    .filter((user) => user.aggregatorId === aggregatorId)
+    .filter((user) => {
+      if (user.aggregatorId !== aggregatorId) return false;
+      if (mdaId && user.mdaId !== mdaId) return false;
+      return true;
+    })
     .slice()
     .sort(
       (left, right) =>
-        new Date(right.invitedAt).getTime() - new Date(left.invitedAt).getTime()
+        new Date(right.invitedAt).getTime() - new Date(left.invitedAt).getTime(),
     );
 }
 
 export async function inviteMDAUser(
-  payload: InviteMDAPayload & { aggregatorId: string; invitedBy: string }
+  payload: InviteMDAPayload & { aggregatorId: string; invitedBy: string },
 ): Promise<MDAUser> {
   await delay();
 
   const duplicateUser = mdaUsersStore.find(
-    (user) => user.aggregatorId === payload.aggregatorId && user.email.toLowerCase() === payload.email.toLowerCase()
+    (user) =>
+      user.aggregatorId === payload.aggregatorId &&
+      user.email.toLowerCase() === payload.email.toLowerCase(),
   );
 
   if (duplicateUser) {
     throw new Error('An MDA user with this email already exists.');
   }
 
-  const collection = getCollectionOrThrow(payload.collectionCode);
-  getServiceOrThrow(payload.collectionCode, payload.serviceCode);
+  const record = getMDAOrThrow(payload.mdaId);
+  getCollectionOrThrow(payload.mdaId, payload.collectionCode);
+  getServiceOrThrow(payload.mdaId, payload.serviceCode);
 
   const invitedUser: MDAUser = {
     id: `mda_usr_${Date.now()}`,
     email: payload.email.toLowerCase(),
     name: toDisplayName(payload.email),
-    mdaName: collection.name,
+    mdaId: record.id,
+    mdaCode: record.mdaCode,
+    mdaName: record.mdaName,
     collectionCode: payload.collectionCode,
     serviceCode: payload.serviceCode,
     status: 'pending',
@@ -148,12 +226,23 @@ export async function reactivateMDAUser(id: string): Promise<MDAUser> {
   return target;
 }
 
-export async function getCollectionCodes(aggregatorId: string): Promise<CollectionCode[]> {
-  await delay(240);
-  return mockCollectionCodes.filter((collection) => collection.aggregatorId === aggregatorId);
+interface CollectionSettlementParams {
+  aggregatorId: string;
+  mdaId: string;
+  collectionCode: string;
+  page?: number;
+  limit?: number;
 }
 
-export async function getServiceCodes(collectionCode: string): Promise<ServiceCode[]> {
-  await delay(240);
-  return mockServiceCodes.filter((serviceCode) => serviceCode.collectionCode === collectionCode);
+export async function getMDACollectionSettlementBatches(
+  params: CollectionSettlementParams,
+): Promise<PaginatedSettlementBatches> {
+  const collection = getCollectionOrThrow(params.mdaId, params.collectionCode);
+
+  return getSettlementBatches({
+    aggregatorId: params.aggregatorId,
+    collectionCode: collection.code,
+    page: params.page ?? 1,
+    limit: params.limit ?? 25,
+  });
 }

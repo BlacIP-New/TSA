@@ -1,22 +1,23 @@
 /**
- * Transaction Service — integration-ready mock implementation for dashboard and ledger endpoints.
+ * Transaction Service — settlement-batch implementation for dashboard and /transactions route.
  *
  * Backend swap-in points:
  *   GET /collections/summary
  *   GET /collections/chart
- *   GET /transactions
- *   GET /transactions/:id
+ *   GET /settlements/batches
+ *   GET /settlements/batches/:batchId
  */
 
-import { getMockTransactionById, mockTransactions } from '../data/mockTransactions';
+import { getMockSettlementBatchDetailById, mockSettlementBatches } from '../data/mockSettlements';
 import {
   CollectionChart,
   CollectionChartParams,
   CollectionSummaryParams,
   MdaBreakdownRow,
-  PaginatedTransactions,
-  Transaction,
-  TransactionQueryParams,
+  PaginatedSettlementBatches,
+  SettlementBatch,
+  SettlementBatchDetail,
+  SettlementBatchQueryParams,
   TransactionSummary,
 } from '../types/transaction';
 
@@ -54,7 +55,7 @@ function calculatePercentageChange(current: number, previous: number) {
   return Number((((current - previous) / previous) * 100).toFixed(1));
 }
 
-function getScopedTransactions({
+function getScopedSettlementBatches({
   aggregatorId,
   collectionCode,
   serviceCode,
@@ -63,26 +64,23 @@ function getScopedTransactions({
   collectionCode?: string;
   serviceCode?: string;
 }) {
-  return mockTransactions.filter((transaction) => {
-    if (transaction.aggregatorId !== aggregatorId) return false;
-    if (collectionCode && transaction.collectionCode !== collectionCode) return false;
-    if (serviceCode && transaction.serviceCode !== serviceCode) return false;
+  return mockSettlementBatches.filter((batch) => {
+    if (batch.aggregatorId !== aggregatorId) return false;
+    if (collectionCode && batch.collectionCode !== collectionCode) return false;
+    if (serviceCode && batch.serviceCode !== serviceCode) return false;
     return true;
   });
 }
 
-function getDateFilteredTransactions<T extends { from?: string; to?: string }>(
-  transactions: Transaction[],
+function getDateFilteredBatches<T extends { from?: string; to?: string }>(
+  batches: SettlementBatch[],
   params: T,
-  settledOnly = false
 ) {
   const fromDate = params.from ? toUtcDate(params.from) : null;
   const toDate = params.to ? toUtcDate(params.to, true) : null;
 
-  return transactions.filter((transaction) => {
-    if (settledOnly && transaction.status !== 'settled') return false;
-
-    const comparisonDate = new Date(transaction.settlementDate);
+  return batches.filter((batch) => {
+    const comparisonDate = new Date(batch.settledDate);
     if (fromDate && comparisonDate < fromDate) return false;
     if (toDate && comparisonDate > toDate) return false;
     return true;
@@ -103,39 +101,41 @@ function getPreviousRange({ from, to }: Pick<CollectionSummaryParams, 'from' | '
   };
 }
 
-function buildBreakdown(currentTransactions: Transaction[], previousTransactions: Transaction[]): MdaBreakdownRow[] {
+function buildBreakdown(currentBatches: SettlementBatch[], previousBatches: SettlementBatch[]): MdaBreakdownRow[] {
   const previousTotals = new Map<string, number>();
+  const previousCounts = new Map<string, number>();
 
-  previousTransactions.forEach((transaction) => {
-    const key = `${transaction.collectionCode}:${transaction.serviceCode}`;
-    previousTotals.set(key, (previousTotals.get(key) ?? 0) + transaction.amount);
+  previousBatches.forEach((batch) => {
+    const key = `${batch.collectionCode}:${batch.serviceCode}`;
+    previousTotals.set(key, (previousTotals.get(key) ?? 0) + batch.totalAmount);
+    previousCounts.set(key, (previousCounts.get(key) ?? 0) + batch.itemCount);
   });
 
-  const totalAmount = currentTransactions.reduce((sum, transaction) => sum + transaction.amount, 0);
+  const totalAmount = currentBatches.reduce((sum, batch) => sum + batch.totalAmount, 0);
   const rows = new Map<string, MdaBreakdownRow>();
 
-  currentTransactions.forEach((transaction) => {
-    const key = `${transaction.collectionCode}:${transaction.serviceCode}`;
+  currentBatches.forEach((batch) => {
+    const key = `${batch.collectionCode}:${batch.serviceCode}`;
     const existing = rows.get(key);
 
     if (existing) {
-      existing.totalAmount += transaction.amount;
-      existing.transactionCount += 1;
-      if (new Date(transaction.settlementDate) > new Date(existing.lastSettlementDate)) {
-        existing.lastSettlementDate = transaction.settlementDate;
+      existing.totalAmount += batch.totalAmount;
+      existing.settlementLineCount += batch.itemCount;
+      if (new Date(batch.settledDate) > new Date(existing.lastSettlementDate)) {
+        existing.lastSettlementDate = batch.settledDate;
       }
       return;
     }
 
     rows.set(key, {
-      mdaName: transaction.narration.split(' settlement')[0],
-      collectionCode: transaction.collectionCode,
-      serviceCode: transaction.serviceCode,
-      totalAmount: transaction.amount,
-      transactionCount: 1,
+      mdaName: batch.mdaName,
+      collectionCode: batch.collectionCode,
+      serviceCode: batch.serviceCode,
+      totalAmount: batch.totalAmount,
+      settlementLineCount: batch.itemCount,
       percentageOfTotal: 0,
       periodChange: 0,
-      lastSettlementDate: transaction.settlementDate,
+      lastSettlementDate: batch.settledDate,
     });
   });
 
@@ -154,18 +154,18 @@ function buildBreakdown(currentTransactions: Transaction[], previousTransactions
 export async function getCollectionsSummary(params: CollectionSummaryParams): Promise<TransactionSummary> {
   await delay();
 
-  const scopedTransactions = getScopedTransactions(params);
-  const currentTransactions = getDateFilteredTransactions(scopedTransactions, params, true);
+  const scopedBatches = getScopedSettlementBatches(params);
+  const currentBatches = getDateFilteredBatches(scopedBatches, params);
   const previousRange = getPreviousRange(params);
-  const previousTransactions = getDateFilteredTransactions(scopedTransactions, previousRange, true);
+  const previousBatches = getDateFilteredBatches(scopedBatches, previousRange);
 
-  const totalAmount = currentTransactions.reduce((sum, transaction) => sum + transaction.amount, 0);
-  const totalCount = currentTransactions.length;
-  const previousPeriodAmount = previousTransactions.reduce((sum, transaction) => sum + transaction.amount, 0);
-  const previousPeriodCount = previousTransactions.length;
+  const totalAmount = currentBatches.reduce((sum, batch) => sum + batch.totalAmount, 0);
+  const totalCount = currentBatches.reduce((sum, batch) => sum + batch.itemCount, 0);
+  const previousPeriodAmount = previousBatches.reduce((sum, batch) => sum + batch.totalAmount, 0);
+  const previousPeriodCount = previousBatches.reduce((sum, batch) => sum + batch.itemCount, 0);
   const averageAmount = totalCount === 0 ? 0 : totalAmount / totalCount;
   const previousAverageAmount = previousPeriodCount === 0 ? 0 : previousPeriodAmount / previousPeriodCount;
-  const breakdown = buildBreakdown(currentTransactions, previousTransactions);
+  const breakdown = buildBreakdown(currentBatches, previousBatches);
 
   return {
     totalAmount,
@@ -184,7 +184,7 @@ export async function getCollectionsSummary(params: CollectionSummaryParams): Pr
 export async function getCollectionsChart(params: CollectionChartParams): Promise<CollectionChart> {
   await delay();
 
-  const transactions = getDateFilteredTransactions(getScopedTransactions(params), params, true);
+  const batches = getDateFilteredBatches(getScopedSettlementBatches(params), params);
   const rangeStart = toUtcDate(params.from);
   const rangeEnd = toUtcDate(params.to);
   const stepSize = params.groupBy === 'day' ? 1 : 7;
@@ -193,8 +193,8 @@ export async function getCollectionsChart(params: CollectionChartParams): Promis
   for (let offset = 0; rangeStart.getTime() + offset * DAY_MS <= rangeEnd.getTime(); offset += stepSize) {
     const bucketStart = new Date(rangeStart.getTime() + offset * DAY_MS);
     const bucketEnd = new Date(Math.min(bucketStart.getTime() + (stepSize - 1) * DAY_MS, rangeEnd.getTime()));
-    const bucketTransactions = transactions.filter((transaction) => {
-      const settlementTime = new Date(transaction.settlementDate).getTime();
+    const bucketBatches = batches.filter((batch) => {
+      const settlementTime = new Date(batch.settledDate).getTime();
       return settlementTime >= bucketStart.getTime() && settlementTime <= bucketEnd.getTime() + DAY_MS - 1;
     });
 
@@ -203,8 +203,8 @@ export async function getCollectionsChart(params: CollectionChartParams): Promis
         params.groupBy === 'day'
           ? formatBucketLabel(bucketStart)
           : `${formatBucketLabel(bucketStart)} - ${formatBucketLabel(bucketEnd)}`,
-      value: bucketTransactions.reduce((sum, transaction) => sum + transaction.amount, 0),
-      transactionCount: bucketTransactions.length,
+      value: bucketBatches.reduce((sum, batch) => sum + batch.totalAmount, 0),
+      transactionCount: bucketBatches.reduce((sum, batch) => sum + batch.itemCount, 0),
       from: toDateInput(bucketStart),
       to: toDateInput(bucketEnd),
     });
@@ -218,37 +218,32 @@ export async function getCollectionsChart(params: CollectionChartParams): Promis
   };
 }
 
-export async function getTransactions(params: TransactionQueryParams): Promise<PaginatedTransactions> {
+export async function getSettlementBatches(
+  params: SettlementBatchQueryParams,
+): Promise<PaginatedSettlementBatches> {
   await delay();
 
   const page = params.page ?? 1;
   const limit = params.limit ?? 25;
-  const scopedTransactions = getDateFilteredTransactions(getScopedTransactions(params), params);
+  const scopedBatches = getDateFilteredBatches(getScopedSettlementBatches(params), params);
 
-  const filteredTransactions = scopedTransactions
-    .filter((transaction) => {
-      if (params.channel && transaction.channel !== params.channel) return false;
-      if (params.status && transaction.status !== params.status) return false;
-      if (params.minAmount !== '' && params.minAmount != null && transaction.amount < params.minAmount) return false;
-      if (params.maxAmount !== '' && params.maxAmount != null && transaction.amount > params.maxAmount) return false;
-      if (
-        params.search &&
-        !`${transaction.reference} ${transaction.payerName} ${transaction.collectionCode}`
-          .toLowerCase()
-          .includes(params.search.toLowerCase())
-      ) {
+  const filteredBatches = scopedBatches
+    .filter((batch) => {
+      if (params.batchId && !batch.batchId.toLowerCase().includes(params.batchId.toLowerCase())) {
         return false;
       }
+      if (params.minAmount !== '' && params.minAmount != null && batch.totalAmount < params.minAmount) return false;
+      if (params.maxAmount !== '' && params.maxAmount != null && batch.totalAmount > params.maxAmount) return false;
       return true;
     })
-    .sort((left, right) => new Date(right.settlementDate).getTime() - new Date(left.settlementDate).getTime());
+    .sort((left, right) => new Date(right.settledDate).getTime() - new Date(left.settledDate).getTime());
 
-  const total = filteredTransactions.length;
+  const total = filteredBatches.length;
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const startIndex = (page - 1) * limit;
 
   return {
-    data: filteredTransactions.slice(startIndex, startIndex + limit),
+    data: filteredBatches.slice(startIndex, startIndex + limit),
     total,
     page,
     limit,
@@ -256,40 +251,34 @@ export async function getTransactions(params: TransactionQueryParams): Promise<P
   };
 }
 
-export async function getTransactionById(id: string): Promise<Transaction> {
-  await delay(320);
-  const transaction = getMockTransactionById(id);
-
-  if (!transaction) {
-    throw new Error('Transaction not found.');
-  }
-
-  return transaction;
-}
-
-interface TransactionAccessScope {
+interface SettlementAccessScope {
   aggregatorId: string;
   collectionCode?: string;
   serviceCode?: string;
 }
 
-export async function getScopedTransactionById(
-  id: string,
-  scope: TransactionAccessScope
-): Promise<Transaction> {
-  const transaction = await getTransactionById(id);
+export async function getSettlementBatchDetail(
+  batchId: string,
+  scope: SettlementAccessScope,
+): Promise<SettlementBatchDetail> {
+  await delay(320);
+  const detail = getMockSettlementBatchDetailById(batchId);
 
-  if (transaction.aggregatorId !== scope.aggregatorId) {
-    throw new Error('Access denied. This transaction is outside the active aggregator scope.');
+  if (!detail) {
+    throw new Error('Settlement batch not found.');
   }
 
-  if (scope.collectionCode && transaction.collectionCode !== scope.collectionCode) {
-    throw new Error('Access denied. This transaction is outside your assigned collection scope.');
+  if (detail.batch.aggregatorId !== scope.aggregatorId) {
+    throw new Error('Access denied. This settlement batch is outside the active aggregator scope.');
   }
 
-  if (scope.serviceCode && transaction.serviceCode !== scope.serviceCode) {
-    throw new Error('Access denied. This transaction is outside your assigned service scope.');
+  if (scope.collectionCode && detail.batch.collectionCode !== scope.collectionCode) {
+    throw new Error('Access denied. This settlement batch is outside your assigned collection scope.');
   }
 
-  return transaction;
+  if (scope.serviceCode && detail.batch.serviceCode !== scope.serviceCode) {
+    throw new Error('Access denied. This settlement batch is outside your assigned service scope.');
+  }
+
+  return detail;
 }

@@ -2,38 +2,40 @@ import { Activity, RefreshCcw } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { ExportButton } from '../components/export/ExportButton';
 import { ExportModal } from '../components/export/ExportModal';
-import { TransactionDetailDrawer } from '../components/transactions/TransactionDetailDrawer';
-import { TransactionFilters } from '../components/transactions/TransactionFilters';
+import { SettlementBatchDetailDrawer } from '../components/transactions/SettlementBatchDetailDrawer';
+import { SettlementBatchFilters } from '../components/transactions/SettlementBatchFilters';
+import { SettlementBatchTable } from '../components/transactions/SettlementBatchTable';
 import { TransactionPagination } from '../components/transactions/TransactionPagination';
-import { TransactionTable } from '../components/transactions/TransactionTable';
 import { Alert } from '../components/ui/Alert';
 import { Button } from '../components/ui/Button';
 import { useAuth } from '../context/AuthContext';
 import { useExport } from '../hooks/useExport';
 import { useFilters } from '../hooks/useFilters';
-import { useTransactionLedger } from '../hooks/useTransactions';
-import { TransactionFilters as TransactionFiltersValue } from '../types/transaction';
+import { useSettlementBatchLedger } from '../hooks/useTransactions';
+import { SettlementBatchFilters as SettlementBatchFiltersValue } from '../types/transaction';
+import { SettlementExportTarget } from '../services/exportService';
 
 export default function TransactionsPage() {
   const { user } = useAuth();
   const {
-    transactionFilters,
-    transactionPageSize,
-    updateTransactionFilters,
-    resetTransactionFilters,
-    setTransactionPageSize,
+    settlementFilters,
+    settlementPageSize,
+    updateSettlementFilters,
+    resetSettlementFilters,
+    setSettlementPageSize,
   } = useFilters();
   const [page, setPage] = useState(1);
-  const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(null);
+  const [selectedBatchId, setSelectedBatchId] = useState<string | null>(null);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const { result, isLoading, error, refresh } = useTransactionLedger(
+  const [exportTarget, setExportTarget] = useState<SettlementExportTarget>({ type: 'batch-list' });
+  const { result, isLoading, error, refresh } = useSettlementBatchLedger(
     user,
-    transactionFilters,
+    settlementFilters,
     page,
-    transactionPageSize
+    settlementPageSize
   );
-  const { exportTransactions, isExporting, error: exportError, lastExportMessage, clearExportMessages } =
-    useExport(user, transactionFilters);
+  const { exportSettlementData, isExporting, error: exportError, lastExportMessage, clearExportMessages } =
+    useExport(user, settlementFilters);
 
   useEffect(() => {
     if (page > result.totalPages) {
@@ -47,18 +49,18 @@ export default function TransactionsPage() {
     }
   }, [lastExportMessage]);
 
-  function handleFilterChange(updates: Partial<TransactionFiltersValue>) {
-    updateTransactionFilters(updates);
+  function handleFilterChange(updates: Partial<SettlementBatchFiltersValue>) {
+    updateSettlementFilters(updates);
     setPage(1);
   }
 
   function handleResetFilters() {
-    resetTransactionFilters();
+    resetSettlementFilters();
     setPage(1);
   }
 
   function handlePageSizeChange(limit: 25 | 50 | 100) {
-    setTransactionPageSize(limit);
+    setSettlementPageSize(limit);
     setPage(1);
   }
 
@@ -68,9 +70,9 @@ export default function TransactionsPage() {
         <div>
           <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-gray-950">Transaction ledger</h1>
+              <h1 className="text-2xl font-semibold tracking-tight text-gray-950">Settlement batches</h1>
               <p className="mt-1 text-sm text-gray-500">
-                Review settled and in-flight collections with scoped filters and transaction-level drill-down.
+                Review payout batches first, then inspect the settlement lines inside each batch.
               </p>
             </div>
 
@@ -78,7 +80,7 @@ export default function TransactionsPage() {
               <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700">
                 <Activity className="h-3.5 w-3.5" />
                 {user?.role === 'aggregator_admin'
-                  ? 'Aggregator-wide ledger'
+                  ? 'Aggregator-wide settlements'
                   : `${user?.collectionCode} / ${user?.serviceCode}`}
               </div>
               <ExportButton
@@ -86,6 +88,7 @@ export default function TransactionsPage() {
                 isLoading={isExporting}
                 onClick={() => {
                   clearExportMessages();
+                  setExportTarget({ type: 'batch-list' });
                   setIsExportModalOpen(true);
                 }}
               />
@@ -102,8 +105,8 @@ export default function TransactionsPage() {
           </div>
         </div>
 
-        <TransactionFilters
-          filters={transactionFilters}
+        <SettlementBatchFilters
+          filters={settlementFilters}
           isLoading={isLoading}
           onChange={handleFilterChange}
           onReset={handleResetFilters}
@@ -113,36 +116,49 @@ export default function TransactionsPage() {
         {exportError && <Alert variant="error" message={exportError} />}
         {error && <Alert variant="error" message={error} />}
 
-        <TransactionTable
-          transactions={result.data}
+        <SettlementBatchTable
+          batches={result.data}
+          isAdmin={user?.role === 'aggregator_admin'}
           isLoading={isLoading}
-          onSelect={setSelectedTransactionId}
+          onSelect={setSelectedBatchId}
         />
 
         <TransactionPagination
           page={result.page}
           total={result.total}
           totalPages={result.totalPages}
-          limit={transactionPageSize}
+          limit={settlementPageSize}
           isLoading={isLoading}
           onPageChange={setPage}
           onLimitChange={handlePageSizeChange}
         />
       </div>
 
-      <TransactionDetailDrawer
-        transactionId={selectedTransactionId}
+      <SettlementBatchDetailDrawer
+        batchId={selectedBatchId}
         user={user}
-        onClose={() => setSelectedTransactionId(null)}
+        isExporting={isExporting && exportTarget.type === 'batch-detail'}
+        onClose={() => setSelectedBatchId(null)}
+        onExport={(batchId) => {
+          clearExportMessages();
+          setExportTarget({ type: 'batch-detail', batchId });
+          setIsExportModalOpen(true);
+        }}
       />
       <ExportModal
         open={isExportModalOpen}
+        title={exportTarget.type === 'batch-list' ? 'Export settlement batches' : `Export batch ${exportTarget.batchId}`}
+        description={
+          exportTarget.type === 'batch-list'
+            ? 'Generate a CSV or PDF from the current filtered settlement batch view.'
+            : 'Generate a CSV or PDF for the selected settlement batch lines.'
+        }
         isExporting={isExporting}
         onClose={() => {
           if (isExporting) return;
           setIsExportModalOpen(false);
         }}
-        onSelectFormat={(format) => void exportTransactions(format)}
+        onSelectFormat={(format) => void exportSettlementData(format, exportTarget)}
       />
     </>
   );

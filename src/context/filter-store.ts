@@ -1,14 +1,14 @@
 import { createContext } from 'react';
-import { TransactionFilters } from '../types/transaction';
+import { SettlementBatchFilters } from '../types/transaction';
 
-export type TransactionPageSize = 25 | 50 | 100;
+export type PageSizeOption = 25 | 50 | 100;
 
 export interface FilterContextValue {
-  transactionFilters: TransactionFilters;
-  transactionPageSize: TransactionPageSize;
-  updateTransactionFilters: (updates: Partial<TransactionFilters>) => void;
-  resetTransactionFilters: () => void;
-  setTransactionPageSize: (size: TransactionPageSize) => void;
+  settlementFilters: SettlementBatchFilters;
+  settlementPageSize: PageSizeOption;
+  updateSettlementFilters: (updates: Partial<SettlementBatchFilters>) => void;
+  resetSettlementFilters: () => void;
+  setSettlementPageSize: (size: PageSizeOption) => void;
 }
 
 function toDateInput(date: Date) {
@@ -18,18 +18,17 @@ function toDateInput(date: Date) {
   return `${year}-${month}-${day}`;
 }
 
-export function getDefaultTransactionFilters(): TransactionFilters {
+export function getDefaultSettlementFilters(): SettlementBatchFilters {
   const today = new Date();
   return {
     from: toDateInput(new Date(today.getFullYear(), today.getMonth(), 1)),
     to: toDateInput(today),
-    channel: '',
-    status: '',
+    batchId: '',
     minAmount: '',
     maxAmount: '',
   };
 }
 
-export const DEFAULT_TRANSACTION_PAGE_SIZE: TransactionPageSize = 25;
+export const DEFAULT_PAGE_SIZE: PageSizeOption = 25;
 
 export const FilterContext = createContext<FilterContextValue | null>(null);

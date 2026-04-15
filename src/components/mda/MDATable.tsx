@@ -8,6 +8,8 @@ interface MDATableProps {
   users: MDAUser[];
   actionKey: string | null;
   isLoading?: boolean;
+  title?: string;
+  description?: string;
   onInviteClick: () => void;
   onResendInvite: (user: MDAUser) => void;
   onDeactivate: (user: MDAUser) => void;
@@ -18,6 +20,8 @@ export function MDATable({
   users,
   actionKey,
   isLoading = false,
+  title = 'MDA users',
+  description = 'Invite and manage MDA-scoped portal access for one collection code and one service code.',
   onInviteClick,
   onResendInvite,
   onDeactivate,
@@ -27,10 +31,8 @@ export function MDATable({
     <section className="rounded-3xl border border-gray-200 bg-white shadow-sm">
       <div className="flex flex-col gap-3 border-b border-gray-100 px-5 py-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-sm font-semibold text-gray-950">MDA users</h2>
-          <p className="mt-1 text-sm text-gray-500">
-            Invite and manage collection-scoped access for MDA portal users.
-          </p>
+          <h2 className="text-sm font-semibold text-gray-950">{title}</h2>
+          <p className="mt-1 text-sm text-gray-500">{description}</p>
         </div>
         <Button size="sm" leftIcon={<UserPlus className="h-4 w-4" />} onClick={onInviteClick}>
           Invite MDA
@@ -43,6 +45,7 @@ export function MDATable({
             <tr className="text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">
               <th className="px-5 py-4">Name</th>
               <th className="px-5 py-4">Email</th>
+              <th className="px-5 py-4">MDA Code</th>
               <th className="px-5 py-4">Collection Code</th>
               <th className="px-5 py-4">Service Code</th>
               <th className="px-5 py-4">Status</th>
@@ -54,7 +57,7 @@ export function MDATable({
             {isLoading &&
               Array.from({ length: 5 }, (_, index) => (
                 <tr key={index}>
-                  <td className="px-5 py-4" colSpan={7}>
+                  <td className="px-5 py-4" colSpan={8}>
                     <div className="h-12 animate-pulse rounded-2xl bg-gray-100" />
                   </td>
                 </tr>
@@ -62,8 +65,8 @@ export function MDATable({
 
             {!isLoading && users.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-5 py-12 text-center text-sm text-gray-500">
-                  No MDA users have been created yet.
+                <td colSpan={8} className="px-5 py-12 text-center text-sm text-gray-500">
+                  No MDA users have been created for the current selection.
                 </td>
               </tr>
             )}
@@ -92,6 +95,7 @@ export function MDATable({
                       <span>{user.email}</span>
                     </div>
                   </td>
+                  <td className="px-5 py-4 font-medium text-gray-700">{user.mdaCode}</td>
                   <td className="px-5 py-4 font-medium text-gray-700">{user.collectionCode}</td>
                   <td className="px-5 py-4 font-medium text-gray-700">{user.serviceCode}</td>
                   <td className="px-5 py-4">

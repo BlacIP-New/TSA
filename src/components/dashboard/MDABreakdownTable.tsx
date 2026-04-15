@@ -29,7 +29,7 @@ export function MDABreakdownTable({
               <th className="pb-3 pr-4">MDA</th>
               <th className="pb-3 pr-4">Scope</th>
               <th className="pb-3 pr-4">Settled Amount</th>
-              <th className="pb-3 pr-4">Transactions</th>
+              <th className="pb-3 pr-4">Settlement Lines</th>
               <th className="pb-3 pr-4">Share</th>
               <th className="pb-3 pr-4">Period Change</th>
               <th className="pb-3">Last Settlement</th>
@@ -82,7 +82,7 @@ export function MDABreakdownTable({
                     </div>
                   </td>
                   <td className="py-4 pr-4 font-medium text-gray-950">{formatCompactCurrency(row.totalAmount)}</td>
-                  <td className="py-4 pr-4 text-gray-600">{row.transactionCount.toLocaleString()}</td>
+                  <td className="py-4 pr-4 text-gray-600">{row.settlementLineCount.toLocaleString()}</td>
                   <td className="py-4 pr-4 text-gray-600">{row.percentageOfTotal.toFixed(1)}%</td>
                   <td className={`py-4 pr-4 font-medium ${row.periodChange >= 0 ? 'text-emerald-700' : 'text-red-700'}`}>
                     {formatPercentage(row.periodChange)}

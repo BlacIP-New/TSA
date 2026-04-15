@@ -3,18 +3,18 @@ import { AuthUser } from '../types/auth';
 import {
   ChartGroupBy,
   CollectionChart,
-  PaginatedTransactions,
-  Transaction,
-  TransactionFilters,
+  PaginatedSettlementBatches,
+  SettlementBatchDetail,
+  SettlementBatchFilters,
   TransactionSummary,
 } from '../types/transaction';
 import {
   getCollectionsChart,
   getCollectionsSummary,
-  getScopedTransactionById,
-  getTransactions,
+  getSettlementBatchDetail,
+  getSettlementBatches,
 } from '../services/transactionService';
-import { TransactionPageSize } from '../context/filter-store';
+import { PageSizeOption } from '../context/filter-store';
 
 export interface DashboardDateRange {
   from: string;
@@ -118,7 +118,7 @@ export function useTransactionDashboard(user: AuthUser | null) {
   };
 }
 
-const EMPTY_TRANSACTION_PAGE: PaginatedTransactions = {
+const EMPTY_SETTLEMENT_BATCH_PAGE: PaginatedSettlementBatches = {
   data: [],
   total: 0,
   page: 1,
@@ -126,19 +126,19 @@ const EMPTY_TRANSACTION_PAGE: PaginatedTransactions = {
   totalPages: 1,
 };
 
-export function useTransactionLedger(
+export function useSettlementBatchLedger(
   user: AuthUser | null,
-  filters: TransactionFilters,
+  filters: SettlementBatchFilters,
   page: number,
-  limit: TransactionPageSize
+  limit: PageSizeOption
 ) {
-  const [result, setResult] = useState<PaginatedTransactions>(EMPTY_TRANSACTION_PAGE);
+  const [result, setResult] = useState<PaginatedSettlementBatches>(EMPTY_SETTLEMENT_BATCH_PAGE);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadTransactions = useCallback(async () => {
+  const loadSettlementBatches = useCallback(async () => {
     if (!user?.aggregatorId) {
-      setResult(EMPTY_TRANSACTION_PAGE);
+      setResult(EMPTY_SETTLEMENT_BATCH_PAGE);
       setIsLoading(false);
       return;
     }
@@ -147,7 +147,7 @@ export function useTransactionLedger(
     setError(null);
 
     try {
-      const response = await getTransactions({
+      const response = await getSettlementBatches({
         aggregatorId: user.aggregatorId,
         collectionCode: user.role === 'mda_viewer' ? user.collectionCode : undefined,
         serviceCode: user.role === 'mda_viewer' ? user.serviceCode : undefined,
@@ -161,7 +161,7 @@ export function useTransactionLedger(
       setError(
         caughtError instanceof Error
           ? caughtError.message
-          : 'Unable to load transactions right now.'
+          : 'Unable to load settlement batches right now.'
       );
     } finally {
       setIsLoading(false);
@@ -177,70 +177,70 @@ export function useTransactionLedger(
   ]);
 
   useEffect(() => {
-    void loadTransactions();
-  }, [loadTransactions]);
+    void loadSettlementBatches();
+  }, [loadSettlementBatches]);
 
   return {
     result,
     isLoading,
     error,
-    refresh: loadTransactions,
+    refresh: loadSettlementBatches,
   };
 }
 
-export function useTransactionDetail(transactionId: string | null, user: AuthUser | null) {
-  const [transaction, setTransaction] = useState<Transaction | null>(null);
+export function useSettlementBatchDetail(batchId: string | null, user: AuthUser | null) {
+  const [detail, setDetail] = useState<SettlementBatchDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!transactionId) {
-      setTransaction(null);
+    if (!batchId) {
+      setDetail(null);
       setError(null);
       setIsLoading(false);
       return;
     }
 
     let isMounted = true;
-    const currentTransactionId = transactionId;
+    const currentBatchId = batchId;
 
-    async function loadTransaction() {
+    async function loadSettlementBatch() {
       setIsLoading(true);
       setError(null);
 
       try {
         if (!user?.aggregatorId) {
-          throw new Error('Unable to verify your access scope for this transaction.');
+          throw new Error('Unable to verify your access scope for this settlement batch.');
         }
 
-        const response = await getScopedTransactionById(currentTransactionId, {
+        const response = await getSettlementBatchDetail(currentBatchId, {
           aggregatorId: user.aggregatorId,
           collectionCode: user.role === 'mda_viewer' ? user.collectionCode : undefined,
           serviceCode: user.role === 'mda_viewer' ? user.serviceCode : undefined,
         });
-        if (isMounted) setTransaction(response);
+        if (isMounted) setDetail(response);
       } catch (caughtError) {
         if (!isMounted) return;
-        setTransaction(null);
+        setDetail(null);
         setError(
           caughtError instanceof Error
             ? caughtError.message
-            : 'Unable to load transaction details.'
+            : 'Unable to load settlement batch details.'
         );
       } finally {
         if (isMounted) setIsLoading(false);
       }
     }
 
-    void loadTransaction();
+    void loadSettlementBatch();
 
     return () => {
       isMounted = false;
     };
-  }, [transactionId, user?.aggregatorId, user?.collectionCode, user?.role, user?.serviceCode]);
+  }, [batchId, user?.aggregatorId, user?.collectionCode, user?.role, user?.serviceCode]);
 
   return {
-    transaction,
+    detail,
     isLoading,
     error,
   };

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Building2, Mail, ShieldPlus } from 'lucide-react';
-import { CollectionCode, InviteMDAPayload, ServiceCode } from '../../types/mda';
+import { InviteMDAPayload, MDACollectionCode, MDARecord, MDAServiceCode } from '../../types/mda';
 import { validateEmail } from '../../utils/validators';
 import { Alert } from '../ui/Alert';
 import { Button } from '../ui/Button';
@@ -10,86 +10,106 @@ import { Select } from '../ui/Select';
 
 interface InviteMDAModalProps {
   open: boolean;
-  collectionCodes: CollectionCode[];
+  mdas: MDARecord[];
+  defaultMDAId?: string | null;
   isSubmitting?: boolean;
-  loadServiceCodes: (collectionCode: string) => Promise<ServiceCode[]>;
+  loadMDACollections: (mdaId: string) => Promise<MDACollectionCode[]>;
+  loadMDAServiceCodes: (mdaId: string) => Promise<MDAServiceCode[]>;
   onClose: () => void;
   onSubmit: (payload: InviteMDAPayload) => Promise<void>;
 }
 
-const initialValues: InviteMDAPayload = {
+const buildInitialValues = (mdaId?: string | null): InviteMDAPayload => ({
   email: '',
+  mdaId: mdaId ?? '',
   collectionCode: '',
   serviceCode: '',
-};
+});
 
 export function InviteMDAModal({
   open,
-  collectionCodes,
+  mdas,
+  defaultMDAId,
   isSubmitting = false,
-  loadServiceCodes,
+  loadMDACollections,
+  loadMDAServiceCodes,
   onClose,
   onSubmit,
 }: InviteMDAModalProps) {
-  const [values, setValues] = useState<InviteMDAPayload>(initialValues);
-  const [serviceCodes, setServiceCodes] = useState<ServiceCode[]>([]);
-  const [isLoadingServices, setIsLoadingServices] = useState(false);
+  const [values, setValues] = useState<InviteMDAPayload>(() => buildInitialValues(defaultMDAId));
+  const [collectionCodes, setCollectionCodes] = useState<MDACollectionCode[]>([]);
+  const [serviceCodes, setServiceCodes] = useState<MDAServiceCode[]>([]);
+  const [isLoadingScope, setIsLoadingScope] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof InviteMDAPayload, string>>>({});
 
-  const selectedCollection = useMemo(
-    () => collectionCodes.find((collection) => collection.code === values.collectionCode) ?? null,
-    [collectionCodes, values.collectionCode]
+  const selectedMDA = useMemo(
+    () => mdas.find((entry) => entry.id === values.mdaId) ?? null,
+    [mdas, values.mdaId],
   );
 
   useEffect(() => {
     if (!open) {
-      setValues(initialValues);
+      setValues(buildInitialValues(defaultMDAId));
+      setCollectionCodes([]);
       setServiceCodes([]);
-      setIsLoadingServices(false);
+      setIsLoadingScope(false);
       setSubmitError(null);
       setFieldErrors({});
       return;
     }
 
-    if (!values.collectionCode) {
+    setValues((current) => buildInitialValues(current.mdaId || defaultMDAId));
+  }, [defaultMDAId, open]);
+
+  useEffect(() => {
+    if (!open || !values.mdaId) {
+      setCollectionCodes([]);
       setServiceCodes([]);
       return;
     }
 
     let isMounted = true;
 
-    async function fetchServiceCodes() {
-      setIsLoadingServices(true);
+    async function fetchScopeOptions() {
+      setIsLoadingScope(true);
+      setSubmitError(null);
+
       try {
-        const response = await loadServiceCodes(values.collectionCode);
-        if (isMounted) setServiceCodes(response);
+        const [nextCollections, nextServices] = await Promise.all([
+          loadMDACollections(values.mdaId),
+          loadMDAServiceCodes(values.mdaId),
+        ]);
+
+        if (!isMounted) return;
+        setCollectionCodes(nextCollections);
+        setServiceCodes(nextServices);
       } catch (caughtError) {
-        if (isMounted) {
-          setServiceCodes([]);
-          setSubmitError(
-            caughtError instanceof Error
-              ? caughtError.message
-              : 'Unable to load service codes right now.'
-          );
-        }
+        if (!isMounted) return;
+        setCollectionCodes([]);
+        setServiceCodes([]);
+        setSubmitError(
+          caughtError instanceof Error
+            ? caughtError.message
+            : 'Unable to load MDA scope options right now.',
+        );
       } finally {
-        if (isMounted) setIsLoadingServices(false);
+        if (isMounted) setIsLoadingScope(false);
       }
     }
 
-    void fetchServiceCodes();
+    void fetchScopeOptions();
 
     return () => {
       isMounted = false;
     };
-  }, [loadServiceCodes, open, values.collectionCode]);
+  }, [loadMDACollections, loadMDAServiceCodes, open, values.mdaId]);
 
   function updateValue<K extends keyof InviteMDAPayload>(key: K, value: InviteMDAPayload[K]) {
     setValues((current) => ({
       ...current,
       [key]: value,
-      ...(key === 'collectionCode' ? { serviceCode: '' } : null),
+      ...(key === 'mdaId' ? { collectionCode: '', serviceCode: '' } : null),
     }));
     setSubmitError(null);
     setFieldErrors((current) => ({ ...current, [key]: undefined }));
@@ -99,19 +119,21 @@ export function InviteMDAModal({
     const emailError = validateEmail(values.email);
     const nextFieldErrors: Partial<Record<keyof InviteMDAPayload, string>> = {
       email: emailError ?? undefined,
+      mdaId: values.mdaId ? undefined : 'MDA is required.',
       collectionCode: values.collectionCode ? undefined : 'Collection code is required.',
       serviceCode: values.serviceCode ? undefined : 'Service code is required.',
     };
 
     setFieldErrors(nextFieldErrors);
 
-    if (nextFieldErrors.email || nextFieldErrors.collectionCode || nextFieldErrors.serviceCode) {
+    if (nextFieldErrors.email || nextFieldErrors.mdaId || nextFieldErrors.collectionCode || nextFieldErrors.serviceCode) {
       return;
     }
 
     try {
       await onSubmit({
         email: values.email.trim().toLowerCase(),
+        mdaId: values.mdaId,
         collectionCode: values.collectionCode,
         serviceCode: values.serviceCode,
       });
@@ -120,7 +142,7 @@ export function InviteMDAModal({
       setSubmitError(
         caughtError instanceof Error
           ? caughtError.message
-          : 'Unable to invite MDA user right now.'
+          : 'Unable to invite MDA user right now.',
       );
     }
   }
@@ -129,7 +151,7 @@ export function InviteMDAModal({
     <Modal
       open={open}
       title="Invite MDA user"
-      description="Send a role-scoped portal invitation tied to a collection code and service code."
+      description="Send a role-scoped portal invitation tied to an MDA, one collection code, and one service code."
       onClose={onClose}
       footer={
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -159,13 +181,32 @@ export function InviteMDAModal({
           onChange={(event) => updateValue('email', event.target.value)}
         />
 
+        <Select
+          label="MDA"
+          value={values.mdaId}
+          error={fieldErrors.mdaId}
+          options={[
+            { label: 'Select MDA', value: '' },
+            ...mdas.map((mda) => ({
+              label: `${mda.mdaCode} — ${mda.mdaName}`,
+              value: mda.id,
+            })),
+          ]}
+          onChange={(event) => updateValue('mdaId', event.target.value)}
+        />
+
         <div className="grid gap-4 sm:grid-cols-2">
           <Select
             label="Collection code"
             value={values.collectionCode}
             error={fieldErrors.collectionCode}
+            disabled={!values.mdaId || isLoadingScope}
+            hint={values.mdaId && isLoadingScope ? 'Loading MDA collections...' : undefined}
             options={[
-              { label: 'Select collection code', value: '' },
+              {
+                label: values.mdaId ? 'Select collection code' : 'Choose an MDA first',
+                value: '',
+              },
               ...collectionCodes.map((collection) => ({
                 label: `${collection.code} — ${collection.name}`,
                 value: collection.code,
@@ -177,11 +218,11 @@ export function InviteMDAModal({
             label="Service code"
             value={values.serviceCode}
             error={fieldErrors.serviceCode}
-            disabled={!values.collectionCode || isLoadingServices}
-            hint={values.collectionCode && isLoadingServices ? 'Loading service codes...' : undefined}
+            disabled={!values.mdaId || isLoadingScope}
+            hint={values.mdaId && isLoadingScope ? 'Loading MDA service codes...' : undefined}
             options={[
               {
-                label: values.collectionCode ? 'Select service code' : 'Choose a collection first',
+                label: values.mdaId ? 'Select service code' : 'Choose an MDA first',
                 value: '',
               },
               ...serviceCodes.map((serviceCode) => ({
@@ -193,16 +234,16 @@ export function InviteMDAModal({
           />
         </div>
 
-        {selectedCollection && (
+        {selectedMDA && (
           <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
             <div className="flex items-start gap-3">
               <div className="rounded-2xl bg-white p-2 text-[#E8001C]">
                 <Building2 className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-950">{selectedCollection.name}</p>
+                <p className="text-sm font-semibold text-gray-950">{selectedMDA.mdaName}</p>
                 <p className="mt-1 text-sm text-gray-500">
-                  Invitations created here are restricted to collection code {selectedCollection.code}.
+                  Invitations created here are restricted to {selectedMDA.mdaCode} plus one collection code and one service code.
                 </p>
               </div>
             </div>

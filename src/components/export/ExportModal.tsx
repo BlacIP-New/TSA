@@ -5,6 +5,8 @@ import { Button } from '../ui/Button';
 
 interface ExportModalProps {
   open: boolean;
+  title?: string;
+  description?: string;
   isExporting?: boolean;
   onClose: () => void;
   onSelectFormat: (format: ExportFormat) => void;
@@ -12,6 +14,8 @@ interface ExportModalProps {
 
 export function ExportModal({
   open,
+  title = 'Export settlements',
+  description = 'Generate a file using the current settlement view and scope.',
   isExporting = false,
   onClose,
   onSelectFormat,
@@ -19,8 +23,8 @@ export function ExportModal({
   return (
     <Modal
       open={open}
-      title="Export transactions"
-      description="Generate a file using the current ledger filters and the signed-in scope."
+      title={title}
+      description={description}
       onClose={onClose}
     >
       <div className="grid gap-4 md:grid-cols-2">
@@ -35,7 +39,7 @@ export function ExportModal({
           </div>
           <p className="text-base font-semibold text-gray-950">CSV export</p>
           <p className="mt-2 text-sm text-gray-500">
-            Spreadsheet-friendly export of the current filtered transactions.
+            Spreadsheet-friendly export of the current filtered settlement view.
           </p>
         </button>
 

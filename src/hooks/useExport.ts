@@ -1,18 +1,18 @@
 import { useCallback, useState } from 'react';
 import { AuthUser } from '../types/auth';
-import { TransactionFilters } from '../types/transaction';
-import { exportTransactionsCsv, exportTransactionsPdf } from '../services/exportService';
+import { SettlementBatchFilters } from '../types/transaction';
+import { exportSettlements, ExportResult, SettlementExportTarget } from '../services/exportService';
 import { triggerFileDownload } from '../utils/exportHelpers';
 
 export type ExportFormat = 'csv' | 'pdf';
 
-export function useExport(user: AuthUser | null, filters: TransactionFilters) {
+export function useExport(user: AuthUser | null, filters: SettlementBatchFilters) {
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastExportMessage, setLastExportMessage] = useState<string | null>(null);
 
-  const exportTransactions = useCallback(
-    async (format: ExportFormat) => {
+  const exportSettlementData = useCallback(
+    async (format: ExportFormat, target: SettlementExportTarget) => {
       if (!user) {
         setError('No active user session available for export.');
         return;
@@ -23,15 +23,15 @@ export function useExport(user: AuthUser | null, filters: TransactionFilters) {
       setLastExportMessage(null);
 
       try {
-        const result =
-          format === 'csv'
-            ? await exportTransactionsCsv({ user, filters })
-            : await exportTransactionsPdf({ user, filters });
+        const result: ExportResult = await exportSettlements({
+          user,
+          filters,
+          format,
+          target,
+        });
 
         triggerFileDownload(result.blob, result.filename);
-        setLastExportMessage(
-          `${format.toUpperCase()} export generated with ${result.count} transactions.`
-        );
+        setLastExportMessage(result.successMessage);
       } catch (caughtError) {
         setError(
           caughtError instanceof Error
@@ -46,7 +46,7 @@ export function useExport(user: AuthUser | null, filters: TransactionFilters) {
   );
 
   return {
-    exportTransactions,
+    exportSettlementData,
     isExporting,
     error,
     lastExportMessage,

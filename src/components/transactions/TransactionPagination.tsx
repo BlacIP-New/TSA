@@ -1,16 +1,16 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { TransactionPageSize } from '../../context/filter-store';
+import { PageSizeOption } from '../../context/filter-store';
 import { Button } from '../ui/Button';
 
 interface TransactionPaginationProps {
   page: number;
   total: number;
   totalPages: number;
-  limit: TransactionPageSize;
+  limit: PageSizeOption;
   isLoading?: boolean;
   hidePageSize?: boolean;
   onPageChange: (page: number) => void;
-  onLimitChange: (limit: TransactionPageSize) => void;
+  onLimitChange: (limit: PageSizeOption) => void;
 }
 
 function getVisiblePages(page: number, totalPages: number) {
@@ -49,7 +49,7 @@ export function TransactionPagination({
               value={limit}
               disabled={isLoading}
               className="h-9 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-900 outline-none focus:border-[#E8001C] focus:ring-2 focus:ring-[#E8001C]/10"
-              onChange={(event) => onLimitChange(Number(event.target.value) as TransactionPageSize)}
+              onChange={(event) => onLimitChange(Number(event.target.value) as PageSizeOption)}
             >
               <option value={25}>25</option>
               <option value={50}>50</option>

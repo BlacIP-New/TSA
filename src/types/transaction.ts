@@ -1,34 +1,42 @@
-export type PaymentChannel = 'bank_transfer' | 'card' | 'ussd' | 'pos' | 'internet_banking';
-
-export type TransactionStatus = 'settled' | 'pending' | 'failed';
 export type ChartGroupBy = 'day' | 'week';
 
-export interface Transaction {
+export interface SettlementLine {
   id: string;
-  reference: string;
-  payerName: string;
-  payerAccount: string;
-  payerBank: string;
+  batchId: string;
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
   amount: number;
-  channel: PaymentChannel;
-  settlementDate: string;
-  createdAt: string;
-  status: TransactionStatus;
+  settledDate: string;
   collectionCode: string;
   serviceCode: string;
+  mdaName: string;
   aggregatorId: string;
-  narration: string;
-  settlementBatch?: string;
 }
 
-export interface TransactionFilters {
+export interface SettlementBatch {
+  id: string;
+  batchId: string;
+  settledDate: string;
+  mdaName: string;
+  collectionCode: string;
+  serviceCode: string;
+  itemCount: number;
+  totalAmount: number;
+  aggregatorId: string;
+}
+
+export interface SettlementBatchDetail {
+  batch: SettlementBatch;
+  lines: SettlementLine[];
+}
+
+export interface SettlementBatchFilters {
   from?: string;
   to?: string;
-  channel?: PaymentChannel | '';
-  status?: TransactionStatus | '';
+  batchId?: string;
   minAmount?: number | '';
   maxAmount?: number | '';
-  search?: string;
 }
 
 export interface CollectionSummaryParams {
@@ -56,7 +64,7 @@ export interface MdaBreakdownRow {
   collectionCode: string;
   serviceCode: string;
   totalAmount: number;
-  transactionCount: number;
+  settlementLineCount: number;
   percentageOfTotal: number;
   periodChange: number;
   lastSettlementDate: string;
@@ -82,7 +90,7 @@ export interface CollectionChart {
   totalCount: number;
 }
 
-export interface TransactionQueryParams extends TransactionFilters {
+export interface SettlementBatchQueryParams extends SettlementBatchFilters {
   aggregatorId: string;
   collectionCode?: string;
   serviceCode?: string;
@@ -90,8 +98,8 @@ export interface TransactionQueryParams extends TransactionFilters {
   limit?: number;
 }
 
-export interface PaginatedTransactions {
-  data: Transaction[];
+export interface PaginatedSettlementBatches {
+  data: SettlementBatch[];
   total: number;
   page: number;
   limit: number;

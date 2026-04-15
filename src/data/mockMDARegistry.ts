@@ -1,0 +1,186 @@
+import { appConfig } from '../config/env';
+import { MDACollectionCode, MDAServiceCode } from '../types/mda';
+
+export const mockMDARegistry = [
+  {
+    id: 'mda_fmf',
+    mdaCode: 'MDA-FMF',
+    mdaName: 'Federal Ministry of Finance',
+    aggregatorId: appConfig.aggregatorId,
+    status: 'active' as const,
+  },
+  {
+    id: 'mda_mw',
+    mdaCode: 'MDA-MW',
+    mdaName: 'Ministry of Works',
+    aggregatorId: appConfig.aggregatorId,
+    status: 'active' as const,
+  },
+  {
+    id: 'mda_lirs',
+    mdaCode: 'MDA-LIRS',
+    mdaName: 'Lagos Internal Revenue Service',
+    aggregatorId: appConfig.aggregatorId,
+    status: 'active' as const,
+  },
+  {
+    id: 'mda_vis',
+    mdaCode: 'MDA-VIS',
+    mdaName: 'Vehicle Inspection Service',
+    aggregatorId: appConfig.aggregatorId,
+    status: 'active' as const,
+  },
+  {
+    id: 'mda_edu',
+    mdaCode: 'MDA-EDU',
+    mdaName: 'Ministry of Education',
+    aggregatorId: appConfig.aggregatorId,
+    status: 'active' as const,
+  },
+] as const;
+
+export const mockMDACollections: MDACollectionCode[] = [
+  {
+    id: 'mda_col_fmf_001',
+    mdaId: 'mda_fmf',
+    code: 'FMF-001',
+    name: 'Treasury Core Collections',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_col_fmf_017',
+    mdaId: 'mda_fmf',
+    code: 'FMF-017',
+    name: 'Capital Release Collections',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_col_mw_002',
+    mdaId: 'mda_mw',
+    code: 'MW-002',
+    name: 'Contract Verification Receipts',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_col_mw_005',
+    mdaId: 'mda_mw',
+    code: 'MW-005',
+    name: 'Road Maintenance Collections',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_col_lirs_010',
+    mdaId: 'mda_lirs',
+    code: 'LIRS-010',
+    name: 'PAYE Settlement Collections',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_col_lirs_022',
+    mdaId: 'mda_lirs',
+    code: 'LIRS-022',
+    name: 'Direct Assessment Collections',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_col_vis_031',
+    mdaId: 'mda_vis',
+    code: 'VIS-031',
+    name: 'Vehicle Inspection Fees',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_col_vis_041',
+    mdaId: 'mda_vis',
+    code: 'VIS-041',
+    name: 'Roadworthiness Certificate Fees',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_col_edu_120',
+    mdaId: 'mda_edu',
+    code: 'EDU-120',
+    name: 'Examination Processing Collections',
+    aggregatorId: appConfig.aggregatorId,
+  },
+];
+
+export const mockMDAServiceCodes: MDAServiceCode[] = [
+  {
+    id: 'mda_svc_fmf_001',
+    mdaId: 'mda_fmf',
+    code: 'FMF-SVC-001',
+    name: 'Budget Release Processing',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_svc_fmf_004',
+    mdaId: 'mda_fmf',
+    code: 'FMF-SVC-004',
+    name: 'Treasury Remittance Clearance',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_svc_fmf_009',
+    mdaId: 'mda_fmf',
+    code: 'FMF-SVC-009',
+    name: 'Capital Disbursement Validation',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_svc_mw_014',
+    mdaId: 'mda_mw',
+    code: 'MW-SVC-014',
+    name: 'Contract Payment Verification',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_svc_mw_018',
+    mdaId: 'mda_mw',
+    code: 'MW-SVC-018',
+    name: 'Road Maintenance Levy',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_svc_lirs_120',
+    mdaId: 'mda_lirs',
+    code: 'LIRS-SVC-120',
+    name: 'PAYE Settlement',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_svc_lirs_121',
+    mdaId: 'mda_lirs',
+    code: 'LIRS-SVC-121',
+    name: 'Withholding Tax Remittance',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_svc_vis_088',
+    mdaId: 'mda_vis',
+    code: 'VIS-SVC-088',
+    name: 'Vehicle Inspection Fee',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_svc_vis_092',
+    mdaId: 'mda_vis',
+    code: 'VIS-SVC-092',
+    name: 'Roadworthiness Certificate',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_svc_edu_020',
+    mdaId: 'mda_edu',
+    code: 'EDU-SVC-020',
+    name: 'School Charges Collection',
+    aggregatorId: appConfig.aggregatorId,
+  },
+  {
+    id: 'mda_svc_edu_024',
+    mdaId: 'mda_edu',
+    code: 'EDU-SVC-024',
+    name: 'Examination Processing',
+    aggregatorId: appConfig.aggregatorId,
+  },
+];

@@ -1,52 +1,45 @@
 /**
- * Export Service — integration-ready mock implementation for transaction export endpoints.
+ * Export Service — settlement export implementation for batch list and batch detail endpoints.
  *
  * Backend swap-in points:
- *   GET /transactions/export/csv
- *   GET /transactions/export/pdf
+ *   GET /settlements/export/csv
+ *   GET /settlements/export/pdf
  */
 
 import { AuthUser } from '../types/auth';
-import { Transaction, TransactionFilters } from '../types/transaction';
-import { getTransactions } from './transactionService';
+import { SettlementBatchFilters } from '../types/transaction';
+import { getSettlementBatchDetail, getSettlementBatches } from './transactionService';
 import {
-  buildExportAuditDetails,
   buildExportDateRangeLabel,
   buildExportFilename,
-  createCsvBlob,
-  createPdfBlob,
+  buildSettlementExportAuditDetails,
+  createSettlementBatchCsvBlob,
+  createSettlementBatchDetailPdfBlob,
+  createSettlementBatchListPdfBlob,
+  createSettlementLineCsvBlob,
   ExportScopeSummary,
 } from '../utils/exportHelpers';
+import { formatDate } from '../utils/formatters';
 import { logAuditEntry } from './auditService';
 
-interface ExportTransactionsParams {
-  user: AuthUser;
-  filters: TransactionFilters;
-}
-
-interface ExportResult {
+export interface ExportResult {
   blob: Blob;
   filename: string;
-  count: number;
+  successMessage: string;
 }
 
-async function getScopedTransactionsForExport({
-  user,
-  filters,
-}: ExportTransactionsParams): Promise<Transaction[]> {
-  const response = await getTransactions({
-    aggregatorId: user.aggregatorId ?? '',
-    collectionCode: user.role === 'mda_viewer' ? user.collectionCode : undefined,
-    serviceCode: user.role === 'mda_viewer' ? user.serviceCode : undefined,
-    page: 1,
-    limit: 10_000,
-    ...filters,
-  });
+export type SettlementExportTarget =
+  | { type: 'batch-list' }
+  | { type: 'batch-detail'; batchId: string };
 
-  return response.data;
+interface ExportSettlementsParams {
+  user: AuthUser;
+  filters: SettlementBatchFilters;
+  format: 'csv' | 'pdf';
+  target: SettlementExportTarget;
 }
 
-function buildScopeSummary(user: AuthUser, filters: TransactionFilters): ExportScopeSummary {
+function buildScopeSummary(user: AuthUser, filters: SettlementBatchFilters): ExportScopeSummary {
   const generatedAt = new Date().toISOString();
   const scopeLabel =
     user.role === 'mda_viewer'
@@ -65,12 +58,14 @@ function buildScopeSummary(user: AuthUser, filters: TransactionFilters): ExportS
   };
 }
 
-async function logExportAuditEvent(
-  user: AuthUser,
-  action: 'export_csv' | 'export_pdf',
-  scope: ExportScopeSummary,
-  count: number
-) {
+async function logExportAuditEvent(params: {
+  user: AuthUser;
+  action: 'export_csv' | 'export_pdf';
+  scope: ExportScopeSummary;
+  target: SettlementExportTarget;
+  count: number;
+}) {
+  const { user, action, scope, target, count } = params;
   if (!user.aggregatorId) return;
 
   await logAuditEntry({
@@ -78,44 +73,100 @@ async function logExportAuditEvent(
     userEmail: user.email,
     userName: user.name,
     action,
-    details: buildExportAuditDetails(action, scope.scopeLabel, count),
+    details:
+      target.type === 'batch-detail'
+        ? buildSettlementExportAuditDetails(action, {
+            type: 'batch-detail',
+            batchId: target.batchId,
+            count,
+          })
+        : buildSettlementExportAuditDetails(action, {
+            type: 'batch-list',
+            count,
+          }),
     aggregatorId: user.aggregatorId,
     metadata: {
       scopeLabel: scope.scopeLabel,
       collectionCode: scope.collectionCode,
       serviceCode: scope.serviceCode,
       generatedAt: scope.generatedAt,
-      transactionCount: String(count),
+      batchId: target.type === 'batch-detail' ? target.batchId : '',
+      recordCount: String(count),
     },
   });
 }
 
-export async function exportTransactionsCsv(params: ExportTransactionsParams): Promise<ExportResult> {
-  const transactions = await getScopedTransactionsForExport(params);
-  const scope = buildScopeSummary(params.user, params.filters);
-  const blob = createCsvBlob(transactions);
-  const filename = buildExportFilename('csv', scope.scopeLabel, scope.generatedAt);
+export async function exportSettlements(params: ExportSettlementsParams): Promise<ExportResult> {
+  const { user, filters, format, target } = params;
+  const scope = buildScopeSummary(user, filters);
+  const action = format === 'csv' ? 'export_csv' : 'export_pdf';
 
-  await logExportAuditEvent(params.user, 'export_csv', scope, transactions.length);
+  if (target.type === 'batch-list') {
+    const batches = (
+      await getSettlementBatches({
+        aggregatorId: user.aggregatorId ?? '',
+        collectionCode: user.role === 'mda_viewer' ? user.collectionCode : undefined,
+        serviceCode: user.role === 'mda_viewer' ? user.serviceCode : undefined,
+        page: 1,
+        limit: 10_000,
+        ...filters,
+      })
+    ).data;
 
-  return {
-    blob,
-    filename,
-    count: transactions.length,
+    const blob =
+      format === 'csv'
+        ? createSettlementBatchCsvBlob(batches)
+        : createSettlementBatchListPdfBlob(batches, scope);
+    const filename = buildExportFilename(format, `settlement-batches-${scope.scopeLabel}`, scope.generatedAt);
+
+    await logExportAuditEvent({
+      user,
+      action,
+      scope,
+      target,
+      count: batches.length,
+    });
+
+    return {
+      blob,
+      filename,
+      successMessage: `${format.toUpperCase()} export generated with ${batches.length} settlement batches.`,
+    };
+  }
+
+  const detail = await getSettlementBatchDetail(target.batchId, {
+    aggregatorId: user.aggregatorId ?? '',
+    collectionCode: user.role === 'mda_viewer' ? user.collectionCode : undefined,
+    serviceCode: user.role === 'mda_viewer' ? user.serviceCode : undefined,
+  });
+
+  const detailScope: ExportScopeSummary = {
+    ...scope,
+    batchId: detail.batch.batchId,
+    mdaName: detail.batch.mdaName,
+    collectionCode: detail.batch.collectionCode,
+    serviceCode: detail.batch.serviceCode,
+    dateRangeLabel: formatDate(detail.batch.settledDate),
+    scopeLabel: `${detail.batch.collectionCode}-${detail.batch.serviceCode}`,
   };
-}
 
-export async function exportTransactionsPdf(params: ExportTransactionsParams): Promise<ExportResult> {
-  const transactions = await getScopedTransactionsForExport(params);
-  const scope = buildScopeSummary(params.user, params.filters);
-  const blob = createPdfBlob(transactions, scope);
-  const filename = buildExportFilename('pdf', scope.scopeLabel, scope.generatedAt);
+  const blob =
+    format === 'csv'
+      ? createSettlementLineCsvBlob(detail.lines)
+      : createSettlementBatchDetailPdfBlob(detail, detailScope);
+  const filename = buildExportFilename(format, `settlement-batch-${detail.batch.batchId}`, detailScope.generatedAt);
 
-  await logExportAuditEvent(params.user, 'export_pdf', scope, transactions.length);
+  await logExportAuditEvent({
+    user,
+    action,
+    scope: detailScope,
+    target,
+    count: detail.lines.length,
+  });
 
   return {
     blob,
     filename,
-    count: transactions.length,
+    successMessage: `${format.toUpperCase()} export generated for batch ${detail.batch.batchId} with ${detail.lines.length} settlement lines.`,
   };
 }

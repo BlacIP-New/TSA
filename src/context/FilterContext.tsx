@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FilterContext, DEFAULT_TRANSACTION_PAGE_SIZE, getDefaultTransactionFilters, TransactionPageSize } from './filter-store';
-import { TransactionFilters } from '../types/transaction';
+import { FilterContext, DEFAULT_PAGE_SIZE, getDefaultSettlementFilters, PageSizeOption } from './filter-store';
+import { SettlementBatchFilters } from '../types/transaction';
 
-const STORAGE_KEY = 'tsa_transaction_ledger_filters';
+const STORAGE_KEY = 'tsa_settlement_batch_filters';
 
 interface PersistedFilterState {
-  transactionFilters: TransactionFilters;
-  transactionPageSize: TransactionPageSize;
+  settlementFilters: SettlementBatchFilters;
+  settlementPageSize: PageSizeOption;
 }
 
 function getStoredFilterState(): PersistedFilterState {
   if (typeof window === 'undefined') {
     return {
-      transactionFilters: getDefaultTransactionFilters(),
-      transactionPageSize: DEFAULT_TRANSACTION_PAGE_SIZE,
+      settlementFilters: getDefaultSettlementFilters(),
+      settlementPageSize: DEFAULT_PAGE_SIZE,
     };
   }
 
@@ -21,73 +21,73 @@ function getStoredFilterState(): PersistedFilterState {
 
   if (!raw) {
     return {
-      transactionFilters: getDefaultTransactionFilters(),
-      transactionPageSize: DEFAULT_TRANSACTION_PAGE_SIZE,
+      settlementFilters: getDefaultSettlementFilters(),
+      settlementPageSize: DEFAULT_PAGE_SIZE,
     };
   }
 
   try {
     const parsed = JSON.parse(raw) as Partial<PersistedFilterState>;
     return {
-      transactionFilters: {
-        ...getDefaultTransactionFilters(),
-        ...parsed.transactionFilters,
+      settlementFilters: {
+        ...getDefaultSettlementFilters(),
+        ...parsed.settlementFilters,
       },
-      transactionPageSize:
-        parsed.transactionPageSize === 50 || parsed.transactionPageSize === 100
-          ? parsed.transactionPageSize
-          : DEFAULT_TRANSACTION_PAGE_SIZE,
+      settlementPageSize:
+        parsed.settlementPageSize === 50 || parsed.settlementPageSize === 100
+          ? parsed.settlementPageSize
+          : DEFAULT_PAGE_SIZE,
     };
   } catch {
     return {
-      transactionFilters: getDefaultTransactionFilters(),
-      transactionPageSize: DEFAULT_TRANSACTION_PAGE_SIZE,
+      settlementFilters: getDefaultSettlementFilters(),
+      settlementPageSize: DEFAULT_PAGE_SIZE,
     };
   }
 }
 
 export function FilterProvider({ children }: { children: React.ReactNode }) {
-  const [transactionFilters, setTransactionFilters] = useState<TransactionFilters>(() => getStoredFilterState().transactionFilters);
-  const [transactionPageSize, setTransactionPageSizeState] = useState<TransactionPageSize>(
-    () => getStoredFilterState().transactionPageSize
+  const [settlementFilters, setSettlementFilters] = useState<SettlementBatchFilters>(() => getStoredFilterState().settlementFilters);
+  const [settlementPageSize, setSettlementPageSizeState] = useState<PageSizeOption>(
+    () => getStoredFilterState().settlementPageSize
   );
 
   useEffect(() => {
     window.sessionStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ transactionFilters, transactionPageSize })
+      JSON.stringify({ settlementFilters, settlementPageSize })
     );
-  }, [transactionFilters, transactionPageSize]);
+  }, [settlementFilters, settlementPageSize]);
 
-  const updateTransactionFilters = useCallback((updates: Partial<TransactionFilters>) => {
-    setTransactionFilters((current) => ({
+  const updateSettlementFilters = useCallback((updates: Partial<SettlementBatchFilters>) => {
+    setSettlementFilters((current) => ({
       ...current,
       ...updates,
     }));
   }, []);
 
-  const resetTransactionFilters = useCallback(() => {
-    setTransactionFilters(getDefaultTransactionFilters());
+  const resetSettlementFilters = useCallback(() => {
+    setSettlementFilters(getDefaultSettlementFilters());
   }, []);
 
-  const setTransactionPageSize = useCallback((size: TransactionPageSize) => {
-    setTransactionPageSizeState(size);
+  const setSettlementPageSize = useCallback((size: PageSizeOption) => {
+    setSettlementPageSizeState(size);
   }, []);
 
   const value = useMemo(
     () => ({
-      transactionFilters,
-      transactionPageSize,
-      updateTransactionFilters,
-      resetTransactionFilters,
-      setTransactionPageSize,
+      settlementFilters,
+      settlementPageSize,
+      updateSettlementFilters,
+      resetSettlementFilters,
+      setSettlementPageSize,
     }),
     [
-      transactionFilters,
-      transactionPageSize,
-      updateTransactionFilters,
-      resetTransactionFilters,
-      setTransactionPageSize,
+      settlementFilters,
+      settlementPageSize,
+      updateSettlementFilters,
+      resetSettlementFilters,
+      setSettlementPageSize,
     ]
   );
 
