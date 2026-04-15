@@ -90,8 +90,8 @@ function calculateDateRange(preset: string): DateRange {
   }
 
   return {
-    from: from.toISOString().split('T')[0],
-    to: to.toISOString().split('T')[0],
+    from: toDateInput(from),
+    to: toDateInput(to),
   };
 }
 
