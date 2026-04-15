@@ -28,11 +28,11 @@ export function MDATable({
   onReactivate,
 }: MDATableProps) {
   return (
-    <section className="rounded-3xl border border-gray-200 bg-white shadow-sm">
-      <div className="flex flex-col gap-3 border-b border-gray-100 px-5 py-4 md:flex-row md:items-center md:justify-between">
+    <section className="app-panel border-white/70">
+      <div className="flex flex-col gap-3 border-b border-slate-200/80 px-5 py-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-sm font-semibold text-gray-950">{title}</h2>
-          <p className="mt-1 text-sm text-gray-500">{description}</p>
+          <h2 className="text-sm font-semibold text-slate-950">{title}</h2>
+          <p className="mt-1 text-sm text-slate-500">{description}</p>
         </div>
         <Button size="sm" leftIcon={<UserPlus className="h-4 w-4" />} onClick={onInviteClick}>
           Invite MDA
@@ -40,9 +40,9 @@ export function MDATable({
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-100">
+        <table className="app-data-table">
           <thead>
-            <tr className="text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">
+            <tr>
               <th className="px-5 py-4">Name</th>
               <th className="px-5 py-4">Email</th>
               <th className="px-5 py-4">MDA Code</th>
@@ -53,19 +53,19 @@ export function MDATable({
               <th className="px-5 py-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 text-sm">
+          <tbody className="divide-y divide-slate-200/80">
             {isLoading &&
               Array.from({ length: 5 }, (_, index) => (
                 <tr key={index}>
                   <td className="px-5 py-4" colSpan={8}>
-                    <div className="h-12 animate-pulse rounded-2xl bg-gray-100" />
+                    <div className="h-12 animate-pulse rounded-2xl bg-slate-100" />
                   </td>
                 </tr>
               ))}
 
             {!isLoading && users.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-5 py-12 text-center text-sm text-gray-500">
+                <td colSpan={8} className="px-5 py-12 text-center text-sm text-slate-500">
                   No MDA users have been created for the current selection.
                 </td>
               </tr>
@@ -76,7 +76,7 @@ export function MDATable({
                 <tr key={user.id} className="align-top">
                   <td className="px-5 py-4">
                     <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#E8001C]/8 text-sm font-semibold text-[#E8001C]">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200/80 bg-slate-50 text-sm font-semibold text-slate-700">
                         {user.name
                           .split(' ')
                           .slice(0, 2)
@@ -84,24 +84,24 @@ export function MDATable({
                           .join('')}
                       </div>
                       <div>
-                        <p className="font-medium text-gray-950">{user.name}</p>
-                        <p className="mt-1 text-xs text-gray-500">{user.mdaName}</p>
+                        <p className="font-semibold text-slate-950">{user.name}</p>
+                        <p className="mt-1 text-xs text-slate-500">{user.mdaName}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-5 py-4 text-gray-600">
+                  <td className="px-5 py-4 text-slate-600">
                     <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-gray-300" />
+                      <Mail className="h-4 w-4 text-slate-300" />
                       <span>{user.email}</span>
                     </div>
                   </td>
-                  <td className="px-5 py-4 font-medium text-gray-700">{user.mdaCode}</td>
-                  <td className="px-5 py-4 font-medium text-gray-700">{user.collectionCode}</td>
-                  <td className="px-5 py-4 font-medium text-gray-700">{user.serviceCode}</td>
+                  <td className="px-5 py-4 font-semibold text-slate-700">{user.mdaCode}</td>
+                  <td className="px-5 py-4 font-semibold text-slate-700">{user.collectionCode}</td>
+                  <td className="px-5 py-4 font-semibold text-slate-700">{user.serviceCode}</td>
                   <td className="px-5 py-4">
                     <MDAStatusBadge status={user.status} />
                   </td>
-                  <td className="px-5 py-4 text-gray-600">{formatDate(user.invitedAt)}</td>
+                  <td className="px-5 py-4 text-slate-600">{formatDate(user.invitedAt)}</td>
                   <td className="px-5 py-4">
                     <div className="flex justify-end gap-2">
                       {user.status === 'pending' && (

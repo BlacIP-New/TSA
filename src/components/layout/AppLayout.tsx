@@ -17,7 +17,7 @@ export function AppLayout() {
   const title = PAGE_TITLES[location.pathname] ?? '';
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="app-shell-grid flex h-screen overflow-hidden bg-transparent">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">

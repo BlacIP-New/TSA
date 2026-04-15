@@ -32,14 +32,14 @@ export function AuditFilters({
   onReset,
 }: AuditFiltersProps) {
   return (
-    <section className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+    <section className="app-panel border-white/70 p-5">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-[#E8001C]" />
-            <h2 className="text-sm font-semibold text-gray-950">Audit filters</h2>
+            <Filter className="h-4 w-4 text-slate-500" />
+            <h2 className="text-sm font-semibold text-slate-950">Audit filters</h2>
           </div>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-slate-500">
             Narrow results by timeframe, action type, and initiating user.
           </p>
         </div>

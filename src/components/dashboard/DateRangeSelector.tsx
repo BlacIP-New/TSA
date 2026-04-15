@@ -34,7 +34,7 @@ export function DateRangeSelector({
   }
 
   return (
-    <section className="rounded-3xl border border-gray-200 bg-white px-5 py-5 shadow-sm">
+    <section className="app-panel border-white/70 px-5 py-5">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div className="grid gap-4 sm:grid-cols-2 xl:min-w-[440px]">
           <Input
@@ -60,7 +60,7 @@ export function DateRangeSelector({
         <div className="flex flex-col gap-3 xl:items-end">
           <div className="flex flex-wrap items-center gap-2">
             <Button
-              variant="secondary"
+              variant="primary"
               size="sm"
               disabled={isLoading}
               onClick={() => onDateRangeChange(getCurrentMonthDateRange())}
@@ -77,14 +77,14 @@ export function DateRangeSelector({
             </Button>
           </div>
 
-          <div className="flex items-center gap-2 rounded-2xl bg-gray-50 p-1">
+          <div className="inline-flex items-center gap-2 rounded-[20px] border border-slate-200/80 bg-white/75 p-1.5 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
             <button
               type="button"
               disabled={isLoading}
-              className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+              className={`inline-flex items-center gap-2 rounded-2xl px-3.5 py-2 text-sm font-semibold transition-all ${
                 groupBy === 'day'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-800'
+                  ? 'bg-slate-900 text-white shadow-sm'
+                  : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
               }`}
               onClick={() => onGroupByChange('day')}
             >
@@ -94,10 +94,10 @@ export function DateRangeSelector({
             <button
               type="button"
               disabled={isLoading}
-              className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+              className={`inline-flex items-center gap-2 rounded-2xl px-3.5 py-2 text-sm font-semibold transition-all ${
                 groupBy === 'week'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-800'
+                  ? 'bg-slate-900 text-white shadow-sm'
+                  : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
               }`}
               onClick={() => onGroupByChange('week')}
             >

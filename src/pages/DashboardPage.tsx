@@ -25,9 +25,9 @@ export default function DashboardPage() {
       icon: <Wallet className="h-5 w-5" />,
     },
     {
-      label: 'Transaction Count',
+      label: 'Settlement Lines',
       value: (summary?.totalCount ?? 0).toLocaleString(),
-      helper: `Previous period: ${(summary?.previousPeriodCount ?? 0).toLocaleString()} transactions`,
+      helper: `Previous period: ${(summary?.previousPeriodCount ?? 0).toLocaleString()} lines`,
       change: summary?.countPercentageChange,
       icon: <Rows3 className="h-5 w-5" />,
     },
@@ -58,32 +58,36 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 p-5 lg:p-8">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-gray-950">Collection summary</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            {isAdmin
-              ? `Cross-MDA settled collections under ${user.aggregatorName}.`
-              : `${user.mdaName} scoped to collection ${user.collectionCode} and service ${user.serviceCode}.`}
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700">
-            <Activity className="h-3.5 w-3.5" />
-            Mock service data
+      <section className="app-panel-strong border-white/80 px-6 py-6">
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+          <div className="max-w-2xl">
+            <p className="app-kicker">Settlement Command Center</p>
+            <h1 className="mt-3 text-[32px] font-semibold tracking-[-0.06em] text-slate-950">
+              Collection summary
+            </h1>
+            <p className="mt-3 text-sm leading-6 text-slate-500">
+              {isAdmin
+                ? `Cross-MDA settled collections under ${user.aggregatorName}.`
+                : `${user.mdaName} scoped to collection ${user.collectionCode} and service ${user.serviceCode}.`}
+            </p>
           </div>
-          <Button
-            variant="secondary"
-            size="sm"
-            isLoading={isLoading}
-            leftIcon={<RefreshCcw className="h-4 w-4" />}
-            onClick={() => void refresh()}
-          >
-            Refresh
-          </Button>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="rounded-full border border-slate-200/80 bg-white/80 px-3.5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+              Mock settlement data
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              isLoading={isLoading}
+              leftIcon={<RefreshCcw className="h-4 w-4" />}
+              onClick={() => void refresh()}
+            >
+              Refresh
+            </Button>
+          </div>
         </div>
-      </div>
+      </section>
 
       <DateRangeSelector
         dateRange={dateRange}
@@ -94,7 +98,7 @@ export default function DashboardPage() {
       />
 
       {error && (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-2xl border border-red-200/80 bg-red-50/80 px-4 py-3 text-sm text-red-700">
           {error}
         </div>
       )}
@@ -115,36 +119,36 @@ export default function DashboardPage() {
       <div className="grid gap-4 2xl:grid-cols-[minmax(0,1.7fr)_minmax(320px,0.8fr)]">
         <SettlementTrendChart chart={chart} isLoading={isLoading} />
 
-        <section className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-sm font-semibold text-gray-950">Current scope</p>
-          <p className="mt-1 text-sm text-gray-500">
+        <section className="app-panel border-white/70 p-5">
+          <p className="text-base font-semibold text-slate-950">Current scope</p>
+          <p className="mt-1 text-sm text-slate-500">
             {isAdmin
               ? 'All dashboard metrics roll up across every MDA under the active aggregator.'
               : 'This view is already restricted to the signed-in MDA assignment.'}
           </p>
 
-          <dl className="mt-5 space-y-4">
-            <div className="rounded-2xl bg-gray-50 px-4 py-3">
-              <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Date window</dt>
-              <dd className="mt-1 text-sm font-medium text-gray-950">
+          <dl className="mt-5 space-y-3">
+            <div className="app-card px-4 py-3">
+              <dt className="app-kicker">Date window</dt>
+              <dd className="mt-2 text-sm font-semibold text-slate-950">
                 {formatDate(dateRange.from)} to {formatDate(dateRange.to)}
               </dd>
             </div>
-            <div className="rounded-2xl bg-gray-50 px-4 py-3">
-              <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Aggregator</dt>
-              <dd className="mt-1 text-sm font-medium text-gray-950">{user.aggregatorName}</dd>
+            <div className="app-card px-4 py-3">
+              <dt className="app-kicker">Aggregator</dt>
+              <dd className="mt-2 text-sm font-semibold text-slate-950">{user.aggregatorName}</dd>
             </div>
             {!isAdmin && (
-              <div className="rounded-2xl bg-gray-50 px-4 py-3">
-                <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Collection scope</dt>
-                <dd className="mt-1 text-sm font-medium text-gray-950">
+              <div className="app-card px-4 py-3">
+                <dt className="app-kicker">Collection scope</dt>
+                <dd className="mt-2 text-sm font-semibold text-slate-950">
                   {user.collectionCode} / {user.serviceCode}
                 </dd>
               </div>
             )}
-            <div className="rounded-2xl bg-gray-50 px-4 py-3">
-              <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Chart cadence</dt>
-              <dd className="mt-1 text-sm font-medium capitalize text-gray-950">{groupBy}</dd>
+            <div className="app-card px-4 py-3">
+              <dt className="app-kicker">Chart cadence</dt>
+              <dd className="mt-2 text-sm font-semibold capitalize text-slate-950">{groupBy}</dd>
             </div>
           </dl>
         </section>

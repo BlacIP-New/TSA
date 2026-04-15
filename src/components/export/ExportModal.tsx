@@ -31,14 +31,14 @@ export function ExportModal({
         <button
           type="button"
           disabled={isExporting}
-          className="rounded-3xl border border-gray-200 bg-white p-5 text-left transition-colors hover:border-[#E8001C]/40 hover:bg-red-50/40 disabled:cursor-not-allowed disabled:opacity-60"
+          className="app-card p-5 text-left transition-colors hover:border-sky-200/80 hover:bg-sky-50/50 disabled:cursor-not-allowed disabled:opacity-60"
           onClick={() => onSelectFormat('csv')}
         >
-          <div className="mb-4 inline-flex rounded-2xl bg-emerald-50 p-3 text-emerald-700">
+          <div className="mb-4 inline-flex rounded-2xl border border-slate-200/80 bg-slate-50 p-3 text-slate-700">
             <FileSpreadsheet className="h-5 w-5" />
           </div>
-          <p className="text-base font-semibold text-gray-950">CSV export</p>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="text-base font-semibold text-slate-950">CSV export</p>
+          <p className="mt-2 text-sm text-slate-500">
             Spreadsheet-friendly export of the current filtered settlement view.
           </p>
         </button>
@@ -46,14 +46,14 @@ export function ExportModal({
         <button
           type="button"
           disabled={isExporting}
-          className="rounded-3xl border border-gray-200 bg-white p-5 text-left transition-colors hover:border-[#E8001C]/40 hover:bg-red-50/40 disabled:cursor-not-allowed disabled:opacity-60"
+          className="app-card p-5 text-left transition-colors hover:border-sky-200/80 hover:bg-sky-50/50 disabled:cursor-not-allowed disabled:opacity-60"
           onClick={() => onSelectFormat('pdf')}
         >
-          <div className="mb-4 inline-flex rounded-2xl bg-blue-50 p-3 text-blue-700">
+          <div className="mb-4 inline-flex rounded-2xl border border-slate-200/80 bg-slate-50 p-3 text-slate-700">
             <FileText className="h-5 w-5" />
           </div>
-          <p className="text-base font-semibold text-gray-950">PDF report</p>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="text-base font-semibold text-slate-950">PDF report</p>
+          <p className="mt-2 text-sm text-slate-500">
             Paginated report with portal scope, timestamp, and page numbering.
           </p>
         </button>

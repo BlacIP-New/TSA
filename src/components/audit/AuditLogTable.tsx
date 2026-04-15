@@ -22,11 +22,11 @@ const actionLabels: Record<AuditEntry['action'], { label: string; variant: 'info
 
 export function AuditLogTable({ entries, isLoading = false }: AuditLogTableProps) {
   return (
-    <section className="rounded-3xl border border-gray-200 bg-white shadow-sm">
+    <section className="app-panel border-white/70">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-100">
+        <table className="app-data-table">
           <thead>
-            <tr className="text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">
+            <tr>
               <th className="px-5 py-4">Timestamp</th>
               <th className="px-5 py-4">User Email</th>
               <th className="px-5 py-4">Action Type</th>
@@ -34,19 +34,19 @@ export function AuditLogTable({ entries, isLoading = false }: AuditLogTableProps
               <th className="px-5 py-4">IP Address</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 text-sm">
+          <tbody className="divide-y divide-slate-200/80">
             {isLoading &&
               Array.from({ length: 8 }, (_, index) => (
                 <tr key={index}>
                   <td className="px-5 py-4" colSpan={5}>
-                    <div className="h-12 animate-pulse rounded-2xl bg-gray-100" />
+                    <div className="h-12 animate-pulse rounded-2xl bg-slate-100" />
                   </td>
                 </tr>
               ))}
 
             {!isLoading && entries.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-5 py-12 text-center text-sm text-gray-500">
+                <td colSpan={5} className="px-5 py-12 text-center text-sm text-slate-500">
                   No audit records matched the current filters.
                 </td>
               </tr>
@@ -55,18 +55,18 @@ export function AuditLogTable({ entries, isLoading = false }: AuditLogTableProps
             {!isLoading &&
               entries.map((entry) => (
                 <tr key={entry.id} className="align-top">
-                  <td className="px-5 py-4 text-gray-600">{formatDateTime(entry.timestamp)}</td>
+                  <td className="px-5 py-4 text-slate-600">{formatDateTime(entry.timestamp)}</td>
                   <td className="px-5 py-4">
                     <div>
-                      <p className="font-medium text-gray-950">{entry.userEmail}</p>
-                      <p className="mt-1 text-xs text-gray-500">{entry.userName}</p>
+                      <p className="font-semibold text-slate-950">{entry.userEmail}</p>
+                      <p className="mt-1 text-xs text-slate-500">{entry.userName}</p>
                     </div>
                   </td>
                   <td className="px-5 py-4">
                     <Badge variant={actionLabels[entry.action].variant}>{actionLabels[entry.action].label}</Badge>
                   </td>
-                  <td className="px-5 py-4 text-gray-600">{entry.details}</td>
-                  <td className="px-5 py-4 text-gray-600">{entry.ipAddress}</td>
+                  <td className="px-5 py-4 text-slate-600">{entry.details}</td>
+                  <td className="px-5 py-4 font-mono text-xs text-slate-500">{entry.ipAddress}</td>
                 </tr>
               ))}
           </tbody>

@@ -7,19 +7,17 @@ interface SettlementTrendChartProps {
 }
 
 function buildLinePath(points: { x: number; y: number }[]) {
-  return points
-    .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`)
-    .join(' ');
+  return points.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`).join(' ');
 }
 
 export function SettlementTrendChart({ chart, isLoading = false }: SettlementTrendChartProps) {
   if (isLoading) {
     return (
-      <section className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+      <section className="app-panel border-white/70 p-5">
         <div className="animate-pulse space-y-4">
-          <div className="h-4 w-36 rounded-full bg-gray-200" />
-          <div className="h-8 w-48 rounded-full bg-gray-200" />
-          <div className="h-64 rounded-3xl bg-gray-100" />
+          <div className="h-4 w-36 rounded-full bg-slate-200" />
+          <div className="h-8 w-48 rounded-full bg-slate-200" />
+          <div className="h-64 rounded-[28px] bg-slate-100" />
         </div>
       </section>
     );
@@ -27,9 +25,9 @@ export function SettlementTrendChart({ chart, isLoading = false }: SettlementTre
 
   if (!chart || chart.points.length === 0) {
     return (
-      <section className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
-        <p className="text-sm font-semibold text-gray-900">Settlement trend</p>
-        <p className="mt-2 text-sm text-gray-500">No settled transactions were found for the selected range.</p>
+      <section className="app-panel border-white/70 p-5">
+        <p className="text-base font-semibold text-slate-950">Settlement trend</p>
+        <p className="mt-2 text-sm text-slate-500">No settled transactions were found for the selected range.</p>
       </section>
     );
   }
@@ -42,12 +40,8 @@ export function SettlementTrendChart({ chart, isLoading = false }: SettlementTre
   const maxValue = Math.max(...chart.points.map((point) => point.value), 1);
   const step = chart.points.length > 1 ? chartWidth / (chart.points.length - 1) : chartWidth / 2;
   const points = chart.points.map((point, index) => {
-    const x =
-      chart.points.length > 1
-        ? padding.left + index * step
-        : padding.left + chartWidth / 2;
+    const x = chart.points.length > 1 ? padding.left + index * step : padding.left + chartWidth / 2;
     const y = padding.top + chartHeight - (point.value / maxValue) * chartHeight;
-
     return { x, y, value: point.value };
   });
 
@@ -56,18 +50,20 @@ export function SettlementTrendChart({ chart, isLoading = false }: SettlementTre
   const labelInterval = Math.max(1, Math.ceil(chart.points.length / 6));
 
   return (
-    <section className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <section className="app-panel border-white/70 p-5">
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-sm font-semibold text-gray-950">Settlement trend</p>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="text-base font-semibold text-slate-950">Settlement trend</p>
+          <p className="mt-1 text-sm text-slate-500">
             {chart.groupBy === 'day' ? 'Daily' : 'Weekly'} settled volume across the selected range
           </p>
         </div>
-        <div className="rounded-2xl bg-gray-50 px-4 py-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Range total</p>
-          <p className="mt-1 text-lg font-semibold text-gray-950">{formatCompactCurrency(chart.totalAmount)}</p>
-          <p className="text-sm text-gray-500">{chart.totalCount.toLocaleString()} settled transactions</p>
+        <div className="rounded-[22px] border border-slate-200/80 bg-slate-50/80 px-4 py-3">
+          <p className="app-kicker">Range total</p>
+          <p className="mt-1 text-lg font-semibold text-slate-950 tabular-nums">
+            {formatCompactCurrency(chart.totalAmount)}
+          </p>
+          <p className="text-sm text-slate-500">{chart.totalCount.toLocaleString()} settled lines</p>
         </div>
       </div>
 
@@ -82,7 +78,7 @@ export function SettlementTrendChart({ chart, isLoading = false }: SettlementTre
                 y1={y}
                 x2={width - padding.right}
                 y2={y}
-                stroke="#e5e7eb"
+                stroke="#dbe3ee"
                 strokeDasharray="6 8"
               />
             );
@@ -98,13 +94,13 @@ export function SettlementTrendChart({ chart, isLoading = false }: SettlementTre
                 width={barWidth}
                 height={padding.top + chartHeight - point.y}
                 rx={barWidth / 2}
-                fill={index === chart.points.length - 1 ? '#E8001C' : 'rgba(232, 0, 28, 0.12)'}
+                fill={index === chart.points.length - 1 ? '#8bbdff' : 'rgba(148, 163, 184, 0.22)'}
               />
             );
           })}
 
-          <path d={areaPath} fill="rgba(232, 0, 28, 0.10)" />
-          <path d={linePath} fill="none" stroke="#7f1d1d" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+          <path d={areaPath} fill="rgba(125, 183, 255, 0.12)" />
+          <path d={linePath} fill="none" stroke="#334155" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
 
           {points.map((point, index) => (
             <circle
@@ -112,22 +108,22 @@ export function SettlementTrendChart({ chart, isLoading = false }: SettlementTre
               cx={point.x}
               cy={point.y}
               r={5}
-              fill={index === chart.points.length - 1 ? '#E8001C' : '#ffffff'}
-              stroke="#7f1d1d"
+              fill={index === chart.points.length - 1 ? '#8bbdff' : '#ffffff'}
+              stroke="#334155"
               strokeWidth="2"
             />
           ))}
         </svg>
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-500">
+      <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-slate-500">
         {chart.points.map((point, index) => {
           if (index !== 0 && index !== chart.points.length - 1 && index % labelInterval !== 0) {
             return null;
           }
 
           return (
-            <span key={`${point.label}-axis`} className="rounded-full bg-gray-50 px-2.5 py-1">
+            <span key={`${point.label}-axis`} className="rounded-full border border-slate-200/80 bg-white/70 px-2.5 py-1">
               {point.label}
             </span>
           );

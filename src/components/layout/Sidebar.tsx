@@ -43,89 +43,80 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const filteredNav = navItems.filter((item) => !item.adminOnly || isAdmin);
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-gray-900 text-white">
-      <div className="flex items-center justify-between px-5 py-5 border-b border-white/10">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-md bg-[#E8001C] flex items-center justify-center">
-            <span className="text-white font-black text-xs">e</span>
+    <div className="flex h-full flex-col border-r border-slate-200/80 bg-white/72 text-slate-900 backdrop-blur-xl">
+      <div className="flex items-center justify-between border-b border-slate-200/70 px-5 py-5">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-2xl border border-sky-200/80 bg-sky-100 text-sm font-extrabold text-sky-800 shadow-[0_10px_20px_rgba(125,183,255,0.18)]">
+            e
           </div>
-          <span className="font-semibold text-white tracking-tight text-base">
-            <span className="text-[#E8001C]">e</span>tranzact
-          </span>
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Operations</p>
+            <p className="text-base font-semibold tracking-[-0.03em] text-slate-900">eTranzact Console</p>
+          </div>
         </div>
         <button
           onClick={onClose}
-          className="lg:hidden text-gray-400 hover:text-white transition-colors cursor-pointer"
+          className="rounded-xl p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 lg:hidden"
         >
-          <X className="w-5 h-5" />
+          <X className="h-5 w-5" />
         </button>
       </div>
 
-      <div className="px-4 py-4 border-b border-white/10">
-        <div className="flex items-center gap-3 bg-white/5 rounded-xl p-3">
-          <div className="w-9 h-9 rounded-full bg-[#E8001C]/20 border border-[#E8001C]/30 flex items-center justify-center shrink-0">
-            <span className="text-[#E8001C] font-bold text-sm">
+      <div className="border-b border-slate-200/70 px-4 py-4">
+        <div className="rounded-[24px] border border-slate-200/70 bg-slate-50/80 p-3.5">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-900 text-sm font-bold text-white">
               {user?.name?.charAt(0).toUpperCase()}
-            </span>
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-slate-900">{user?.name}</p>
+              <p className="truncate text-xs text-slate-500">{user?.email}</p>
+            </div>
           </div>
-          <div className="min-w-0">
-            <p className="text-sm font-medium text-white truncate">{user?.name}</p>
-            <p className="text-xs text-gray-400 truncate">{user?.email}</p>
+          <div className="mt-3">
+            <Badge variant={isAdmin ? 'info' : 'neutral'} dot>
+              {isAdmin ? 'Aggregator Admin' : 'MDA Viewer'}
+            </Badge>
           </div>
-        </div>
-        <div className="mt-2 px-1">
-          <Badge variant={isAdmin ? 'warning' : 'info'} dot>
-            {isAdmin ? 'Aggregator Admin' : 'MDA Viewer'}
-          </Badge>
         </div>
       </div>
 
-      {!isAdmin && user?.mdaName && (
-        <div className="px-5 py-3 border-b border-white/10">
-          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-2">Your MDA</p>
-          <p className="text-sm text-white font-medium truncate">{user.mdaName}</p>
-          <div className="flex gap-3 mt-1">
-            <span className="text-xs text-gray-400">
-              Code: <span className="text-gray-300">{user.collectionCode}</span>
-            </span>
-            <span className="text-xs text-gray-400">
-              SVC: <span className="text-gray-300">{user.serviceCode}</span>
-            </span>
-          </div>
-        </div>
-      )}
-
-      {isAdmin && user?.aggregatorName && (
-        <div className="px-5 py-3 border-b border-white/10">
-          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-1">Aggregator</p>
-          <p className="text-sm text-white font-medium truncate">{user.aggregatorName}</p>
-        </div>
-      )}
-
-      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider px-2 mb-2">
-          Navigation
+      <div className="border-b border-slate-200/70 px-5 py-4">
+        <p className="app-kicker">Scope</p>
+        <p className="mt-2 text-sm font-semibold text-slate-900">
+          {isAdmin ? user?.aggregatorName : user?.mdaName}
         </p>
+        {!isAdmin && (
+          <p className="mt-1 text-xs text-slate-500">
+            {user?.collectionCode} / {user?.serviceCode}
+          </p>
+        )}
+      </div>
+
+      <nav className="scrollbar-thin flex-1 space-y-1 overflow-y-auto px-3 py-4">
+        <p className="app-kicker px-3 pb-2">Workspace</p>
         {filteredNav.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             onClick={onClose}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors group ${
+              `group flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold tracking-[-0.01em] transition-all ${
                 isActive
-                  ? 'bg-[#E8001C] text-white'
-                  : 'text-gray-300 hover:bg-white/10 hover:text-white'
+                  ? 'border border-sky-200/80 bg-sky-50 text-sky-900 shadow-[0_10px_22px_rgba(125,183,255,0.14)]'
+                  : 'border border-transparent text-slate-600 hover:border-slate-200/80 hover:bg-white/75 hover:text-slate-900'
               }`
             }
           >
             {({ isActive }) => (
               <>
-                <item.icon className="w-4.5 h-4.5 shrink-0" />
+                <item.icon className={`h-4.5 w-4.5 shrink-0 ${isActive ? 'text-sky-700' : 'text-slate-400 group-hover:text-slate-700'}`} />
                 <span className="flex-1">{item.label}</span>
                 <ChevronRight
-                  className={`w-3.5 h-3.5 transition-transform ${
-                    isActive ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-1 group-hover:opacity-50 group-hover:translate-x-0'
+                  className={`h-3.5 w-3.5 transition-all ${
+                    isActive
+                      ? 'translate-x-0 opacity-100 text-sky-700'
+                      : '-translate-x-1 opacity-0 text-slate-300 group-hover:translate-x-0 group-hover:opacity-70'
                   }`}
                 />
               </>
@@ -134,12 +125,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         ))}
       </nav>
 
-      <div className="px-3 py-4 border-t border-white/10">
+      <div className="border-t border-slate-200/70 px-3 py-4">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+          className="flex w-full items-center gap-3 rounded-2xl border border-transparent px-3 py-3 text-sm font-semibold text-slate-600 transition-all hover:border-slate-200/80 hover:bg-white/75 hover:text-slate-900"
         >
-          <LogOut className="w-4.5 h-4.5" />
+          <LogOut className="h-4.5 w-4.5 text-slate-400" />
           Sign out
         </button>
       </div>
@@ -150,14 +141,14 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     <>
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          className="fixed inset-0 z-30 bg-slate-950/18 backdrop-blur-[1px] lg:hidden"
           onClick={onClose}
         />
       )}
 
       <aside
         className={`
-          fixed inset-y-0 left-0 z-40 w-64 transition-transform duration-300 ease-in-out
+          fixed inset-y-0 left-0 z-40 w-[288px] transition-transform duration-300 ease-in-out
           lg:relative lg:translate-x-0 lg:z-auto
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         `}

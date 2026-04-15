@@ -235,14 +235,14 @@ export function InviteMDAModal({
         </div>
 
         {selectedMDA && (
-          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
+          <div className="app-card p-4">
             <div className="flex items-start gap-3">
-              <div className="rounded-2xl bg-white p-2 text-[#E8001C]">
+              <div className="rounded-2xl border border-slate-200/80 bg-white p-2 text-slate-600">
                 <Building2 className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-950">{selectedMDA.mdaName}</p>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="text-sm font-semibold text-slate-950">{selectedMDA.mdaName}</p>
+                <p className="mt-1 text-sm text-slate-500">
                   Invitations created here are restricted to {selectedMDA.mdaCode} plus one collection code and one service code.
                 </p>
               </div>

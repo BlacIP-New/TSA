@@ -23,37 +23,37 @@ export function Input({
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
-        <label htmlFor={inputId} className="text-sm font-medium text-gray-700">
+        <label htmlFor={inputId} className="text-[12px] font-semibold uppercase tracking-[0.16em] text-slate-500">
           {label}
         </label>
       )}
       <div className="relative flex items-center">
         {leftAddon && (
-          <span className="absolute left-3 text-gray-400 pointer-events-none">{leftAddon}</span>
+          <span className="pointer-events-none absolute left-3.5 text-slate-400">{leftAddon}</span>
         )}
         <input
           id={inputId}
           className={`
-            w-full h-10 rounded-lg border bg-white text-sm text-gray-900
-            placeholder:text-gray-400 outline-none transition-colors
-            focus:ring-2 focus:ring-offset-0
+            h-11 w-full rounded-2xl border bg-white/80 text-sm font-medium text-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]
+            placeholder:text-slate-400 outline-none transition-all
+            focus:ring-4 focus:ring-offset-0
             ${error
-              ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
-              : 'border-gray-200 focus:border-[#E8001C] focus:ring-[#E8001C]/10'
+              ? 'border-red-300 focus:border-red-400 focus:ring-red-100'
+              : 'border-slate-200/80 focus:border-sky-300 focus:ring-sky-100'
             }
-            ${leftAddon ? 'pl-9' : 'pl-3.5'}
-            ${rightAddon ? 'pr-10' : 'pr-3.5'}
-            disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed
+            ${leftAddon ? 'pl-10' : 'pl-4'}
+            ${rightAddon ? 'pr-11' : 'pr-4'}
+            disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed
             ${className}
           `}
           {...props}
         />
         {rightAddon && (
-          <span className="absolute right-3 text-gray-400">{rightAddon}</span>
+          <span className="absolute right-3.5 text-slate-400">{rightAddon}</span>
         )}
       </div>
       {error && <p className="text-xs text-red-500">{error}</p>}
-      {hint && !error && <p className="text-xs text-gray-500">{hint}</p>}
+      {hint && !error && <p className="text-xs text-slate-500">{hint}</p>}
     </div>
   );
 }

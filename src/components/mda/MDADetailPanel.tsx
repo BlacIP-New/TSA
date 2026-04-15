@@ -19,25 +19,25 @@ function DetailList({
   emptyLabel: string;
 }) {
   return (
-    <section className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+    <section className="app-panel border-white/70 p-5">
       <div className="flex items-center gap-2">
-        <div className="rounded-2xl bg-[#E8001C]/8 p-2 text-[#E8001C]">{icon}</div>
+        <div className="rounded-2xl border border-slate-200/80 bg-slate-50 p-2 text-slate-600">{icon}</div>
         <div>
-          <h3 className="text-sm font-semibold text-gray-950">{title}</h3>
-          <p className="mt-1 text-sm text-gray-500">{items.length} configured</p>
+          <h3 className="text-sm font-semibold text-slate-950">{title}</h3>
+          <p className="mt-1 text-sm text-slate-500">{items.length} configured</p>
         </div>
       </div>
 
       <div className="mt-4 space-y-3">
         {items.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-gray-200 px-4 py-6 text-sm text-gray-500">
+          <div className="rounded-2xl border border-dashed border-slate-200 px-4 py-6 text-sm text-slate-500">
             {emptyLabel}
           </div>
         ) : (
           items.map((item) => (
-            <div key={item.primary} className="rounded-2xl bg-gray-50 px-4 py-3">
-              <p className="font-medium text-gray-950">{item.primary}</p>
-              {item.secondary && <p className="mt-1 text-sm text-gray-500">{item.secondary}</p>}
+            <div key={item.primary} className="app-card px-4 py-3">
+              <p className="font-semibold text-slate-950">{item.primary}</p>
+              {item.secondary && <p className="mt-1 text-sm text-slate-500">{item.secondary}</p>}
             </div>
           ))
         )}
@@ -51,7 +51,7 @@ export function MDADetailPanel({ detail, isLoading = false }: MDADetailPanelProp
     return (
       <div className="grid gap-4 lg:grid-cols-2">
         {Array.from({ length: 2 }, (_, index) => (
-          <div key={index} className="h-64 animate-pulse rounded-3xl bg-gray-100" />
+          <div key={index} className="h-64 animate-pulse rounded-3xl bg-slate-100" />
         ))}
       </div>
     );
@@ -59,7 +59,7 @@ export function MDADetailPanel({ detail, isLoading = false }: MDADetailPanelProp
 
   if (!detail) {
     return (
-      <div className="rounded-3xl border border-dashed border-gray-200 bg-white px-5 py-12 text-center text-sm text-gray-500 shadow-sm">
+      <div className="app-panel border-dashed border-slate-200 px-5 py-12 text-center text-sm text-slate-500">
         Select an MDA to inspect its registry details.
       </div>
     );
@@ -67,31 +67,31 @@ export function MDADetailPanel({ detail, isLoading = false }: MDADetailPanelProp
 
   return (
     <div className="space-y-4">
-      <section className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+      <section className="app-panel border-white/70 p-5">
         <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Active MDA</p>
-            <h2 className="mt-2 text-xl font-semibold tracking-tight text-gray-950">
+            <p className="app-kicker">Active MDA</p>
+            <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">
               {detail.record.mdaCode}
             </h2>
-            <p className="mt-1 text-sm text-gray-500">{detail.record.mdaName}</p>
+            <p className="mt-1 text-sm text-slate-500">{detail.record.mdaName}</p>
           </div>
           <div className="grid grid-cols-2 gap-3 text-sm">
-            <div className="rounded-2xl bg-gray-50 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Collections</p>
-              <p className="mt-2 font-semibold text-gray-950">{detail.record.collectionCount}</p>
+            <div className="app-card px-4 py-3">
+              <p className="app-kicker">Collections</p>
+              <p className="mt-2 font-semibold text-slate-950">{detail.record.collectionCount}</p>
             </div>
-            <div className="rounded-2xl bg-gray-50 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Services</p>
-              <p className="mt-2 font-semibold text-gray-950">{detail.record.serviceCount}</p>
+            <div className="app-card px-4 py-3">
+              <p className="app-kicker">Services</p>
+              <p className="mt-2 font-semibold text-slate-950">{detail.record.serviceCount}</p>
             </div>
-            <div className="rounded-2xl bg-gray-50 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Active Users</p>
-              <p className="mt-2 font-semibold text-gray-950">{detail.record.activeUserCount}</p>
+            <div className="app-card px-4 py-3">
+              <p className="app-kicker">Active Users</p>
+              <p className="mt-2 font-semibold text-slate-950">{detail.record.activeUserCount}</p>
             </div>
-            <div className="rounded-2xl bg-gray-50 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Total Users</p>
-              <p className="mt-2 font-semibold text-gray-950">{detail.record.totalUserCount}</p>
+            <div className="app-card px-4 py-3">
+              <p className="app-kicker">Total Users</p>
+              <p className="mt-2 font-semibold text-slate-950">{detail.record.totalUserCount}</p>
             </div>
           </div>
         </div>
@@ -118,14 +118,14 @@ export function MDADetailPanel({ detail, isLoading = false }: MDADetailPanelProp
         />
       </div>
 
-      <div className="rounded-3xl border border-red-100 bg-gradient-to-r from-red-50 via-white to-white p-5 shadow-sm">
+      <div className="app-panel border-white/70 p-5">
         <div className="flex items-start gap-3">
-          <div className="rounded-2xl bg-white p-2 text-[#E8001C]">
+          <div className="rounded-2xl border border-slate-200/80 bg-slate-50 p-2 text-slate-600">
             <UserRound className="h-5 w-5" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-gray-950">Scope model</p>
-            <p className="mt-1 text-sm text-gray-600">
+            <p className="text-sm font-semibold text-slate-950">Scope model</p>
+            <p className="mt-1 text-sm text-slate-600">
               Users under this MDA can be assigned one collection code and one independently selected service code.
             </p>
           </div>

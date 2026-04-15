@@ -70,8 +70,7 @@ export default function MDAManagementPage() {
   );
 
   const selectedCollection = useMemo(
-    () =>
-      selectedMDADetail?.collections.find((entry) => entry.code === selectedCollectionCode) ?? null,
+    () => selectedMDADetail?.collections.find((entry) => entry.code === selectedCollectionCode) ?? null,
     [selectedCollectionCode, selectedMDADetail?.collections],
   );
 
@@ -157,21 +156,23 @@ export default function MDAManagementPage() {
   return (
     <>
       <div className="space-y-6 p-5 lg:p-8">
-        <div>
-          <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-gray-950">MDA management</h1>
-              <p className="mt-1 text-sm text-gray-500">
-                Admin-only workspace for MDA registry visibility, collection settlements, and MDA user access.
+        <section className="app-panel-strong border-white/80 px-6 py-6">
+          <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+            <div className="max-w-2xl">
+              <p className="app-kicker">MDA Operations</p>
+              <h1 className="mt-3 text-[32px] font-semibold tracking-[-0.06em] text-slate-950">
+                MDA management
+              </h1>
+              <p className="mt-3 text-sm leading-6 text-slate-500">
+                Admin workspace for MDA registry visibility, collection settlements, and MDA user access.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700">
-                <ShieldCheck className="h-3.5 w-3.5" />
+              <div className="rounded-full border border-slate-200/80 bg-white/80 px-3.5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
                 {user.aggregatorName}
               </div>
               <Button
-                variant="secondary"
+                variant="primary"
                 size="sm"
                 isLoading={isLoading}
                 leftIcon={<RefreshCcw className="h-4 w-4" />}
@@ -181,76 +182,69 @@ export default function MDAManagementPage() {
               </Button>
             </div>
           </div>
-        </div>
+        </section>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
-            <div className="flex items-center gap-2 text-[#E8001C]">
+          <div className="app-panel border-white/70 p-5">
+            <div className="flex items-center gap-2 text-slate-600">
               <Building2 className="h-4 w-4" />
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Total MDAs</p>
+              <p className="app-kicker">Total MDAs</p>
             </div>
-            <p className="mt-2 text-2xl font-semibold tracking-tight text-gray-950">{mdas.length}</p>
-            <p className="mt-1 text-sm text-gray-500">Admin-visible MDA registry entries</p>
+            <p className="mt-3 text-[30px] font-semibold tracking-[-0.05em] text-slate-950 tabular-nums">{mdas.length}</p>
+            <p className="mt-2 text-sm text-slate-500">Admin-visible MDA registry entries</p>
           </div>
-          <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
-            <div className="flex items-center gap-2 text-emerald-600">
+          <div className="app-panel border-white/70 p-5">
+            <div className="flex items-center gap-2 text-slate-600">
               <FolderKanban className="h-4 w-4" />
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Selected collections</p>
+              <p className="app-kicker">Selected collections</p>
             </div>
-            <p className="mt-2 text-2xl font-semibold tracking-tight text-gray-950">
+            <p className="mt-3 text-[30px] font-semibold tracking-[-0.05em] text-slate-950 tabular-nums">
               {selectedMDADetail?.collections.length ?? 0}
             </p>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-slate-500">
               {selectedMDA ? `Under ${selectedMDA.mdaCode}` : 'Choose an MDA to inspect its collections'}
             </p>
           </div>
-          <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
-            <div className="flex items-center gap-2 text-blue-600">
+          <div className="app-panel border-white/70 p-5">
+            <div className="flex items-center gap-2 text-slate-600">
               <Activity className="h-4 w-4" />
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Settlement batches</p>
+              <p className="app-kicker">Settlement batches</p>
             </div>
-            <p className="mt-2 text-2xl font-semibold tracking-tight text-gray-950">{settlementResult.total}</p>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-3 text-[30px] font-semibold tracking-[-0.05em] text-slate-950 tabular-nums">{settlementResult.total}</p>
+            <p className="mt-2 text-sm text-slate-500">
               {selectedCollection ? `${selectedCollection.code} currently selected` : 'Select a collection code'}
             </p>
           </div>
-          <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
-            <div className="flex items-center gap-2 text-amber-600">
+          <div className="app-panel border-white/70 p-5">
+            <div className="flex items-center gap-2 text-slate-600">
               <UsersRound className="h-4 w-4" />
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Scoped users</p>
+              <p className="app-kicker">Scoped users</p>
             </div>
-            <p className="mt-2 text-2xl font-semibold tracking-tight text-gray-950">{statusSummary.total}</p>
-            <p className="mt-1 text-sm text-gray-500">
-              Users currently mapped to the selected MDA
-            </p>
+            <p className="mt-3 text-[30px] font-semibold tracking-[-0.05em] text-slate-950 tabular-nums">{statusSummary.total}</p>
+            <p className="mt-2 text-sm text-slate-500">Users currently mapped to the selected MDA</p>
           </div>
         </div>
 
         {(pageAlert || error || settlementError) && (
           <Alert
             variant={pageAlert?.variant ?? 'error'}
-            message={
-              pageAlert?.message ??
-              settlementError ??
-              error ??
-              'Unable to load MDA management data right now.'
-            }
+            message={pageAlert?.message ?? settlementError ?? error ?? 'Unable to load MDA management data right now.'}
           />
         )}
 
-        <div className="rounded-3xl border border-red-100 bg-gradient-to-r from-red-50 via-white to-white p-5 shadow-sm">
+        <section className="app-panel border-white/70 p-5">
           <div className="flex items-start gap-3">
-            <div className="rounded-2xl bg-white p-2 text-[#E8001C]">
-              <Activity className="h-5 w-5" />
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50 p-2 text-slate-600">
+              <ShieldCheck className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-950">Scope enforcement</p>
-              <p className="mt-1 text-sm text-gray-600">
-                Users are now bound to one MDA, one collection code, and one independently selected service code. Collection settlements shown here remain filtered strictly to the selected collection.
+              <p className="text-sm font-semibold text-slate-950">Scope enforcement</p>
+              <p className="mt-1 text-sm text-slate-600">
+                Users are bound to one MDA, one collection code, and one independently selected service code. Collection settlements shown here remain filtered strictly to the selected collection.
               </p>
             </div>
           </div>
-        </div>
+        </section>
 
         <MDATabNavigation activeTab={activeTab} onChange={setActiveTab} />
 
@@ -269,12 +263,12 @@ export default function MDAManagementPage() {
         {activeTab === 'collections' && (
           <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
             <div className="space-y-4">
-              <section className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Selected MDA</p>
-                <h2 className="mt-2 text-xl font-semibold tracking-tight text-gray-950">
+              <section className="app-panel border-white/70 p-5">
+                <p className="app-kicker">Selected MDA</p>
+                <h2 className="mt-3 text-xl font-semibold tracking-[-0.04em] text-slate-950">
                   {selectedMDA?.mdaCode ?? 'No MDA selected'}
                 </h2>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-2 text-sm text-slate-500">
                   {selectedMDA?.mdaName ?? 'Choose an MDA from the registry tab to inspect its collections.'}
                 </p>
               </section>
@@ -288,25 +282,25 @@ export default function MDAManagementPage() {
             </div>
 
             <div className="space-y-4">
-              <section className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+              <section className="app-panel border-white/70 p-5">
                 <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Collection settlement scope</p>
-                    <h2 className="mt-2 text-xl font-semibold tracking-tight text-gray-950">
+                    <p className="app-kicker">Collection settlement scope</p>
+                    <h2 className="mt-3 text-xl font-semibold tracking-[-0.04em] text-slate-950">
                       {selectedCollection?.code ?? 'Select a collection code'}
                     </h2>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-2 text-sm text-slate-500">
                       {selectedCollection?.name ?? 'Settlement batches for the selected collection code will appear here.'}
                     </p>
                   </div>
                   <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div className="rounded-2xl bg-gray-50 px-4 py-3">
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Batches</p>
-                      <p className="mt-2 font-semibold text-gray-950">{settlementResult.total}</p>
+                    <div className="app-card px-4 py-3">
+                      <p className="app-kicker">Batches</p>
+                      <p className="mt-2 font-semibold text-slate-950 tabular-nums">{settlementResult.total}</p>
                     </div>
-                    <div className="rounded-2xl bg-gray-50 px-4 py-3">
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Total amount</p>
-                      <p className="mt-2 font-semibold text-gray-950">{formatCompactCurrency(selectedCollectionTotal)}</p>
+                    <div className="app-card px-4 py-3">
+                      <p className="app-kicker">Total amount</p>
+                      <p className="mt-2 font-semibold text-slate-950 tabular-nums">{formatCompactCurrency(selectedCollectionTotal)}</p>
                     </div>
                   </div>
                 </div>
@@ -325,27 +319,27 @@ export default function MDAManagementPage() {
         {activeTab === 'users' && (
           <div className="space-y-6">
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Selected MDA</p>
-                <p className="mt-2 text-lg font-semibold tracking-tight text-gray-950">
+              <div className="app-panel border-white/70 p-5">
+                <p className="app-kicker">Selected MDA</p>
+                <p className="mt-3 text-lg font-semibold tracking-[-0.04em] text-slate-950">
                   {selectedMDA?.mdaCode ?? 'Not selected'}
                 </p>
-                <p className="mt-1 text-sm text-gray-500">{selectedMDA?.mdaName ?? 'Select an MDA to scope this tab.'}</p>
+                <p className="mt-2 text-sm text-slate-500">{selectedMDA?.mdaName ?? 'Select an MDA to scope this tab.'}</p>
               </div>
-              <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Pending invites</p>
-                <p className="mt-2 text-2xl font-semibold tracking-tight text-gray-950">{statusSummary.pending}</p>
-                <p className="mt-1 text-sm text-gray-500">Awaiting first login and activation</p>
+              <div className="app-panel border-white/70 p-5">
+                <p className="app-kicker">Pending invites</p>
+                <p className="mt-3 text-[30px] font-semibold tracking-[-0.05em] text-slate-950 tabular-nums">{statusSummary.pending}</p>
+                <p className="mt-2 text-sm text-slate-500">Awaiting first login and activation</p>
               </div>
-              <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Active users</p>
-                <p className="mt-2 text-2xl font-semibold tracking-tight text-gray-950">{statusSummary.active}</p>
-                <p className="mt-1 text-sm text-gray-500">Currently allowed into the portal</p>
+              <div className="app-panel border-white/70 p-5">
+                <p className="app-kicker">Active users</p>
+                <p className="mt-3 text-[30px] font-semibold tracking-[-0.05em] text-slate-950 tabular-nums">{statusSummary.active}</p>
+                <p className="mt-2 text-sm text-slate-500">Currently allowed into the portal</p>
               </div>
-              <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Inactive users</p>
-                <p className="mt-2 text-2xl font-semibold tracking-tight text-gray-950">{statusSummary.inactive}</p>
-                <p className="mt-1 text-sm text-gray-500">Disabled until reactivation</p>
+              <div className="app-panel border-white/70 p-5">
+                <p className="app-kicker">Inactive users</p>
+                <p className="mt-3 text-[30px] font-semibold tracking-[-0.05em] text-slate-950 tabular-nums">{statusSummary.inactive}</p>
+                <p className="mt-2 text-sm text-slate-500">Disabled until reactivation</p>
               </div>
             </div>
 

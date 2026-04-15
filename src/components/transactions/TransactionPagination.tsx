@@ -33,22 +33,22 @@ export function TransactionPagination({
   const visiblePages = getVisiblePages(page, totalPages);
 
   return (
-    <div className="flex flex-col gap-4 rounded-3xl border border-gray-200 bg-white p-5 shadow-sm lg:flex-row lg:items-center lg:justify-between">
+    <div className="app-panel border-white/70 flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between">
       <div>
-        <p className="text-sm font-medium text-gray-950">
-          Showing {start}-{end} of {total.toLocaleString()} transactions
+        <p className="text-sm font-semibold text-slate-950">
+          Showing {start}-{end} of {total.toLocaleString()} records
         </p>
-        <p className="mt-1 text-sm text-gray-500">Results remain in reverse chronological order.</p>
+        <p className="mt-1 text-sm text-slate-500">Results remain in reverse chronological order.</p>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         {!hidePageSize && (
-          <label className="flex items-center gap-2 text-sm text-gray-600">
+          <label className="flex items-center gap-2 text-sm text-slate-600">
             Rows
             <select
               value={limit}
               disabled={isLoading}
-              className="h-9 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-900 outline-none focus:border-[#E8001C] focus:ring-2 focus:ring-[#E8001C]/10"
+              className="h-9 rounded-2xl border border-slate-200/80 bg-white/80 px-3 text-sm font-medium text-slate-900 outline-none focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
               onChange={(event) => onLimitChange(Number(event.target.value) as PageSizeOption)}
             >
               <option value={25}>25</option>
@@ -75,10 +75,10 @@ export function TransactionPagination({
                 key={visiblePage}
                 type="button"
                 disabled={isLoading}
-                className={`h-9 min-w-9 rounded-lg px-3 text-sm font-medium transition-colors ${
+                className={`h-9 min-w-9 rounded-2xl px-3 text-sm font-semibold transition-colors ${
                   visiblePage === page
-                    ? 'bg-[#E8001C] text-white'
-                    : 'bg-white text-gray-600 hover:bg-gray-100'
+                    ? 'border border-sky-200/80 bg-sky-100 text-sky-900'
+                    : 'bg-white/70 text-slate-600 hover:bg-slate-100'
                 }`}
                 onClick={() => onPageChange(visiblePage)}
               >
@@ -87,7 +87,7 @@ export function TransactionPagination({
             ))}
           </div>
 
-          <span className="text-sm font-medium text-gray-600 sm:hidden">
+          <span className="text-sm font-medium text-slate-600 sm:hidden">
             Page {page} of {totalPages}
           </span>
 

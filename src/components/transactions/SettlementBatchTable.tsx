@@ -18,11 +18,11 @@ export function SettlementBatchTable({
   const columnCount = isAdmin ? 7 : 6;
 
   return (
-    <section className="rounded-3xl border border-gray-200 bg-white shadow-sm">
+    <section className="app-panel border-white/70">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-100">
+        <table className="app-data-table">
           <thead>
-            <tr className="text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">
+            <tr>
               <th className="px-5 py-4">Settled Date</th>
               <th className="px-5 py-4">Batch ID</th>
               {isAdmin && <th className="px-5 py-4">MDA Name</th>}
@@ -32,19 +32,19 @@ export function SettlementBatchTable({
               <th className="px-5 py-4">Total Amount</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 text-sm">
+          <tbody className="divide-y divide-slate-200/80">
             {isLoading &&
               Array.from({ length: 8 }, (_, index) => (
                 <tr key={index}>
                   <td className="px-5 py-4" colSpan={columnCount}>
-                    <div className="h-12 animate-pulse rounded-2xl bg-gray-100" />
+                    <div className="h-12 animate-pulse rounded-2xl bg-slate-100" />
                   </td>
                 </tr>
               ))}
 
             {!isLoading && batches.length === 0 && (
               <tr>
-                <td colSpan={columnCount} className="px-5 py-12 text-center text-sm text-gray-500">
+                <td colSpan={columnCount} className="px-5 py-12 text-center text-sm text-slate-500">
                   No settlement batches matched the current filters.
                 </td>
               </tr>
@@ -56,7 +56,7 @@ export function SettlementBatchTable({
                   key={batch.id}
                   role="button"
                   tabIndex={0}
-                  className="cursor-pointer transition-colors hover:bg-gray-50 focus:bg-gray-50 focus:outline-none"
+                  className="cursor-pointer transition-colors focus:bg-slate-50 focus:outline-none"
                   onClick={() => onSelect(batch.id)}
                   onKeyDown={(event) => {
                     if (event.key === 'Enter' || event.key === ' ') {
@@ -65,18 +65,18 @@ export function SettlementBatchTable({
                     }
                   }}
                 >
-                  <td className="px-5 py-4 text-gray-600">{formatDate(batch.settledDate)}</td>
+                  <td className="px-5 py-4 text-slate-600">{formatDate(batch.settledDate)}</td>
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-gray-950">{batch.batchId}</span>
-                      <ChevronRight className="h-4 w-4 text-gray-300" />
+                      <span className="font-semibold text-slate-950 tabular-nums">{batch.batchId}</span>
+                      <ChevronRight className="h-4 w-4 text-slate-300" />
                     </div>
                   </td>
-                  {isAdmin && <td className="px-5 py-4 font-medium text-gray-700">{batch.mdaName}</td>}
-                  <td className="px-5 py-4 font-medium text-gray-700">{batch.collectionCode}</td>
-                  <td className="px-5 py-4 font-medium text-gray-700">{batch.serviceCode}</td>
-                  <td className="px-5 py-4 text-gray-600">{batch.itemCount.toLocaleString()}</td>
-                  <td className="px-5 py-4 font-medium text-gray-950">{formatCompactCurrency(batch.totalAmount)}</td>
+                  {isAdmin && <td className="px-5 py-4 font-medium text-slate-700">{batch.mdaName}</td>}
+                  <td className="px-5 py-4 font-medium text-slate-700">{batch.collectionCode}</td>
+                  <td className="px-5 py-4 font-medium text-slate-700">{batch.serviceCode}</td>
+                  <td className="px-5 py-4 text-slate-600 tabular-nums">{batch.itemCount.toLocaleString()}</td>
+                  <td className="px-5 py-4 font-semibold text-slate-950 tabular-nums">{formatCompactCurrency(batch.totalAmount)}</td>
                 </tr>
               ))}
           </tbody>

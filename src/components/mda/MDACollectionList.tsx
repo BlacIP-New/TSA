@@ -15,14 +15,14 @@ export function MDACollectionList({
   onSelect,
 }: MDACollectionListProps) {
   return (
-    <section className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+    <section className="app-panel border-white/70 p-5">
       <div className="flex items-center gap-2">
-        <div className="rounded-2xl bg-[#E8001C]/8 p-2 text-[#E8001C]">
+        <div className="rounded-2xl border border-slate-200/80 bg-slate-50 p-2 text-slate-600">
           <Layers3 className="h-4 w-4" />
         </div>
         <div>
-          <h2 className="text-sm font-semibold text-gray-950">Collection codes</h2>
-          <p className="mt-1 text-sm text-gray-500">
+          <h2 className="text-sm font-semibold text-slate-950">Collection codes</h2>
+          <p className="mt-1 text-sm text-slate-500">
             Choose a collection code to inspect its settlement batches.
           </p>
         </div>
@@ -31,11 +31,11 @@ export function MDACollectionList({
       <div className="mt-4 space-y-3">
         {isLoading &&
           Array.from({ length: 4 }, (_, index) => (
-            <div key={index} className="h-20 animate-pulse rounded-2xl bg-gray-100" />
+            <div key={index} className="h-20 animate-pulse rounded-2xl bg-slate-100" />
           ))}
 
         {!isLoading && collections.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-gray-200 px-4 py-8 text-sm text-gray-500">
+          <div className="rounded-2xl border border-dashed border-slate-200 px-4 py-8 text-sm text-slate-500">
             No collection codes are configured for this MDA yet.
           </div>
         )}
@@ -50,13 +50,13 @@ export function MDACollectionList({
                 type="button"
                 className={`w-full rounded-2xl border px-4 py-4 text-left transition-colors ${
                   isSelected
-                    ? 'border-[#E8001C]/30 bg-red-50/60'
-                    : 'border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100'
+                    ? 'border-sky-200/80 bg-sky-50/80'
+                    : 'border-slate-200/80 bg-slate-50/80 hover:border-slate-300 hover:bg-slate-100'
                 }`}
                 onClick={() => onSelect(collection.code)}
               >
-                <p className="font-medium text-gray-950">{collection.code}</p>
-                <p className="mt-1 text-sm text-gray-500">{collection.name}</p>
+                <p className="font-semibold text-slate-950">{collection.code}</p>
+                <p className="mt-1 text-sm text-slate-500">{collection.name}</p>
               </button>
             );
           })}

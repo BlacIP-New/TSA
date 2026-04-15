@@ -1,4 +1,4 @@
-import { Activity, RefreshCcw } from 'lucide-react';
+import { RefreshCcw } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { ExportButton } from '../components/export/ExportButton';
 import { ExportModal } from '../components/export/ExportModal';
@@ -32,7 +32,7 @@ export default function TransactionsPage() {
     user,
     settlementFilters,
     page,
-    settlementPageSize
+    settlementPageSize,
   );
   const { exportSettlementData, isExporting, error: exportError, lastExportMessage, clearExportMessages } =
     useExport(user, settlementFilters);
@@ -67,18 +67,20 @@ export default function TransactionsPage() {
   return (
     <>
       <div className="space-y-6 p-5 lg:p-8">
-        <div>
-          <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-gray-950">Settlement batches</h1>
-              <p className="mt-1 text-sm text-gray-500">
+        <section className="app-panel-strong border-white/80 px-6 py-6">
+          <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+            <div className="max-w-2xl">
+              <p className="app-kicker">Batch Operations</p>
+              <h1 className="mt-3 text-[32px] font-semibold tracking-[-0.06em] text-slate-950">
+                Settlement batches
+              </h1>
+              <p className="mt-3 text-sm leading-6 text-slate-500">
                 Review payout batches first, then inspect the settlement lines inside each batch.
               </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700">
-                <Activity className="h-3.5 w-3.5" />
+              <div className="rounded-full border border-slate-200/80 bg-white/80 px-3.5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
                 {user?.role === 'aggregator_admin'
                   ? 'Aggregator-wide settlements'
                   : `${user?.collectionCode} / ${user?.serviceCode}`}
@@ -93,7 +95,7 @@ export default function TransactionsPage() {
                 }}
               />
               <Button
-                variant="secondary"
+                variant="primary"
                 size="sm"
                 isLoading={isLoading}
                 leftIcon={<RefreshCcw className="h-4 w-4" />}
@@ -103,7 +105,7 @@ export default function TransactionsPage() {
               </Button>
             </div>
           </div>
-        </div>
+        </section>
 
         <SettlementBatchFilters
           filters={settlementFilters}

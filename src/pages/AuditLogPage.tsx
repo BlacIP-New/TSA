@@ -1,4 +1,4 @@
-import { Activity, ClipboardList, RefreshCcw } from 'lucide-react';
+import { ClipboardList, RefreshCcw } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { AuditFilters } from '../components/audit/AuditFilters';
 import { AuditLogTable } from '../components/audit/AuditLogTable';
@@ -47,47 +47,51 @@ export default function AuditLogPage() {
 
   return (
     <div className="space-y-6 p-5 lg:p-8">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-gray-950">Audit log</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Timestamped activity for compliance review, export traceability, and admin oversight.
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700">
-            <Activity className="h-3.5 w-3.5" />
-            {user.aggregatorName}
+      <section className="app-panel-strong border-white/80 px-6 py-6">
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+          <div className="max-w-2xl">
+            <p className="app-kicker">Compliance Trail</p>
+            <h1 className="mt-3 text-[32px] font-semibold tracking-[-0.06em] text-slate-950">
+              Audit log
+            </h1>
+            <p className="mt-3 text-sm leading-6 text-slate-500">
+              Timestamped activity for compliance review, export traceability, and admin oversight.
+            </p>
           </div>
-          <Button
-            variant="secondary"
-            size="sm"
-            isLoading={isLoading}
-            leftIcon={<RefreshCcw className="h-4 w-4" />}
-            onClick={() => void refresh()}
-          >
-            Refresh
-          </Button>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="rounded-full border border-slate-200/80 bg-white/80 px-3.5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+              {user.aggregatorName}
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              isLoading={isLoading}
+              leftIcon={<RefreshCcw className="h-4 w-4" />}
+              onClick={() => void refresh()}
+            >
+              Refresh
+            </Button>
+          </div>
         </div>
-      </div>
+      </section>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Visible records</p>
-          <p className="mt-2 text-2xl font-semibold tracking-tight text-gray-950">{result.total}</p>
-          <p className="mt-1 text-sm text-gray-500">Matching the current audit filters</p>
+        <div className="app-panel border-white/70 p-5">
+          <p className="app-kicker">Visible records</p>
+          <p className="mt-3 text-[30px] font-semibold tracking-[-0.05em] text-slate-950 tabular-nums">{result.total}</p>
+          <p className="mt-2 text-sm text-slate-500">Matching the current audit filters</p>
         </div>
-        <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Tracked users</p>
-          <p className="mt-2 text-2xl font-semibold tracking-tight text-gray-950">{userOptions.length}</p>
-          <p className="mt-1 text-sm text-gray-500">Unique users with logged portal activity</p>
+        <div className="app-panel border-white/70 p-5">
+          <p className="app-kicker">Tracked users</p>
+          <p className="mt-3 text-[30px] font-semibold tracking-[-0.05em] text-slate-950 tabular-nums">{userOptions.length}</p>
+          <p className="mt-2 text-sm text-slate-500">Unique users with logged portal activity</p>
         </div>
-        <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
-          <div className="flex items-center gap-2">
-            <ClipboardList className="h-4 w-4 text-[#E8001C]" />
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Compliance note</p>
+        <div className="app-panel border-white/70 p-5">
+          <div className="flex items-center gap-2 text-slate-600">
+            <ClipboardList className="h-4 w-4" />
+            <p className="app-kicker">Compliance note</p>
           </div>
-          <p className="mt-2 text-sm text-gray-700">
+          <p className="mt-3 text-sm leading-6 text-slate-600">
             Export events, login activity, and MDA admin actions are all captured as immutable records.
           </p>
         </div>

@@ -15,18 +15,18 @@ export function MDARegistryTable({
   onSelect,
 }: MDARegistryTableProps) {
   return (
-    <section className="rounded-3xl border border-gray-200 bg-white shadow-sm">
-      <div className="border-b border-gray-100 px-5 py-4">
-        <h2 className="text-sm font-semibold text-gray-950">MDA registry</h2>
-        <p className="mt-1 text-sm text-gray-500">
+    <section className="app-panel border-white/70">
+      <div className="border-b border-slate-200/80 px-5 py-4">
+        <h2 className="text-sm font-semibold text-slate-950">MDA registry</h2>
+        <p className="mt-1 text-sm text-slate-500">
           Select an MDA to inspect its collection codes, service codes, settlements, and users.
         </p>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-100">
+        <table className="app-data-table">
           <thead>
-            <tr className="text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">
+            <tr>
               <th className="px-5 py-4">MDA</th>
               <th className="px-5 py-4">Collections</th>
               <th className="px-5 py-4">Services</th>
@@ -34,19 +34,19 @@ export function MDARegistryTable({
               <th className="px-5 py-4">Total Users</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 text-sm">
+          <tbody className="divide-y divide-slate-200/80">
             {isLoading &&
               Array.from({ length: 5 }, (_, index) => (
                 <tr key={index}>
                   <td className="px-5 py-4" colSpan={5}>
-                    <div className="h-12 animate-pulse rounded-2xl bg-gray-100" />
+                    <div className="h-12 animate-pulse rounded-2xl bg-slate-100" />
                   </td>
                 </tr>
               ))}
 
             {!isLoading && mdas.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-5 py-12 text-center text-sm text-gray-500">
+                <td colSpan={5} className="px-5 py-12 text-center text-sm text-slate-500">
                   No MDAs are available in the current aggregator scope.
                 </td>
               </tr>
@@ -58,11 +58,11 @@ export function MDARegistryTable({
 
                 return (
                   <tr
-                    key={mda.id}
-                    role="button"
-                    tabIndex={0}
-                    className={`cursor-pointer transition-colors hover:bg-gray-50 ${
-                      isSelected ? 'bg-red-50/50' : ''
+                  key={mda.id}
+                  role="button"
+                  tabIndex={0}
+                    className={`cursor-pointer transition-colors hover:bg-slate-50 ${
+                      isSelected ? 'bg-sky-50/50' : ''
                     }`}
                     onClick={() => onSelect(mda.id)}
                     onKeyDown={(event) => {
@@ -74,22 +74,22 @@ export function MDARegistryTable({
                   >
                     <td className="px-5 py-4">
                       <div className="flex items-start gap-3">
-                        <div className="rounded-2xl bg-[#E8001C]/8 p-2 text-[#E8001C]">
+                        <div className="rounded-2xl border border-slate-200/80 bg-slate-50 p-2 text-slate-600">
                           <Building2 className="h-4 w-4" />
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <p className="font-medium text-gray-950">{mda.mdaCode}</p>
-                            <ChevronRight className="h-4 w-4 text-gray-300" />
+                            <p className="font-semibold text-slate-950">{mda.mdaCode}</p>
+                            <ChevronRight className="h-4 w-4 text-slate-300" />
                           </div>
-                          <p className="mt-1 text-sm text-gray-500">{mda.mdaName}</p>
+                          <p className="mt-1 text-sm text-slate-500">{mda.mdaName}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-5 py-4 font-medium text-gray-700">{mda.collectionCount}</td>
-                    <td className="px-5 py-4 font-medium text-gray-700">{mda.serviceCount}</td>
-                    <td className="px-5 py-4 font-medium text-gray-700">{mda.activeUserCount}</td>
-                    <td className="px-5 py-4 font-medium text-gray-700">{mda.totalUserCount}</td>
+                    <td className="px-5 py-4 font-semibold text-slate-700 tabular-nums">{mda.collectionCount}</td>
+                    <td className="px-5 py-4 font-semibold text-slate-700 tabular-nums">{mda.serviceCount}</td>
+                    <td className="px-5 py-4 font-semibold text-slate-700 tabular-nums">{mda.activeUserCount}</td>
+                    <td className="px-5 py-4 font-semibold text-slate-700 tabular-nums">{mda.totalUserCount}</td>
                   </tr>
                 );
               })}

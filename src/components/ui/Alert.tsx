@@ -9,17 +9,17 @@ interface AlertProps {
 }
 
 const config: Record<AlertVariant, { icon: React.FC<{ className?: string }>; classes: string }> = {
-  error: { icon: XCircle, classes: 'bg-red-50 border-red-200 text-red-700' },
-  success: { icon: CheckCircle2, classes: 'bg-emerald-50 border-emerald-200 text-emerald-700' },
-  info: { icon: Info, classes: 'bg-blue-50 border-blue-200 text-blue-700' },
-  warning: { icon: AlertCircle, classes: 'bg-amber-50 border-amber-200 text-amber-700' },
+  error: { icon: XCircle, classes: 'border-red-200/80 bg-red-50/80 text-red-700' },
+  success: { icon: CheckCircle2, classes: 'border-sky-200/80 bg-sky-50/80 text-sky-800' },
+  info: { icon: Info, classes: 'border-slate-200/80 bg-white/85 text-slate-700' },
+  warning: { icon: AlertCircle, classes: 'border-amber-200/80 bg-amber-50/80 text-amber-700' },
 };
 
 export function Alert({ variant = 'info', message, className = '' }: AlertProps) {
   const { icon: Icon, classes } = config[variant];
   return (
-    <div className={`flex items-start gap-2.5 rounded-lg border px-4 py-3 text-sm ${classes} ${className}`}>
-      <Icon className="w-4 h-4 mt-0.5 shrink-0" />
+    <div className={`flex items-start gap-2.5 rounded-2xl border px-4 py-3 text-sm ${classes} ${className}`}>
+      <Icon className="mt-0.5 h-4 w-4 shrink-0" />
       <p>{message}</p>
     </div>
   );

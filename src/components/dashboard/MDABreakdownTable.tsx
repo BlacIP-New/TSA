@@ -16,16 +16,16 @@ export function MDABreakdownTable({
   isLoading = false,
 }: MDABreakdownTableProps) {
   return (
-    <section className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+    <section className="app-panel border-white/70 p-5">
       <div className="mb-4">
-        <p className="text-sm font-semibold text-gray-950">{title}</p>
-        <p className="mt-1 text-sm text-gray-500">{description}</p>
+        <p className="text-base font-semibold text-slate-950">{title}</p>
+        <p className="mt-1 text-sm text-slate-500">{description}</p>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-100 text-sm">
+        <table className="app-data-table">
           <thead>
-            <tr className="text-left text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">
+            <tr>
               <th className="pb-3 pr-4">MDA</th>
               <th className="pb-3 pr-4">Scope</th>
               <th className="pb-3 pr-4">Settled Amount</th>
@@ -35,19 +35,19 @@ export function MDABreakdownTable({
               <th className="pb-3">Last Settlement</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-slate-200/80">
             {isLoading &&
               Array.from({ length: 4 }, (_, index) => (
                 <tr key={index}>
                   <td className="py-4 pr-4" colSpan={7}>
-                    <div className="h-10 animate-pulse rounded-2xl bg-gray-100" />
+                    <div className="h-10 animate-pulse rounded-2xl bg-slate-100" />
                   </td>
                 </tr>
               ))}
 
             {!isLoading && rows.length === 0 && (
               <tr>
-                <td className="py-10 text-center text-sm text-gray-500" colSpan={7}>
+                <td className="py-10 text-center text-sm text-slate-500" colSpan={7}>
                   No settlement records available for the selected range.
                 </td>
               </tr>
@@ -58,7 +58,7 @@ export function MDABreakdownTable({
                 <tr key={`${row.collectionCode}-${row.serviceCode}`} className="align-top">
                   <td className="py-4 pr-4">
                     <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#E8001C]/8 text-sm font-semibold text-[#E8001C]">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200/80 bg-slate-50 text-sm font-semibold text-slate-700">
                         {row.mdaName
                           .split(' ')
                           .slice(0, 2)
@@ -66,9 +66,9 @@ export function MDABreakdownTable({
                           .join('')}
                       </div>
                       <div>
-                        <p className="font-medium text-gray-950">{row.mdaName}</p>
+                        <p className="font-semibold text-slate-950">{row.mdaName}</p>
                         {index === 0 && rows.length > 1 && (
-                          <Badge variant="success" className="mt-2">
+                          <Badge variant="info" className="mt-2">
                             Highest volume
                           </Badge>
                         )}
@@ -81,13 +81,13 @@ export function MDABreakdownTable({
                       <Badge variant="info">{row.serviceCode}</Badge>
                     </div>
                   </td>
-                  <td className="py-4 pr-4 font-medium text-gray-950">{formatCompactCurrency(row.totalAmount)}</td>
-                  <td className="py-4 pr-4 text-gray-600">{row.settlementLineCount.toLocaleString()}</td>
-                  <td className="py-4 pr-4 text-gray-600">{row.percentageOfTotal.toFixed(1)}%</td>
-                  <td className={`py-4 pr-4 font-medium ${row.periodChange >= 0 ? 'text-emerald-700' : 'text-red-700'}`}>
+                  <td className="py-4 pr-4 font-semibold text-slate-950 tabular-nums">{formatCompactCurrency(row.totalAmount)}</td>
+                  <td className="py-4 pr-4 text-slate-600 tabular-nums">{row.settlementLineCount.toLocaleString()}</td>
+                  <td className="py-4 pr-4 text-slate-600 tabular-nums">{row.percentageOfTotal.toFixed(1)}%</td>
+                  <td className={`py-4 pr-4 font-semibold ${row.periodChange >= 0 ? 'text-emerald-700' : 'text-red-700'}`}>
                     {formatPercentage(row.periodChange)}
                   </td>
-                  <td className="py-4 text-gray-600">{formatDate(row.lastSettlementDate)}</td>
+                  <td className="py-4 text-slate-600">{formatDate(row.lastSettlementDate)}</td>
                 </tr>
               ))}
           </tbody>
