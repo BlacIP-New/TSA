@@ -1,104 +1,165 @@
-import { LayoutDashboard, TrendingUp, ArrowUpRight, ArrowDownRight, Activity } from 'lucide-react';
+import { Activity, Building2, RefreshCcw, Rows3, Wallet } from 'lucide-react';
+import { DateRangeSelector } from '../components/dashboard/DateRangeSelector';
+import { MDABreakdownTable } from '../components/dashboard/MDABreakdownTable';
+import { SettlementTrendChart } from '../components/dashboard/SettlementTrendChart';
+import { SummaryCard } from '../components/dashboard/SummaryCard';
+import { Button } from '../components/ui/Button';
 import { useAuth } from '../context/AuthContext';
-import { formatCurrency } from '../utils/formatters';
-
-const ADMIN_STATS = [
-  { label: 'Total Settled (This Month)', value: 8_940_200_000, change: 12.4, up: true },
-  { label: 'Total Transactions', value: null, count: 14382, change: 8.1, up: true },
-  { label: 'Active MDAs', value: null, count: 47, change: 3, up: true },
-  { label: 'Pending Invitations', value: null, count: 5, change: -2, up: false },
-];
-
-const MDA_STATS = [
-  { label: 'Total Settled (This Month)', value: 420_500_000, change: 6.2, up: true },
-  { label: 'Total Transactions', value: null, count: 1843, change: 4.5, up: true },
-  { label: 'Avg. Transaction Value', value: 228_000, change: 1.8, up: true },
-  { label: 'Last Settlement', value: null, label2: '12 Apr 2025', change: 0, up: true },
-];
+import { useTransactionDashboard } from '../hooks/useTransactions';
+import { formatCompactCurrency, formatCurrency, formatDate } from '../utils/formatters';
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'aggregator_admin';
-  const stats = isAdmin ? ADMIN_STATS : MDA_STATS;
+  const { dateRange, setDateRange, groupBy, setGroupBy, summary, chart, isLoading, error, refresh } =
+    useTransactionDashboard(user);
+
+  if (!user) return null;
+
+  const summaryCards = [
+    {
+      label: 'Total Settled Amount',
+      value: formatCurrency(summary?.totalAmount ?? 0),
+      helper: `Previous period: ${formatCompactCurrency(summary?.previousPeriodAmount ?? 0)}`,
+      change: summary?.percentageChange,
+      icon: <Wallet className="h-5 w-5" />,
+    },
+    {
+      label: 'Transaction Count',
+      value: (summary?.totalCount ?? 0).toLocaleString(),
+      helper: `Previous period: ${(summary?.previousPeriodCount ?? 0).toLocaleString()} transactions`,
+      change: summary?.countPercentageChange,
+      icon: <Rows3 className="h-5 w-5" />,
+    },
+    {
+      label: 'Average Settled Value',
+      value: formatCurrency(summary?.averageAmount ?? 0),
+      helper: isAdmin
+        ? `${summary?.breakdown.length ?? 0} MDA scopes active in this window`
+        : `${user.collectionCode} / ${user.serviceCode}`,
+      change: summary?.averageAmountChange,
+      icon: <Activity className="h-5 w-5" />,
+    },
+    isAdmin
+      ? {
+          label: 'Leading MDA',
+          value: formatCompactCurrency(summary?.topPerformer?.totalAmount ?? 0),
+          helper: summary?.topPerformer?.mdaName ?? 'No settled collections in this range',
+          change: summary?.topPerformer?.periodChange,
+          icon: <Building2 className="h-5 w-5" />,
+        }
+      : {
+          label: 'Assigned Scope',
+          value: user.collectionCode ?? 'Not assigned',
+          helper: user.serviceCode ? `Service ${user.serviceCode}` : 'No service code assigned',
+          icon: <Building2 className="h-5 w-5" />,
+        },
+  ];
 
   return (
-    <div className="p-5 lg:p-8 space-y-8">
-      <div className="flex items-start justify-between">
+    <div className="space-y-6 p-5 lg:p-8">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Good morning, {user?.name?.split(' ')[0]}
-          </h1>
-          <p className="text-gray-500 text-sm mt-1">
+          <h1 className="text-2xl font-semibold tracking-tight text-gray-950">Collection summary</h1>
+          <p className="mt-1 text-sm text-gray-500">
             {isAdmin
-              ? `Overview of all collections under ${user?.aggregatorName}`
-              : `${user?.mdaName} — Collection ${user?.collectionCode}`}
+              ? `Cross-MDA settled collections under ${user.aggregatorName}.`
+              : `${user.mdaName} scoped to collection ${user.collectionCode} and service ${user.serviceCode}.`}
           </p>
         </div>
-        <div className="hidden sm:flex items-center gap-2 bg-emerald-50 text-emerald-700 text-xs font-medium px-3 py-1.5 rounded-full border border-emerald-200">
-          <Activity className="w-3.5 h-3.5" />
-          Live data
+
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700">
+            <Activity className="h-3.5 w-3.5" />
+            Mock service data
+          </div>
+          <Button
+            variant="secondary"
+            size="sm"
+            isLoading={isLoading}
+            leftIcon={<RefreshCcw className="h-4 w-4" />}
+            onClick={() => void refresh()}
+          >
+            Refresh
+          </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        {stats.map((stat, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-xs">
-            <div className="flex items-start justify-between mb-3">
-              <p className="text-xs font-medium text-gray-500 leading-tight max-w-[140px]">{stat.label}</p>
-              <div className={`flex items-center gap-0.5 text-xs font-semibold ${stat.up ? 'text-emerald-600' : 'text-red-500'}`}>
-                {stat.up ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
-                {Math.abs(stat.change)}%
-              </div>
-            </div>
-            <div className="text-2xl font-bold text-gray-900">
-              {stat.value != null
-                ? formatCurrency(stat.value)
-                : stat.label2 ?? stat.count?.toLocaleString()}
-            </div>
-            <p className="text-xs text-gray-400 mt-1">vs. previous month</p>
-          </div>
+      <DateRangeSelector
+        dateRange={dateRange}
+        groupBy={groupBy}
+        isLoading={isLoading}
+        onDateRangeChange={setDateRange}
+        onGroupByChange={setGroupBy}
+      />
+
+      {error && (
+        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {summaryCards.map((card) => (
+          <SummaryCard
+            key={card.label}
+            label={card.label}
+            value={card.value}
+            helper={card.helper}
+            change={card.change}
+            icon={card.icon}
+          />
         ))}
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs">
-        <div className="flex items-center gap-2 mb-2">
-          <TrendingUp className="w-4 h-4 text-[#E8001C]" />
-          <h2 className="font-semibold text-gray-800 text-sm">Settlement Trend</h2>
-        </div>
-        <p className="text-xs text-gray-400 mb-6">Daily settlement volumes — current month</p>
-        <div className="h-40 flex items-end gap-1.5">
-          {Array.from({ length: 15 }, (_, i) => {
-            const heights = [35, 55, 45, 70, 60, 80, 50, 65, 90, 75, 85, 60, 70, 95, 80];
-            return (
-              <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                <div
-                  className="w-full rounded-t-md transition-all"
-                  style={{
-                    height: `${heights[i]}%`,
-                    background: i === 14 ? '#E8001C' : '#E8001C20',
-                  }}
-                />
+      <div className="grid gap-4 2xl:grid-cols-[minmax(0,1.7fr)_minmax(320px,0.8fr)]">
+        <SettlementTrendChart chart={chart} isLoading={isLoading} />
+
+        <section className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+          <p className="text-sm font-semibold text-gray-950">Current scope</p>
+          <p className="mt-1 text-sm text-gray-500">
+            {isAdmin
+              ? 'All dashboard metrics roll up across every MDA under the active aggregator.'
+              : 'This view is already restricted to the signed-in MDA assignment.'}
+          </p>
+
+          <dl className="mt-5 space-y-4">
+            <div className="rounded-2xl bg-gray-50 px-4 py-3">
+              <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Date window</dt>
+              <dd className="mt-1 text-sm font-medium text-gray-950">
+                {formatDate(dateRange.from)} to {formatDate(dateRange.to)}
+              </dd>
+            </div>
+            <div className="rounded-2xl bg-gray-50 px-4 py-3">
+              <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Aggregator</dt>
+              <dd className="mt-1 text-sm font-medium text-gray-950">{user.aggregatorName}</dd>
+            </div>
+            {!isAdmin && (
+              <div className="rounded-2xl bg-gray-50 px-4 py-3">
+                <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Collection scope</dt>
+                <dd className="mt-1 text-sm font-medium text-gray-950">
+                  {user.collectionCode} / {user.serviceCode}
+                </dd>
               </div>
-            );
-          })}
-        </div>
-        <div className="flex justify-between text-xs text-gray-400 mt-2 px-0.5">
-          <span>Apr 1</span>
-          <span>Apr 8</span>
-          <span>Apr 15</span>
-        </div>
+            )}
+            <div className="rounded-2xl bg-gray-50 px-4 py-3">
+              <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Chart cadence</dt>
+              <dd className="mt-1 text-sm font-medium capitalize text-gray-950">{groupBy}</dd>
+            </div>
+          </dl>
+        </section>
       </div>
 
-      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
-        <LayoutDashboard className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-        <div>
-          <p className="text-sm font-semibold text-amber-800">Phase 2 coming soon</p>
-          <p className="text-xs text-amber-700 mt-0.5">
-            Full interactive dashboard with real-time collection metrics, MDA breakdowns, and trend charts
-            will be implemented in Phase 2.
-          </p>
-        </div>
-      </div>
+      <MDABreakdownTable
+        rows={summary?.breakdown ?? []}
+        isLoading={isLoading}
+        title={isAdmin ? 'Per-MDA breakdown' : 'Assigned collection snapshot'}
+        description={
+          isAdmin
+            ? 'Settled collections ranked by volume for the selected window.'
+            : 'Only your assigned collection and service code are included in this breakdown.'
+        }
+      />
     </div>
   );
 }

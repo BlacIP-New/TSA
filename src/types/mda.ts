@@ -17,7 +17,6 @@ export interface MDAUser {
 
 export interface InviteMDAPayload {
   email: string;
-  mdaName: string;
   collectionCode: string;
   serviceCode: string;
 }

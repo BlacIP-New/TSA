@@ -24,8 +24,8 @@ export interface AuditEntry {
 }
 
 export interface AuditFilters {
-  dateFrom?: string;
-  dateTo?: string;
+  from?: string;
+  to?: string;
   action?: AuditAction | '';
   userId?: string;
 }

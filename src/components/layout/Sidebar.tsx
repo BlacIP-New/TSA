@@ -9,7 +9,6 @@ import {
   X,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { Logo } from '../ui/Logo';
 import { Badge } from '../ui/Badge';
 
 interface NavItem {

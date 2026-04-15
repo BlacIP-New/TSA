@@ -14,6 +14,7 @@
 
 import { AuthUser, LoginCredentials, LoginResponse } from '../types/auth';
 import { MOCK_ADMIN_USER, MOCK_MDA_USER } from '../data/mockUsers';
+import { logAuditEntry } from './auditService';
 
 const DEMO_CREDENTIALS: Record<string, { password: string; user: AuthUser }> = {
   'admin@nsw.gov.ng': { password: 'Admin@1234', user: MOCK_ADMIN_USER },
@@ -33,11 +34,33 @@ export async function login(credentials: LoginCredentials): Promise<LoginRespons
   sessionStorage.setItem('tsa_token', token);
   sessionStorage.setItem('tsa_user', JSON.stringify(match.user));
 
+  if (match.user.aggregatorId) {
+    await logAuditEntry({
+      userId: match.user.id,
+      userEmail: match.user.email,
+      userName: match.user.name,
+      action: 'login',
+      details: `${match.user.email} signed into the TSA Collection Insight Portal.`,
+      aggregatorId: match.user.aggregatorId,
+    });
+  }
+
   return { token, user: match.user };
 }
 
 export async function logout(): Promise<void> {
   await new Promise((r) => setTimeout(r, 300));
+  const storedUser = getStoredUser();
+  if (storedUser?.aggregatorId) {
+    await logAuditEntry({
+      userId: storedUser.id,
+      userEmail: storedUser.email,
+      userName: storedUser.name,
+      action: 'logout',
+      details: `${storedUser.email} signed out of the TSA Collection Insight Portal.`,
+      aggregatorId: storedUser.aggregatorId,
+    });
+  }
   sessionStorage.removeItem('tsa_token');
   sessionStorage.removeItem('tsa_user');
 }
