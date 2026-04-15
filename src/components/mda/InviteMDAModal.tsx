@@ -154,14 +154,15 @@ export function InviteMDAModal({
       description="Send a role-scoped portal invitation tied to an MDA, one collection code, and one service code."
       onClose={onClose}
       footer={
-        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <Button variant="secondary" onClick={onClose} disabled={isSubmitting} className="w-full sm:w-auto sm:min-w-[132px]">
             Cancel
           </Button>
           <Button
             isLoading={isSubmitting}
             leftIcon={<ShieldPlus className="h-4 w-4" />}
             onClick={() => void handleSubmit()}
+            className="w-full sm:w-auto sm:min-w-[132px]"
           >
             Send invitation
           </Button>

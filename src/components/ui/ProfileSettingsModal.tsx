@@ -41,11 +41,11 @@ export function ProfileSettingsModal({ open, onClose }: ProfileSettingsModalProp
       onClose={onClose}
       size="lg"
       footer={
-        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <Button variant="secondary" onClick={onClose}>
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <Button variant="secondary" onClick={onClose} className="w-full sm:w-auto sm:min-w-[128px]">
             Cancel
           </Button>
-          <Button onClick={handleSave}>Save changes</Button>
+          <Button onClick={handleSave} className="w-full sm:w-auto sm:min-w-[128px]">Save changes</Button>
         </div>
       }
     >

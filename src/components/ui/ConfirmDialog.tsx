@@ -29,11 +29,11 @@ export function ConfirmDialog({
       title={title}
       onClose={onClose}
       footer={
-        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <Button variant="secondary" onClick={onClose} disabled={isLoading}>
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <Button variant="secondary" onClick={onClose} disabled={isLoading} className="w-full sm:w-auto sm:min-w-[128px]">
             Cancel
           </Button>
-          <Button variant={confirmVariant} isLoading={isLoading} onClick={onConfirm}>
+          <Button variant={confirmVariant} isLoading={isLoading} onClick={onConfirm} className="w-full sm:w-auto sm:min-w-[128px]">
             {confirmLabel}
           </Button>
         </div>
@@ -43,7 +43,7 @@ export function ConfirmDialog({
         <div className="rounded bg-white p-2 text-slate-600">
           <AlertTriangle className="h-5 w-5" />
         </div>
-        <p className="text-sm text-amber-900">{message}</p>
+        <p className="text-sm text-slate-700">{message}</p>
       </div>
     </Modal>
   );
