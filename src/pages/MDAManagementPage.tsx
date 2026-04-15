@@ -1,8 +1,7 @@
-import { Activity, Building2, FolderKanban, RefreshCcw, ShieldCheck, UsersRound } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 import { Alert } from '../components/ui/Alert';
-import { Button } from '../components/ui/Button';
 import { InviteMDAModal } from '../components/mda/InviteMDAModal';
 import { MDATable } from '../components/mda/MDATable';
 import { useAuth } from '../context/AuthContext';
@@ -42,7 +41,6 @@ export default function MDAManagementPage() {
     isSettlementLoading,
     error,
     settlementError,
-    refresh,
     createInvite,
     resendInvite,
     deactivateUser,
@@ -156,75 +154,6 @@ export default function MDAManagementPage() {
   return (
     <>
       <div className="space-y-6 p-5 lg:p-8">
-        <section className="app-panel-strong border-white/80 px-6 py-6">
-          <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
-            <div className="max-w-2xl">
-              <p className="app-kicker">MDA Operations</p>
-              <h1 className="mt-3 text-[32px] font-semibold tracking-[-0.06em] text-slate-950">
-                MDA management
-              </h1>
-              <p className="mt-3 text-sm leading-6 text-slate-500">
-                Admin workspace for MDA registry visibility, collection settlements, and MDA user access.
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="rounded-full border border-slate-200/80 bg-white/80 px-3.5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
-                {user.aggregatorName}
-              </div>
-              <Button
-                variant="primary"
-                size="sm"
-                isLoading={isLoading}
-                leftIcon={<RefreshCcw className="h-4 w-4" />}
-                onClick={() => void refresh()}
-              >
-                Refresh
-              </Button>
-            </div>
-          </div>
-        </section>
-
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <div className="app-panel border-gray-300 p-5">
-            <div className="flex items-center gap-2 text-slate-600">
-              <Building2 className="h-4 w-4" />
-              <p className="app-kicker">Total MDAs</p>
-            </div>
-            <p className="mt-3 text-[30px] font-semibold tracking-[-0.05em] text-slate-950 tabular-nums">{mdas.length}</p>
-            <p className="mt-2 text-sm text-slate-500">Admin-visible MDA registry entries</p>
-          </div>
-          <div className="app-panel border-gray-300 p-5">
-            <div className="flex items-center gap-2 text-slate-600">
-              <FolderKanban className="h-4 w-4" />
-              <p className="app-kicker">Selected collections</p>
-            </div>
-            <p className="mt-3 text-[30px] font-semibold tracking-[-0.05em] text-slate-950 tabular-nums">
-              {selectedMDADetail?.collections.length ?? 0}
-            </p>
-            <p className="mt-2 text-sm text-slate-500">
-              {selectedMDA ? `Under ${selectedMDA.mdaCode}` : 'Choose an MDA to inspect its collections'}
-            </p>
-          </div>
-          <div className="app-panel border-gray-300 p-5">
-            <div className="flex items-center gap-2 text-slate-600">
-              <Activity className="h-4 w-4" />
-              <p className="app-kicker">Settlement batches</p>
-            </div>
-            <p className="mt-3 text-[30px] font-semibold tracking-[-0.05em] text-slate-950 tabular-nums">{settlementResult.total}</p>
-            <p className="mt-2 text-sm text-slate-500">
-              {selectedCollection ? `${selectedCollection.code} currently selected` : 'Select a collection code'}
-            </p>
-          </div>
-          <div className="app-panel border-gray-300 p-5">
-            <div className="flex items-center gap-2 text-slate-600">
-              <UsersRound className="h-4 w-4" />
-              <p className="app-kicker">Scoped users</p>
-            </div>
-            <p className="mt-3 text-[30px] font-semibold tracking-[-0.05em] text-slate-950 tabular-nums">{statusSummary.total}</p>
-            <p className="mt-2 text-sm text-slate-500">Users currently mapped to the selected MDA</p>
-          </div>
-        </div>
-
         {(pageAlert || error || settlementError) && (
           <Alert
             variant={pageAlert?.variant ?? 'error'}

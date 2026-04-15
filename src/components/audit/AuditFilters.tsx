@@ -1,14 +1,14 @@
-import { CalendarRange, Filter } from 'lucide-react';
+import { Filter } from 'lucide-react';
 import { AuditAction } from '../../types/audit';
 import { AuditLogFilters } from '../../hooks/useAuditLog';
 import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
 
 interface AuditFiltersProps {
   filters: AuditLogFilters;
   users: Array<{ id: string; label: string }>;
   isLoading?: boolean;
+  embedded?: boolean;
   onChange: (updates: Partial<AuditLogFilters>) => void;
   onReset: () => void;
 }
@@ -28,45 +28,13 @@ export function AuditFilters({
   filters,
   users,
   isLoading = false,
+  embedded = false,
   onChange,
   onReset,
 }: AuditFiltersProps) {
-  return (
-    <section className="app-panel border-gray-300 p-5">
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-slate-500" />
-            <h2 className="text-sm font-semibold text-slate-950">Audit filters</h2>
-          </div>
-          <p className="mt-1 text-sm text-slate-500">
-            Narrow results by timeframe, action type, and initiating user.
-          </p>
-        </div>
-        <Button variant="ghost" size="sm" disabled={isLoading} onClick={onReset}>
-          Reset filters
-        </Button>
-      </div>
-
-      <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Input
-          label="From"
-          type="date"
-          value={filters.from ?? ''}
-          max={filters.to || undefined}
-          disabled={isLoading}
-          leftAddon={<CalendarRange className="h-4 w-4" />}
-          onChange={(event) => onChange({ from: event.target.value })}
-        />
-        <Input
-          label="To"
-          type="date"
-          value={filters.to ?? ''}
-          min={filters.from || undefined}
-          disabled={isLoading}
-          leftAddon={<CalendarRange className="h-4 w-4" />}
-          onChange={(event) => onChange({ to: event.target.value })}
-        />
+  const filtersBody = (
+    <>
+      <div className={`${embedded ? '' : 'mt-5'} grid gap-4 md:grid-cols-2 xl:grid-cols-2`}>
         <Select
           label="Action type"
           value={filters.action ?? ''}
@@ -85,6 +53,40 @@ export function AuditFilters({
           onChange={(event) => onChange({ userId: event.target.value })}
         />
       </div>
+    </>
+  );
+
+  if (embedded) {
+    return (
+      <div className="space-y-4">
+        <div className="flex justify-end">
+          <Button variant="ghost" size="sm" disabled={isLoading} onClick={onReset}>
+            Reset filters
+          </Button>
+        </div>
+        {filtersBody}
+      </div>
+    );
+  }
+
+  return (
+    <section className="app-panel border-gray-300 p-5">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <Filter className="h-4 w-4 text-slate-500" />
+            <h2 className="text-sm font-semibold text-slate-950">Audit filters</h2>
+          </div>
+          <p className="mt-1 text-sm text-slate-500">
+            Narrow results by action type and initiating user.
+          </p>
+        </div>
+        <Button variant="ghost" size="sm" disabled={isLoading} onClick={onReset}>
+          Reset filters
+        </Button>
+      </div>
+
+      {filtersBody}
     </section>
   );
 }

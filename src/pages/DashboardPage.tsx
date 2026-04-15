@@ -1,9 +1,9 @@
-import { Activity, Building2, RefreshCcw, Rows3, Wallet } from 'lucide-react';
-import { DateRangeSelector } from '../components/dashboard/DateRangeSelector';
+import { Activity, Building2, BarChart3, LineChart, Rows3, Wallet } from 'lucide-react';
 import { MDABreakdownTable } from '../components/dashboard/MDABreakdownTable';
 import { SettlementTrendChart } from '../components/dashboard/SettlementTrendChart';
 import { SummaryCard } from '../components/dashboard/SummaryCard';
 import { Button } from '../components/ui/Button';
+import { DateRangeDropdown } from '../components/ui/DateRangeDropdown';
 import { useAuth } from '../context/AuthContext';
 import { useTransactionDashboard } from '../hooks/useTransactions';
 import { formatCompactCurrency, formatCurrency, formatDate } from '../utils/formatters';
@@ -11,7 +11,7 @@ import { formatCompactCurrency, formatCurrency, formatDate } from '../utils/form
 export default function DashboardPage() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'aggregator_admin';
-  const { dateRange, setDateRange, groupBy, setGroupBy, summary, chart, isLoading, error, refresh } =
+  const { dateRange, setDateRange, groupBy, setGroupBy, summary, chart, isLoading, error } =
     useTransactionDashboard(user);
 
   if (!user) return null;
@@ -58,44 +58,29 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 p-5 lg:p-8">
-      <section className="app-panel-strong border-white/80 px-6 py-6">
-        <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
-          <div className="max-w-2xl">
-            <p className="app-kicker">Settlement Command Center</p>
-            <h1 className="mt-3 text-[32px] font-semibold tracking-[-0.06em] text-slate-950">
-              Collection summary
-            </h1>
-            <p className="mt-3 text-sm leading-6 text-slate-500">
-              {isAdmin
-                ? `Cross-MDA settled collections under ${user.aggregatorName}.`
-                : `${user.mdaName} scoped to collection ${user.collectionCode} and service ${user.serviceCode}.`}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="rounded-full border border-slate-200/80 bg-white/80 px-3.5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
-              Mock settlement data
-            </div>
-            <Button
-              variant="primary"
-              size="sm"
-              isLoading={isLoading}
-              leftIcon={<RefreshCcw className="h-4 w-4" />}
-              onClick={() => void refresh()}
-            >
-              Refresh
-            </Button>
-          </div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <DateRangeDropdown dateRange={dateRange} onDateRangeChange={setDateRange} />
+        <div className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white/75 p-1">
+          <Button
+            variant={groupBy === 'day' ? 'primary' : 'ghost'}
+            size="sm"
+            disabled={isLoading}
+            onClick={() => setGroupBy('day')}
+            leftIcon={<BarChart3 className="h-4 w-4" />}
+          >
+            Daily
+          </Button>
+          <Button
+            variant={groupBy === 'week' ? 'primary' : 'ghost'}
+            size="sm"
+            disabled={isLoading}
+            onClick={() => setGroupBy('week')}
+            leftIcon={<LineChart className="h-4 w-4" />}
+          >
+            Weekly
+          </Button>
         </div>
-      </section>
-
-      <DateRangeSelector
-        dateRange={dateRange}
-        groupBy={groupBy}
-        isLoading={isLoading}
-        onDateRangeChange={setDateRange}
-        onGroupByChange={setGroupBy}
-      />
+      </div>
 
       {error && (
         <div className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-slate-700">

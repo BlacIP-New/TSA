@@ -18,7 +18,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard },
-  { label: 'Transactions', to: '/transactions', icon: List },
+  { label: 'Settlement Transactions', to: '/transactions', icon: List },
   { label: 'MDA Management', to: '/mda-management', icon: Users, adminOnly: true },
   { label: 'Audit Log', to: '/audit-log', icon: ClipboardList, adminOnly: true },
 ];
