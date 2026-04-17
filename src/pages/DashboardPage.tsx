@@ -1,4 +1,4 @@
-import { Activity, Building2, Rows3, Wallet } from 'lucide-react';
+import { Building2, Rows3, Wallet } from 'lucide-react';
 import { MDABreakdownTable } from '../components/dashboard/MDABreakdownTable';
 import { SettlementTrendChart } from '../components/dashboard/SettlementTrendChart';
 import { SummaryCard } from '../components/dashboard/SummaryCard';
@@ -30,15 +30,6 @@ export default function DashboardPage() {
       change: summary?.countPercentageChange,
       icon: <Rows3 className="h-5 w-5" />,
     },
-    {
-      label: 'Average Settled Value',
-      value: formatCurrency(summary?.averageAmount ?? 0),
-      helper: isAdmin
-        ? `${summary?.breakdown.length ?? 0} MDA scopes active in this window`
-        : `${user.collectionCode} / ${user.serviceCode}`,
-      change: summary?.averageAmountChange,
-      icon: <Activity className="h-5 w-5" />,
-    },
     isAdmin
       ? {
           label: 'Leading MDA',
@@ -67,7 +58,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {summaryCards.map((card) => (
           <SummaryCard
             key={card.label}

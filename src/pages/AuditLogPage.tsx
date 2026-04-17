@@ -2,11 +2,11 @@ import { Filter } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { AuditFilters } from '../components/audit/AuditFilters';
 import { AuditLogTable } from '../components/audit/AuditLogTable';
-import { Alert } from '../components/ui/Alert';
 import { Button } from '../components/ui/Button';
 import { DateRangeDropdown } from '../components/ui/DateRangeDropdown';
 import { TransactionPagination } from '../components/transactions/TransactionPagination';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { useAuditLog, AuditLogFilters } from '../hooks/useAuditLog';
 
 function toDateInput(date: Date) {
@@ -18,6 +18,7 @@ function toDateInput(date: Date) {
 
 export default function AuditLogPage() {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const [filters, setFilters] = useState<AuditLogFilters>({
     from: '',
     to: '',
@@ -56,6 +57,12 @@ export default function AuditLogPage() {
       setPage(result.totalPages);
     }
   }, [page, result.totalPages]);
+
+  useEffect(() => {
+    if (error) {
+      showToast(error, 'error');
+    }
+  }, [error, showToast]);
 
   function handleFilterChange(updates: Partial<AuditLogFilters>) {
     setFilters((current) => ({
@@ -129,8 +136,6 @@ export default function AuditLogPage() {
           </div>
         </div>
       </div>
-
-      {error && <Alert variant="error" message={error} />}
 
       <AuditLogTable entries={result.data} isLoading={isLoading} />
 

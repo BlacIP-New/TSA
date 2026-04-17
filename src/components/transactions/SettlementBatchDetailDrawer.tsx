@@ -1,9 +1,10 @@
 import { Building2, CalendarClock, ChevronLeft, Hash, Layers3, Wallet } from 'lucide-react';
 import { AuthUser } from '../../types/auth';
 import { useSettlementBatchDetail } from '../../hooks/useTransactions';
-import { Alert } from '../ui/Alert';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import { SettlementStatusBadge } from './SettlementStatusBadge';
+import { useEffect } from 'react';
+import { useToast } from '../../context/ToastContext';
 
 interface SettlementBatchDetailDrawerProps {
   batchId: string | null;
@@ -26,7 +27,14 @@ export function SettlementBatchDetailDrawer({
   onClose,
 }: SettlementBatchDetailDrawerProps) {
   const isOpen = batchId !== null;
+  const { showToast } = useToast();
   const { detail, isLoading, error } = useSettlementBatchDetail(batchId, user);
+
+  useEffect(() => {
+    if (error) {
+      showToast(error, 'error');
+    }
+  }, [error, showToast]);
 
   if (!isOpen) return null;
 
@@ -54,8 +62,6 @@ export function SettlementBatchDetailDrawer({
           ))}
         </div>
       )}
-
-      {!isLoading && error && <Alert variant="error" message={error} />}
 
       {!isLoading && detail && (
         <>

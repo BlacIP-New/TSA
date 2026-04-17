@@ -6,11 +6,11 @@ import { SettlementBatchDetailDrawer } from '../components/transactions/Settleme
 import { SettlementBatchFilters } from '../components/transactions/SettlementBatchFilters';
 import { SettlementBatchTable } from '../components/transactions/SettlementBatchTable';
 import { TransactionPagination } from '../components/transactions/TransactionPagination';
-import { Alert } from '../components/ui/Alert';
 import { Button } from '../components/ui/Button';
 import { DateRangeDropdown } from '../components/ui/DateRangeDropdown';
 import { useAuth } from '../context/AuthContext';
 import { usePageTitle } from '../context/PageTitleContext';
+import { useToast } from '../context/ToastContext';
 import { useExport } from '../hooks/useExport';
 import { useFilters } from '../hooks/useFilters';
 import { useSettlementBatchLedger } from '../hooks/useTransactions';
@@ -26,6 +26,7 @@ function toDateInput(date: Date) {
 
 export default function TransactionsPage() {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const { setTitleOverride } = usePageTitle();
   const {
     settlementFilters,
@@ -85,8 +86,21 @@ export default function TransactionsPage() {
   useEffect(() => {
     if (lastExportMessage) {
       setIsExportModalOpen(false);
+      showToast(lastExportMessage, 'success');
     }
-  }, [lastExportMessage]);
+  }, [lastExportMessage, showToast]);
+
+  useEffect(() => {
+    if (exportError) {
+      showToast(exportError, 'error');
+    }
+  }, [exportError, showToast]);
+
+  useEffect(() => {
+    if (error) {
+      showToast(error, 'error');
+    }
+  }, [error, showToast]);
 
   function handleFilterChange(updates: Partial<SettlementBatchFiltersValue>) {
     updateSettlementFilters(updates);
@@ -161,10 +175,6 @@ export default function TransactionsPage() {
             </div>
           </div>
         )}
-
-        {lastExportMessage && <Alert variant="success" message={lastExportMessage} />}
-        {exportError && <Alert variant="error" message={exportError} />}
-        {error && <Alert variant="error" message={error} />}
 
         {selectedBatchId ? (
           <SettlementBatchDetailDrawer

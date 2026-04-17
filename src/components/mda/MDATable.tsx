@@ -1,4 +1,4 @@
-import { Mail, RotateCcw, UserPlus, UserX } from 'lucide-react';
+import { Copy, Mail, RotateCcw, UserPlus, UserX } from 'lucide-react';
 import { MDAUser } from '../../types/mda';
 import { formatDate } from '../../utils/formatters';
 import { Button } from '../ui/Button';
@@ -12,6 +12,7 @@ interface MDATableProps {
   description?: string;
   onInviteClick: () => void;
   onResendInvite: (user: MDAUser) => void;
+  onCopyInviteLink: (user: MDAUser) => void;
   onDeactivate: (user: MDAUser) => void;
   onReactivate: (user: MDAUser) => void;
 }
@@ -24,6 +25,7 @@ export function MDATable({
   description = 'Invite and manage MDA-scoped portal access for one collection code and an optional service code.',
   onInviteClick,
   onResendInvite,
+  onCopyInviteLink,
   onDeactivate,
   onReactivate,
 }: MDATableProps) {
@@ -104,6 +106,18 @@ export function MDATable({
                   <td className="px-5 py-4 text-slate-600">{formatDate(user.invitedAt)}</td>
                   <td className="px-5 py-4">
                     <div className="flex justify-end gap-2">
+                      {user.status === 'pending' && (
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          isLoading={actionKey === `copy-link:${user.id}`}
+                          leftIcon={<Copy className="h-4 w-4" />}
+                          onClick={() => onCopyInviteLink(user)}
+                        >
+                          Copy link
+                        </Button>
+                      )}
+
                       {user.status === 'pending' && (
                         <Button
                           variant="ghost"

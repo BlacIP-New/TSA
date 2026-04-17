@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Building2, Mail, ShieldPlus } from 'lucide-react';
+import { Building2, ExternalLink, Mail, ShieldPlus } from 'lucide-react';
 import { InviteMDAPayload, MDACollectionCode, MDARecord, MDAServiceCode } from '../../types/mda';
 import { validateEmail } from '../../utils/validators';
-import { Alert } from '../ui/Alert';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Modal } from '../ui/Modal';
 import { SearchableDropdown } from '../ui/SearchableDropdown';
+import { useToast } from '../../context/ToastContext';
 
 interface InviteMDAModalProps {
   open: boolean;
@@ -16,7 +16,7 @@ interface InviteMDAModalProps {
   loadMDACollections: (mdaId: string) => Promise<MDACollectionCode[]>;
   loadMDAServiceCodes: (mdaId: string, collectionCode?: string) => Promise<MDAServiceCode[]>;
   onClose: () => void;
-  onSubmit: (payload: InviteMDAPayload) => Promise<void>;
+  onSubmit: (payload: InviteMDAPayload) => Promise<{ setupLink: string }>;
 }
 
 const buildInitialValues = (mdaId?: string | null): InviteMDAPayload => ({
@@ -36,11 +36,13 @@ export function InviteMDAModal({
   onClose,
   onSubmit,
 }: InviteMDAModalProps) {
+  const { showToast } = useToast();
   const [values, setValues] = useState<InviteMDAPayload>(() => buildInitialValues(defaultMDAId));
   const [collectionCodes, setCollectionCodes] = useState<MDACollectionCode[]>([]);
   const [serviceCodes, setServiceCodes] = useState<MDAServiceCode[]>([]);
   const [isLoadingScope, setIsLoadingScope] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [setupLink, setSetupLink] = useState<string | null>(null);
+  const [invitedEmail, setInvitedEmail] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof InviteMDAPayload, string>>>({});
 
   const selectedMDA = useMemo(
@@ -54,7 +56,8 @@ export function InviteMDAModal({
       setCollectionCodes([]);
       setServiceCodes([]);
       setIsLoadingScope(false);
-      setSubmitError(null);
+      setSetupLink(null);
+      setInvitedEmail(null);
       setFieldErrors({});
       return;
     }
@@ -73,7 +76,6 @@ export function InviteMDAModal({
 
     async function fetchCollections() {
       setIsLoadingScope(true);
-      setSubmitError(null);
 
       try {
         const nextCollections = await loadMDACollections(values.mdaId);
@@ -90,10 +92,11 @@ export function InviteMDAModal({
       } catch (caughtError) {
         if (!isMounted) return;
         setCollectionCodes([]);
-        setSubmitError(
+        showToast(
           caughtError instanceof Error
             ? caughtError.message
             : 'Unable to load MDA scope options right now.',
+          'error',
         );
       } finally {
         if (isMounted) setIsLoadingScope(false);
@@ -105,7 +108,7 @@ export function InviteMDAModal({
     return () => {
       isMounted = false;
     };
-  }, [defaultMDAId, loadMDACollections, open, values.collectionCode, values.mdaId]);
+  }, [defaultMDAId, loadMDACollections, open, showToast, values.collectionCode, values.mdaId]);
 
   useEffect(() => {
     if (!open || !values.mdaId) {
@@ -117,7 +120,6 @@ export function InviteMDAModal({
 
     async function fetchServices() {
       setIsLoadingScope(true);
-      setSubmitError(null);
 
       try {
         const nextServices = await loadMDAServiceCodes(values.mdaId, values.collectionCode || undefined);
@@ -127,10 +129,11 @@ export function InviteMDAModal({
       } catch (caughtError) {
         if (!isMounted) return;
         setServiceCodes([]);
-        setSubmitError(
+        showToast(
           caughtError instanceof Error
             ? caughtError.message
             : 'Unable to load service codes right now.',
+          'error',
         );
       } finally {
         if (isMounted) setIsLoadingScope(false);
@@ -142,7 +145,7 @@ export function InviteMDAModal({
     return () => {
       isMounted = false;
     };
-  }, [loadMDAServiceCodes, open, values.collectionCode, values.mdaId]);
+  }, [loadMDAServiceCodes, open, showToast, values.collectionCode, values.mdaId]);
 
   function updateValue<K extends keyof InviteMDAPayload>(key: K, value: InviteMDAPayload[K]) {
     setValues((current) => ({
@@ -150,7 +153,8 @@ export function InviteMDAModal({
       [key]: value,
       ...(key === 'mdaId' ? { collectionCode: '', serviceCode: '' } : null),
     }));
-    setSubmitError(null);
+    setSetupLink(null);
+    setInvitedEmail(null);
     setFieldErrors((current) => ({ ...current, [key]: undefined }));
   }
 
@@ -170,19 +174,22 @@ export function InviteMDAModal({
     }
 
     try {
-      await onSubmit({
+      const payload = {
         email: values.email.trim().toLowerCase(),
         mdaId: values.mdaId,
         collectionCode: values.collectionCode,
         serviceCode: values.serviceCode || undefined,
-      });
-      onClose();
+      };
+
+      const result = await onSubmit(payload);
+      setSetupLink(result.setupLink);
+      setInvitedEmail(payload.email);
     } catch (caughtError) {
-      setSubmitError(
+      const message =
         caughtError instanceof Error
           ? caughtError.message
-          : 'Unable to invite MDA user right now.',
-      );
+          : 'Unable to invite MDA user right now.';
+      showToast(message, 'error');
     }
   }
 
@@ -195,7 +202,7 @@ export function InviteMDAModal({
       footer={
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Button variant="secondary" onClick={onClose} disabled={isSubmitting} className="w-full sm:w-auto sm:min-w-[132px]">
-            Cancel
+            {setupLink ? 'Done' : 'Cancel'}
           </Button>
           <Button
             isLoading={isSubmitting}
@@ -203,13 +210,46 @@ export function InviteMDAModal({
             onClick={() => void handleSubmit()}
             className="w-full sm:w-auto sm:min-w-[132px]"
           >
-            Send invitation
+            {setupLink ? 'Send another invitation' : 'Send invitation'}
           </Button>
         </div>
       }
     >
       <div className="space-y-5">
-        {submitError && <Alert variant="error" message={submitError} />}
+        {setupLink && (
+          <div className="app-card p-4">
+            <p className="app-kicker">Temporary access link</p>
+            <p className="mt-2 text-sm text-slate-600">
+              Share this link with <span className="font-semibold text-slate-950">{invitedEmail}</span> so they can create a password and sign in.
+            </p>
+            <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm break-all text-slate-700">
+              {setupLink}
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  void navigator.clipboard
+                    .writeText(setupLink)
+                    .then(() => {
+                      showToast('Setup link copied to clipboard.', 'info');
+                    })
+                    .catch(() => {
+                      showToast('Unable to copy setup link right now.', 'warning');
+                    });
+                }}
+              >
+                Copy link
+              </Button>
+              <a href={setupLink} target="_blank" rel="noreferrer">
+                <Button variant="ghost" size="sm" leftIcon={<ExternalLink className="h-4 w-4" />}>
+                  Open link
+                </Button>
+              </a>
+            </div>
+          </div>
+        )}
 
         <Input
           label="Email address"

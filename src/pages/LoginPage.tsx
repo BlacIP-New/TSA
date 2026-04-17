@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
-import { Alert } from '../components/ui/Alert';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { login } from '../services/authService';
 import { validateEmail } from '../utils/validators';
 
@@ -17,6 +17,7 @@ export default function LoginPage() {
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
 
   const { setUser } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   function validate(): boolean {
@@ -45,6 +46,12 @@ export default function LoginPage() {
     }
   }
 
+  useEffect(() => {
+    if (error) {
+      showToast(error, 'error');
+    }
+  }, [error, showToast]);
+
   return (
     <div className="min-h-screen bg-[#f2f4f7] px-4 py-10">
       <div className="mx-auto w-full max-w-[760px]">
@@ -60,10 +67,6 @@ export default function LoginPage() {
           <div className="mb-6">
             <h2 className="text-lg font-semibold text-slate-900">Welcome back</h2>
           </div>
-
-          {error && (
-            <Alert variant="error" message={error} className="mb-5" />
-          )}
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <Input

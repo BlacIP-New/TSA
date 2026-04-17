@@ -1,14 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { Logo } from '../components/ui/Logo';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
-import { Alert } from '../components/ui/Alert';
+import { useToast } from '../context/ToastContext';
 import { requestPasswordReset } from '../services/authService';
 import { validateEmail } from '../utils/validators';
 
 export default function ForgotPasswordPage() {
+  const { showToast } = useToast();
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -32,6 +33,12 @@ export default function ForgotPasswordPage() {
       setIsLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (error) {
+      showToast(error, 'error');
+    }
+  }, [error, showToast]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
@@ -77,8 +84,6 @@ export default function ForgotPasswordPage() {
                   Enter the email associated with your account and we'll send a reset link.
                 </p>
               </div>
-
-              {error && <Alert variant="error" message={error} className="mb-4" />}
 
               <form onSubmit={handleSubmit} className="space-y-4" noValidate>
                 <Input

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -13,7 +13,7 @@
     --app-panel-strong: #ffffff;
     --app-line: rgba(209, 213, 219, 1);
     --app-line-strong: rgba(209, 213, 219, 1);
-    --app-text: #0f172a;
+    --app-text: #525866;
     --app-muted: #64748b;
     --app-accent: #335CFF;
     --app-accent-deep: #1e40af;
@@ -31,7 +31,7 @@
 
   body {
     min-height: 100vh;
-    font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+    font-family: 'Lato', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -125,6 +125,12 @@
 }
 
 @layer utilities {
+  .text-black,
+  .text-slate-900,
+  .text-slate-950 {
+    color: #525866 !important;
+  }
+
   .scrollbar-thin {
     scrollbar-width: thin;
     scrollbar-color: #c9d2dd transparent;

@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Filter } from 'lucide-react';
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
-import { Alert } from '../components/ui/Alert';
 import { InviteMDAModal } from '../components/mda/InviteMDAModal';
 import { MDATable } from '../components/mda/MDATable';
 import { useAuth } from '../context/AuthContext';
@@ -17,11 +16,7 @@ import { Input } from '../components/ui/Input';
 import { SearchableDropdown } from '../components/ui/SearchableDropdown';
 import { Select } from '../components/ui/Select';
 import { formatCompactCurrency } from '../utils/formatters';
-
-type PageAlert = {
-  variant: 'success' | 'error' | 'info' | 'warning';
-  message: string;
-} | null;
+import { useToast } from '../context/ToastContext';
 
 type ConfirmState =
   | { type: 'deactivate'; user: MDAUser }
@@ -33,6 +28,7 @@ type MDAUserStatusTab = 'all' | 'pending' | 'active' | 'inactive';
 
 export default function MDAManagementPage() {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const {
     mdas,
     allCollections,
@@ -46,6 +42,7 @@ export default function MDAManagementPage() {
     settlementError,
     createInvite,
     resendInvite,
+    getInviteSetupLink,
     deactivateUser,
     reactivateUser,
     loadMDACollections,
@@ -56,7 +53,6 @@ export default function MDAManagementPage() {
   const [activeTab, setActiveTab] = useState<MDATabKey>('mdas');
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [actionKey, setActionKey] = useState<string | null>(null);
-  const [pageAlert, setPageAlert] = useState<PageAlert>(null);
   const [confirmState, setConfirmState] = useState<ConfirmState>(null);
   const [selectedBatchId, setSelectedBatchId] = useState<string | null>(null);
   const [collectionsMdaFilterId, setCollectionsMdaFilterId] = useState<string>('all');
@@ -170,14 +166,11 @@ export default function MDAManagementPage() {
 
   async function handleInvite(payload: InviteMDAPayload) {
     setActionKey('invite');
-    setPageAlert(null);
     try {
-      await createInvite(payload);
+      const inviteResult = await createInvite(payload);
       setActiveTab('users');
-      setPageAlert({
-        variant: 'success',
-        message: 'Invitation sent successfully. The new MDA user is now pending activation.',
-      });
+      showToast('Invitation sent successfully. The setup link is now shown in the invite modal.', 'success');
+      return inviteResult;
     } finally {
       setActionKey(null);
     }
@@ -185,25 +178,51 @@ export default function MDAManagementPage() {
 
   async function handleResendInvite(target: MDAUser) {
     setActionKey(`resend:${target.id}`);
-    setPageAlert(null);
     try {
       await resendInvite(target.id);
-      setPageAlert({
-        variant: 'success',
-        message: `Invitation resent to ${target.email}.`,
-      });
+      showToast(`Invitation resent to ${target.email}.`, 'success');
     } catch (caughtError) {
-      setPageAlert({
-        variant: 'error',
-        message:
-          caughtError instanceof Error
-            ? caughtError.message
-            : 'Unable to resend the invitation right now.',
-      });
+      showToast(
+        caughtError instanceof Error
+          ? caughtError.message
+          : 'Unable to resend the invitation right now.',
+        'error',
+      );
     } finally {
       setActionKey(null);
     }
   }
+
+  async function handleCopyInviteLink(target: MDAUser) {
+    setActionKey(`copy-link:${target.id}`);
+
+    try {
+      const result = await getInviteSetupLink(target.id);
+      await navigator.clipboard.writeText(result.setupLink);
+      showToast(`Setup link copied for ${result.email}.`, 'info');
+    } catch (caughtError) {
+      showToast(
+        caughtError instanceof Error
+          ? caughtError.message
+          : 'Unable to copy setup link right now.',
+        'warning',
+      );
+    } finally {
+      setActionKey(null);
+    }
+  }
+
+  useEffect(() => {
+    if (error) {
+      showToast(error, 'error');
+    }
+  }, [error, showToast]);
+
+  useEffect(() => {
+    if (settlementError) {
+      showToast(settlementError, 'error');
+    }
+  }, [settlementError, showToast]);
 
   function handleUserMdaFilterChange(nextMdaId: string) {
     setUsersMdaFilterId(nextMdaId);
@@ -215,31 +234,23 @@ export default function MDAManagementPage() {
 
     const nextActionKey = `${confirmState.type}:${confirmState.user.id}`;
     setActionKey(nextActionKey);
-    setPageAlert(null);
 
     try {
       if (confirmState.type === 'deactivate') {
         await deactivateUser(confirmState.user.id);
-        setPageAlert({
-          variant: 'warning',
-          message: `${confirmState.user.email} has been deactivated.`,
-        });
+        showToast(`${confirmState.user.email} has been deactivated.`, 'warning');
       } else {
         await reactivateUser(confirmState.user.id);
-        setPageAlert({
-          variant: 'success',
-          message: `${confirmState.user.email} has been reactivated.`,
-        });
+        showToast(`${confirmState.user.email} has been reactivated.`, 'success');
       }
       setConfirmState(null);
     } catch (caughtError) {
-      setPageAlert({
-        variant: 'error',
-        message:
-          caughtError instanceof Error
-            ? caughtError.message
-            : 'Unable to complete this action right now.',
-      });
+      showToast(
+        caughtError instanceof Error
+          ? caughtError.message
+          : 'Unable to complete this action right now.',
+        'error',
+      );
     } finally {
       setActionKey(null);
     }
@@ -250,13 +261,6 @@ export default function MDAManagementPage() {
   return (
     <>
       <div className="space-y-6 p-4 sm:p-5 lg:p-8">
-        {(pageAlert || error || settlementError) && (
-          <Alert
-            variant={pageAlert?.variant ?? 'error'}
-            message={pageAlert?.message ?? settlementError ?? error ?? 'Unable to load MDA management data right now.'}
-          />
-        )}
-
         <MDATabNavigation activeTab={activeTab} onChange={setActiveTab} />
 
         {activeTab === 'mdas' && (
@@ -440,6 +444,7 @@ export default function MDAManagementPage() {
               }
               onInviteClick={() => setIsInviteOpen(true)}
               onResendInvite={handleResendInvite}
+              onCopyInviteLink={handleCopyInviteLink}
               onDeactivate={(target) => setConfirmState({ type: 'deactivate', user: target })}
               onReactivate={(target) => setConfirmState({ type: 'reactivate', user: target })}
             />

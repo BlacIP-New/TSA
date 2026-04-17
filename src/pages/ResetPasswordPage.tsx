@@ -1,14 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Lock, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { Logo } from '../components/ui/Logo';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
-import { Alert } from '../components/ui/Alert';
+import { useToast } from '../context/ToastContext';
 import { confirmPasswordReset } from '../services/authService';
 import { validatePassword } from '../utils/validators';
 
 export default function ResetPasswordPage() {
+  const { showToast } = useToast();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get('token') ?? '';
@@ -47,12 +48,26 @@ export default function ResetPasswordPage() {
     }
   }
 
+  useEffect(() => {
+    if (error) {
+      showToast(error, 'error');
+    }
+  }, [error, showToast]);
+
+  useEffect(() => {
+    if (!token) {
+      showToast('Invalid or missing reset token. Please request a new password reset link.', 'error');
+    }
+  }, [showToast, token]);
+
   if (!token) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
         <div className="text-center space-y-4 max-w-sm">
           <Logo className="justify-center" />
-          <Alert variant="error" message="Invalid or missing reset token. Please request a new password reset link." />
+          <p className="text-sm text-slate-500">
+            This reset link is invalid or missing. Request a new password reset link to continue.
+          </p>
           <Link to="/forgot-password">
             <Button variant="secondary" size="sm">Request new link</Button>
           </Link>
@@ -94,8 +109,6 @@ export default function ResetPasswordPage() {
                   Choose a strong password for your account.
                 </p>
               </div>
-
-              {error && <Alert variant="error" message={error} className="mb-4" />}
 
               <form onSubmit={handleSubmit} className="space-y-4" noValidate>
                 <Input

@@ -16,6 +16,7 @@ import {
   getMDAServiceCodes,
   getMDAUsers,
   getMDACollections,
+  getMDAInviteSetupLink,
   inviteMDAUser,
   reactivateMDAUser,
   resendMDAInvite,
@@ -198,7 +199,7 @@ export function useMDAs(user: AuthUser | null) {
       }
 
       const detail = await getMDADetail(payload.mdaId);
-      await inviteMDAUser({
+      const inviteResult = await inviteMDAUser({
         ...payload,
         aggregatorId: user.aggregatorId,
         invitedBy: user.id,
@@ -213,13 +214,14 @@ export function useMDAs(user: AuthUser | null) {
       });
       await refresh();
       setSelectedMDAId(payload.mdaId);
+      return inviteResult;
     },
     [refresh, user],
   );
 
   const resendInvite = useCallback(
     async (id: string) => {
-      await resendMDAInvite(id);
+      const resendResult = await resendMDAInvite(id);
       if (user?.aggregatorId) {
         const target = users.find((entry) => entry.id === id);
         if (target) {
@@ -234,9 +236,14 @@ export function useMDAs(user: AuthUser | null) {
         }
       }
       await refresh();
+      return resendResult;
     },
     [refresh, user, users],
   );
+
+  const getInviteSetupLink = useCallback(async (id: string) => {
+    return getMDAInviteSetupLink(id);
+  }, []);
 
   const deactivateUser = useCallback(
     async (id: string) => {
@@ -295,6 +302,7 @@ export function useMDAs(user: AuthUser | null) {
     refresh,
     createInvite,
     resendInvite,
+    getInviteSetupLink,
     deactivateUser,
     reactivateUser,
     loadMDACollections,

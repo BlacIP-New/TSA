@@ -26,6 +26,7 @@ import {
 } from '../types/mda';
 import { PaginatedSettlementBatches } from '../types/transaction';
 import { getSettlementBatches } from './transactionService';
+import { provisionInvitedUserAccess } from './authService';
 
 const NETWORK_DELAY_MS = 520;
 let mdaUsersStore = [...mockMDAUsers];
@@ -152,7 +153,7 @@ export async function getMDAUsers(aggregatorId: string, mdaId?: string): Promise
 
 export async function inviteMDAUser(
   payload: InviteMDAPayload & { aggregatorId: string; invitedBy: string },
-): Promise<MDAUser> {
+): Promise<{ user: MDAUser; setupLink: string }> {
   await delay();
 
   const duplicateUser = mdaUsersStore.find(
@@ -187,10 +188,24 @@ export async function inviteMDAUser(
   };
 
   mdaUsersStore = [invitedUser, ...mdaUsersStore];
-  return invitedUser;
+
+  const provision = provisionInvitedUserAccess({
+    email: invitedUser.email,
+    name: invitedUser.name,
+    aggregatorId: invitedUser.aggregatorId,
+    aggregatorName: 'NSW Aggregator',
+    mdaName: invitedUser.mdaName,
+    collectionCode: invitedUser.collectionCode,
+    serviceCode: invitedUser.serviceCode,
+  });
+
+  return {
+    user: invitedUser,
+    setupLink: provision.setupLink,
+  };
 }
 
-export async function resendMDAInvite(id: string): Promise<void> {
+export async function resendMDAInvite(id: string): Promise<{ setupLink: string }> {
   await delay(360);
 
   const target = mdaUsersStore.find((user) => user.id === id);
@@ -204,6 +219,62 @@ export async function resendMDAInvite(id: string): Promise<void> {
   }
 
   target.invitedAt = new Date().toISOString();
+
+  const provision = provisionInvitedUserAccess({
+    email: target.email,
+    name: target.name,
+    aggregatorId: target.aggregatorId,
+    aggregatorName: 'NSW Aggregator',
+    mdaName: target.mdaName,
+    collectionCode: target.collectionCode,
+    serviceCode: target.serviceCode,
+  });
+
+  return {
+    setupLink: provision.setupLink,
+  };
+}
+
+export async function getMDAInviteSetupLink(id: string): Promise<{ setupLink: string; email: string }> {
+  await delay(180);
+
+  const target = mdaUsersStore.find((user) => user.id === id);
+
+  if (!target) {
+    throw new Error('MDA user not found.');
+  }
+
+  if (target.status !== 'pending') {
+    throw new Error('Only pending invitations can generate setup links.');
+  }
+
+  const provision = provisionInvitedUserAccess({
+    email: target.email,
+    name: target.name,
+    aggregatorId: target.aggregatorId,
+    aggregatorName: 'NSW Aggregator',
+    mdaName: target.mdaName,
+    collectionCode: target.collectionCode,
+    serviceCode: target.serviceCode,
+  });
+
+  return {
+    setupLink: provision.setupLink,
+    email: target.email,
+  };
+}
+
+export function activateMDAUserByEmail(email: string): MDAUser | null {
+  const normalizedEmail = email.trim().toLowerCase();
+  const target = mdaUsersStore.find((entry) => entry.email.toLowerCase() === normalizedEmail);
+
+  if (!target) {
+    return null;
+  }
+
+  target.status = 'active';
+  target.activatedAt = target.activatedAt ?? new Date().toISOString();
+  return target;
 }
 
 export async function deactivateMDAUser(id: string): Promise<MDAUser> {
