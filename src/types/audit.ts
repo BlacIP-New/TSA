@@ -28,4 +28,5 @@ export interface AuditFilters {
   to?: string;
   action?: AuditAction | '';
   userId?: string;
+  userEmail?: string;
 }

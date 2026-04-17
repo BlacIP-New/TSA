@@ -1,7 +1,8 @@
-import { Filter } from 'lucide-react';
+import { Filter, Mail } from 'lucide-react';
 import { AuditAction } from '../../types/audit';
 import { AuditLogFilters } from '../../hooks/useAuditLog';
 import { Button } from '../ui/Button';
+import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
 
 interface AuditFiltersProps {
@@ -34,7 +35,7 @@ export function AuditFilters({
 }: AuditFiltersProps) {
   const filtersBody = (
     <>
-      <div className={`${embedded ? '' : 'mt-5'} grid gap-4 md:grid-cols-2 xl:grid-cols-2`}>
+      <div className={`${embedded ? '' : 'mt-5'} grid gap-4 md:grid-cols-2 xl:grid-cols-3`}>
         <Select
           label="Action type"
           value={filters.action ?? ''}
@@ -51,6 +52,14 @@ export function AuditFilters({
             ...users.map((user) => ({ label: user.label, value: user.id })),
           ]}
           onChange={(event) => onChange({ userId: event.target.value })}
+        />
+        <Input
+          label="Email search"
+          value={filters.userEmail ?? ''}
+          disabled={isLoading}
+          leftAddon={<Mail className="h-4 w-4" />}
+          placeholder="Search by email"
+          onChange={(event) => onChange({ userEmail: event.target.value })}
         />
       </div>
     </>

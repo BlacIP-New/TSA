@@ -49,8 +49,10 @@ export interface SettlementBatchFilters {
   from?: string;
   to?: string;
   batchId?: string;
-  minAmount?: number | '';
-  maxAmount?: number | '';
+  status?: SettlementStatus | '';
+  mdaId?: string;
+  collectionCode?: string;
+  serviceCode?: string;
 }
 
 export interface CollectionSummaryParams {

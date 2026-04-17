@@ -45,6 +45,7 @@ export async function getAuditLog(params: GetAuditLogParams) {
       if (entry.aggregatorId !== params.aggregatorId) return false;
       if (params.action && entry.action !== params.action) return false;
       if (params.userId && entry.userId !== params.userId) return false;
+      if (params.userEmail && !entry.userEmail.toLowerCase().includes(params.userEmail.toLowerCase())) return false;
       const timestamp = new Date(entry.timestamp);
       if (fromDate && timestamp < fromDate) return false;
       if (toDate && timestamp > toDate) return false;

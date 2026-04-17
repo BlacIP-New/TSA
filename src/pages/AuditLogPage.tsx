@@ -109,7 +109,7 @@ export default function AuditLogPage() {
                   <div className="mb-5 flex items-center justify-between border-b border-gray-300 pb-3">
                     <div>
                       <p className="text-sm font-semibold text-slate-950">Audit filters</p>
-                      <p className="mt-1 text-xs text-slate-500">Filter by period, action, and initiating user</p>
+                      <p className="mt-1 text-xs text-slate-500">Filter by action type, user, and email address</p>
                     </div>
                     <Button variant="ghost" size="sm" onClick={() => setIsFilterPanelOpen(false)}>
                       Close

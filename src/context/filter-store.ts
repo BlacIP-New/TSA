@@ -24,8 +24,7 @@ export function getDefaultSettlementFilters(): SettlementBatchFilters {
     from: toDateInput(new Date(today.getFullYear(), today.getMonth(), 1)),
     to: toDateInput(today),
     batchId: '',
-    minAmount: '',
-    maxAmount: '',
+
   };
 }
 

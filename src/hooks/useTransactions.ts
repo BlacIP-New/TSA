@@ -132,7 +132,7 @@ export function useSettlementBatchLedger(
   const [result, setResult] = useState<PaginatedSettlementBatches>(EMPTY_SETTLEMENT_BATCH_PAGE);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { from, to, batchId, minAmount, maxAmount } = filters;
+  const { from, to, batchId, status, mdaId: filterMdaId, collectionCode: filterCollectionCode, serviceCode: filterServiceCode } = filters;
 
   const loadSettlementBatches = useCallback(async () => {
     if (!user?.aggregatorId) {
@@ -147,16 +147,16 @@ export function useSettlementBatchLedger(
     try {
       const response = await getSettlementBatches({
         aggregatorId: user.aggregatorId,
-        mdaId: user.role === 'mda_admin' || user.role === 'mda_user' ? user.mdaId : undefined,
-        collectionCode: user.role === 'mda_user' ? user.collectionCode : undefined,
-        serviceCode: user.role === 'mda_user' ? user.serviceCode : undefined,
+        mdaId: filterMdaId || (user.role === 'mda_admin' || user.role === 'mda_user' ? user.mdaId : undefined),
+        collectionCode: filterCollectionCode || (user.role === 'mda_user' ? user.collectionCode : undefined),
+        serviceCode: filterServiceCode || (user.role === 'mda_user' ? user.serviceCode : undefined),
         page,
         limit,
         from,
         to,
         batchId,
-        minAmount,
-        maxAmount,
+
+        status,
       });
 
       setResult(response);
@@ -172,10 +172,12 @@ export function useSettlementBatchLedger(
   }, [
     batchId,
     from,
-    maxAmount,
-    minAmount,
     limit,
     page,
+    status,
+    filterMdaId,
+    filterCollectionCode,
+    filterServiceCode,
     user?.aggregatorId,
     user?.mdaId,
     user?.collectionCode,

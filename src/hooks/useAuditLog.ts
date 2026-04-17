@@ -34,7 +34,7 @@ export function useAuditLog(
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userOptions, setUserOptions] = useState<Array<{ id: string; label: string }>>([]);
-  const { from, to, action, userId } = filters;
+  const { from, to, action, userId, userEmail } = filters;
 
   const loadAuditLog = useCallback(async () => {
     if (!user?.aggregatorId) {
@@ -55,6 +55,7 @@ export function useAuditLog(
           to,
           action,
           userId,
+          userEmail,
           page,
           limit,
         }),
@@ -85,6 +86,7 @@ export function useAuditLog(
     from,
     to,
     userId,
+    userEmail,
     limit,
     page,
     user?.aggregatorId,

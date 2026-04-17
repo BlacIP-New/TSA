@@ -117,6 +117,17 @@ export default function TransactionsPage() {
     setPage(1);
   }
 
+  // Build filter options from data
+  const mdaOptions = Array.from(
+    new Map(result.data.map((batch) => [batch.mdaId, { label: batch.mdaName, value: batch.mdaId }])).values()
+  );
+  const collectionOptions = Array.from(
+    new Map(result.data.map((batch) => [batch.collectionCode, { label: batch.collectionCode, value: batch.collectionCode }])).values()
+  );
+  const serviceOptions = Array.from(
+    new Map(result.data.map((batch) => [batch.serviceCode, { label: batch.serviceCode, value: batch.serviceCode }])).values()
+  );
+
   return (
     <>
       <div className="space-y-6 p-4 sm:p-5 lg:p-8">
@@ -149,7 +160,7 @@ export default function TransactionsPage() {
                     <div className="mb-5 flex items-center justify-between border-b border-gray-300 pb-3">
                       <div>
                         <p className="text-sm font-semibold text-slate-950">Settlement filters</p>
-                        <p className="mt-1 text-xs text-slate-500">Narrow by date, batch ID, and amount range</p>
+                        <p className="mt-1 text-xs text-slate-500">Filter by batch ID, status, MDA, collection code, service code, and amount range</p>
                       </div>
                       <Button variant="ghost" size="sm" onClick={() => setIsFilterPanelOpen(false)}>
                         Close
@@ -159,7 +170,11 @@ export default function TransactionsPage() {
                     <SettlementBatchFilters
                       embedded
                       filters={settlementFilters}
+                      user={user}
                       isLoading={isLoading}
+                      mdaOptions={mdaOptions}
+                      collectionOptions={collectionOptions}
+                      serviceOptions={serviceOptions}
                       onChange={handleFilterChange}
                       onReset={handleResetFilters}
                     />

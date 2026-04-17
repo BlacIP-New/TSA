@@ -60,17 +60,20 @@ function getScopedSettlementBatches({
   mdaId,
   collectionCode,
   serviceCode,
+  status,
 }: {
   aggregatorId: string;
   mdaId?: string;
   collectionCode?: string;
   serviceCode?: string;
+  status?: string;
 }) {
   return mockSettlementBatches.filter((batch) => {
     if (batch.aggregatorId !== aggregatorId) return false;
     if (mdaId && batch.mdaId !== mdaId) return false;
     if (collectionCode && batch.collectionCode !== collectionCode) return false;
     if (serviceCode && batch.serviceCode !== serviceCode) return false;
+    if (status && batch.status !== status) return false;
     return true;
   });
 }
@@ -235,8 +238,8 @@ export async function getSettlementBatches(
       if (params.batchId && !batch.batchId.toLowerCase().includes(params.batchId.toLowerCase())) {
         return false;
       }
-      if (params.minAmount !== '' && params.minAmount != null && batch.totalAmount < params.minAmount) return false;
-      if (params.maxAmount !== '' && params.maxAmount != null && batch.totalAmount > params.maxAmount) return false;
+
+      if (params.status && params.status !== '' && batch.status !== params.status) return false;
       return true;
     })
     .sort((left, right) => new Date(right.settledDate).getTime() - new Date(left.settledDate).getTime());
