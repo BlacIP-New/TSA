@@ -2,7 +2,7 @@ export type AuditAction =
   | 'login'
   | 'logout'
   | 'export_csv'
-  | 'export_pdf'
+  | 'export_excel'
   | 'mda_invited'
   | 'mda_deactivated'
   | 'mda_reactivated'

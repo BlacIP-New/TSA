@@ -3,7 +3,7 @@
  *
  * Backend swap-in points:
  *   GET /settlements/export/csv
- *   GET /settlements/export/pdf
+ *   GET /settlements/export/excel
  */
 
 import { AuthUser } from '../types/auth';
@@ -14,9 +14,9 @@ import {
   buildExportFilename,
   buildSettlementExportAuditDetails,
   createSettlementBatchCsvBlob,
-  createSettlementBatchDetailPdfBlob,
-  createSettlementBatchListPdfBlob,
+  createSettlementBatchExcelBlob,
   createSettlementLineCsvBlob,
+  createSettlementLineExcelBlob,
   ExportScopeSummary,
 } from '../utils/exportHelpers';
 import { formatDate } from '../utils/formatters';
@@ -35,7 +35,7 @@ export type SettlementExportTarget =
 interface ExportSettlementsParams {
   user: AuthUser;
   filters: SettlementBatchFilters;
-  format: 'csv' | 'pdf';
+  format: 'csv' | 'xlsx';
   target: SettlementExportTarget;
 }
 
@@ -60,7 +60,7 @@ function buildScopeSummary(user: AuthUser, filters: SettlementBatchFilters): Exp
 
 async function logExportAuditEvent(params: {
   user: AuthUser;
-  action: 'export_csv' | 'export_pdf';
+  action: 'export_csv' | 'export_excel';
   scope: ExportScopeSummary;
   target: SettlementExportTarget;
   count: number;
@@ -99,7 +99,8 @@ async function logExportAuditEvent(params: {
 export async function exportSettlements(params: ExportSettlementsParams): Promise<ExportResult> {
   const { user, filters, format, target } = params;
   const scope = buildScopeSummary(user, filters);
-  const action = format === 'csv' ? 'export_csv' : 'export_pdf';
+  const action = format === 'csv' ? 'export_csv' : 'export_excel';
+  const formatLabel = format === 'csv' ? 'CSV' : 'Excel';
 
   if (target.type === 'batch-list') {
     const batches = (
@@ -116,7 +117,7 @@ export async function exportSettlements(params: ExportSettlementsParams): Promis
     const blob =
       format === 'csv'
         ? createSettlementBatchCsvBlob(batches)
-        : createSettlementBatchListPdfBlob(batches, scope);
+        : createSettlementBatchExcelBlob(batches);
     const filename = buildExportFilename(format, `settlement-batches-${scope.scopeLabel}`, scope.generatedAt);
 
     await logExportAuditEvent({
@@ -130,7 +131,7 @@ export async function exportSettlements(params: ExportSettlementsParams): Promis
     return {
       blob,
       filename,
-      successMessage: `${format.toUpperCase()} export generated with ${batches.length} settlement batches.`,
+      successMessage: `${formatLabel} export generated with ${batches.length} settlement batches.`,
     };
   }
 
@@ -153,7 +154,7 @@ export async function exportSettlements(params: ExportSettlementsParams): Promis
   const blob =
     format === 'csv'
       ? createSettlementLineCsvBlob(detail.lines)
-      : createSettlementBatchDetailPdfBlob(detail, detailScope);
+      : createSettlementLineExcelBlob(detail.lines);
   const filename = buildExportFilename(format, `settlement-batch-${detail.batch.batchId}`, detailScope.generatedAt);
 
   await logExportAuditEvent({
@@ -167,6 +168,6 @@ export async function exportSettlements(params: ExportSettlementsParams): Promis
   return {
     blob,
     filename,
-    successMessage: `${format.toUpperCase()} export generated for batch ${detail.batch.batchId} with ${detail.lines.length} settlement lines.`,
+    successMessage: `${formatLabel} export generated for batch ${detail.batch.batchId} with ${detail.lines.length} settlement lines.`,
   };
 }

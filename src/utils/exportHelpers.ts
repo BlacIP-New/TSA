@@ -237,6 +237,76 @@ export function createSettlementLineCsvBlob(lines: SettlementLine[]) {
   });
 }
 
+function createExcelLikeBlob(headers: string[], rows: string[]) {
+  // This is a lightweight, spreadsheet-compatible export fallback for mock mode.
+  // Backend integration can swap this for true XLSX generation.
+  return new Blob([[headers.join(','), ...rows].join('\n')], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  });
+}
+
+export function createSettlementBatchExcelBlob(batches: SettlementBatch[]) {
+  const headers = [
+    'Settled Date',
+    'Batch ID',
+    'MDA Name',
+    'Collection Code',
+    'Service Code',
+    'Item Count',
+    'Total Amount',
+    'Aggregator ID',
+  ];
+
+  const rows = batches.map((batch) =>
+    [
+      formatDate(batch.settledDate),
+      batch.batchId,
+      batch.mdaName,
+      batch.collectionCode,
+      batch.serviceCode,
+      String(batch.itemCount),
+      batch.totalAmount.toFixed(2),
+      batch.aggregatorId,
+    ]
+      .map((cell) => escapeCsvCell(cell))
+      .join(',')
+  );
+
+  return createExcelLikeBlob(headers, rows);
+}
+
+export function createSettlementLineExcelBlob(lines: SettlementLine[]) {
+  const headers = [
+    'Settled Date',
+    'Batch ID',
+    'Bank',
+    'Account Number',
+    'Account Name',
+    'Amount',
+    'Collection Code',
+    'Service Code',
+    'Aggregator ID',
+  ];
+
+  const rows = lines.map((line) =>
+    [
+      formatDate(line.settledDate),
+      line.batchId,
+      line.bankName,
+      line.accountNumber,
+      line.accountName,
+      line.amount.toFixed(2),
+      line.collectionCode,
+      line.serviceCode,
+      line.aggregatorId,
+    ]
+      .map((cell) => escapeCsvCell(cell))
+      .join(',')
+  );
+
+  return createExcelLikeBlob(headers, rows);
+}
+
 export function createSettlementBatchListPdfBlob(
   batches: SettlementBatch[],
   scope: ExportScopeSummary,
@@ -301,7 +371,7 @@ export function triggerFileDownload(blob: Blob, filename: string) {
 }
 
 export function buildExportFilename(
-  format: 'csv' | 'pdf',
+  format: 'csv' | 'xlsx',
   scopeLabel: string,
   generatedAt: string,
 ) {
@@ -329,9 +399,11 @@ export function buildSettlementExportAuditDetails(
   action: AuditAction,
   target: { type: 'batch-list'; count: number } | { type: 'batch-detail'; batchId: string; count: number },
 ) {
+  const exportLabel = action === 'export_csv' ? 'CSV' : 'Excel';
+
   if (target.type === 'batch-detail') {
-    return `${action === 'export_csv' ? 'CSV' : 'PDF'} settlement export generated for batch ${target.batchId} with ${target.count} settlement lines.`;
+    return `${exportLabel} settlement export generated for batch ${target.batchId} with ${target.count} settlement lines.`;
   }
 
-  return `${action === 'export_csv' ? 'CSV' : 'PDF'} settlement batch export generated with ${target.count} batches.`;
+  return `${exportLabel} settlement batch export generated with ${target.count} batches.`;
 }

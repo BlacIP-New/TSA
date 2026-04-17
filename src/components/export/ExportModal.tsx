@@ -1,4 +1,4 @@
-import { FileSpreadsheet, FileText } from 'lucide-react';
+import { FileSpreadsheet } from 'lucide-react';
 import { ExportFormat } from '../../hooks/useExport';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
@@ -47,14 +47,14 @@ export function ExportModal({
           type="button"
           disabled={isExporting}
           className="app-card p-5 text-left transition-colors hover:border-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
-          onClick={() => onSelectFormat('pdf')}
+          onClick={() => onSelectFormat('xlsx')}
         >
           <div className="mb-4 inline-flex rounded-lg border border-gray-300 bg-white p-3 text-slate-700">
-            <FileText className="h-5 w-5" />
+            <FileSpreadsheet className="h-5 w-5" />
           </div>
-          <p className="text-base font-semibold text-slate-950">PDF report</p>
+          <p className="text-base font-semibold text-slate-950">Excel export (default)</p>
           <p className="mt-2 text-sm text-slate-500">
-            Paginated report with portal scope, timestamp, and page numbering.
+            Microsoft Excel-friendly export of the current filtered settlement view.
           </p>
         </button>
       </div>

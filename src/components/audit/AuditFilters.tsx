@@ -17,7 +17,7 @@ const actionOptions: Array<{ label: string; value: AuditAction | '' }> = [
   { label: 'All actions', value: '' },
   { label: 'Login', value: 'login' },
   { label: 'CSV Export', value: 'export_csv' },
-  { label: 'PDF Export', value: 'export_pdf' },
+  { label: 'Excel Export', value: 'export_excel' },
   { label: 'User Invited', value: 'mda_invited' },
   { label: 'Invitation Resent', value: 'invitation_resent' },
   { label: 'User Deactivated', value: 'mda_deactivated' },

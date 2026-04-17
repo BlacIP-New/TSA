@@ -4,7 +4,7 @@ import { SettlementBatchFilters } from '../types/transaction';
 import { exportSettlements, ExportResult, SettlementExportTarget } from '../services/exportService';
 import { triggerFileDownload } from '../utils/exportHelpers';
 
-export type ExportFormat = 'csv' | 'pdf';
+export type ExportFormat = 'csv' | 'xlsx';
 
 export function useExport(user: AuthUser | null, filters: SettlementBatchFilters) {
   const [isExporting, setIsExporting] = useState(false);

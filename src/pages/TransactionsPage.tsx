@@ -207,7 +207,7 @@ export default function TransactionsPage() {
       <ExportModal
         open={isExportModalOpen}
         title="Export settlement batches"
-        description="Generate a CSV or PDF from the current filtered settlement batch view."
+        description="Generate a CSV or Excel file from the current filtered settlement batch view."
         isExporting={isExporting}
         onClose={() => {
           if (isExporting) return;

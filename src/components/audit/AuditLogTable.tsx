@@ -11,7 +11,7 @@ const actionLabels: Record<AuditEntry['action'], { label: string; variant: 'info
   login: { label: 'Login', variant: 'info' },
   logout: { label: 'Logout', variant: 'neutral' },
   export_csv: { label: 'Export CSV', variant: 'success' },
-  export_pdf: { label: 'Export PDF', variant: 'success' },
+  export_excel: { label: 'Export Excel', variant: 'success' },
   mda_invited: { label: 'User Invited', variant: 'info' },
   mda_deactivated: { label: 'Deactivated', variant: 'warning' },
   mda_reactivated: { label: 'Reactivated', variant: 'success' },
