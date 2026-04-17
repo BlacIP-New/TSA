@@ -1,4 +1,5 @@
 export type MDAStatus = 'pending' | 'active' | 'inactive';
+export type ManagedUserType = 'system_admin' | 'system_user' | 'mda_admin' | 'mda_user';
 
 export interface MDARecord {
   id: string;
@@ -39,10 +40,11 @@ export interface MDAUser {
   id: string;
   email: string;
   name: string;
-  mdaId: string;
-  mdaCode: string;
-  mdaName: string;
-  collectionCode: string;
+  userType: ManagedUserType;
+  mdaId?: string;
+  mdaCode?: string;
+  mdaName?: string;
+  collectionCode?: string;
   serviceCode?: string;
   status: MDAStatus;
   invitedAt: string;
@@ -54,7 +56,8 @@ export interface MDAUser {
 
 export interface InviteMDAPayload {
   email: string;
-  mdaId: string;
-  collectionCode: string;
+  userType: ManagedUserType;
+  mdaId?: string;
+  collectionCode?: string;
   serviceCode?: string;
 }

@@ -20,6 +20,7 @@ export interface SettlementLine {
   settledDate: string;
   collectionCode: string;
   serviceCode: string;
+  mdaId: string;
   mdaName: string;
   aggregatorId: string;
   status: SettlementStatus;
@@ -29,6 +30,7 @@ export interface SettlementBatch {
   id: string;
   batchId: string;
   settledDate: string;
+  mdaId: string;
   mdaName: string;
   collectionCode: string;
   serviceCode: string;
@@ -53,6 +55,7 @@ export interface SettlementBatchFilters {
 
 export interface CollectionSummaryParams {
   aggregatorId: string;
+  mdaId?: string;
   collectionCode?: string;
   serviceCode?: string;
   from: string;
@@ -104,6 +107,7 @@ export interface CollectionChart {
 
 export interface SettlementBatchQueryParams extends SettlementBatchFilters {
   aggregatorId: string;
+  mdaId?: string;
   collectionCode?: string;
   serviceCode?: string;
   page?: number;

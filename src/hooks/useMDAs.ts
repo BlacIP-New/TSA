@@ -73,15 +73,21 @@ export function useMDAs(user: AuthUser | null) {
 
     try {
       const nextMdas = await getMDAs(user.aggregatorId);
+
+      const scopedMdas =
+        user.role === 'mda_admin' && user.mdaId
+          ? nextMdas.filter((entry) => entry.id === user.mdaId)
+          : nextMdas;
+
       const nextSelectedMDAId =
-        selectedMDAId && nextMdas.some((entry) => entry.id === selectedMDAId)
+        selectedMDAId && scopedMdas.some((entry) => entry.id === selectedMDAId)
           ? selectedMDAId
-          : nextMdas[0]?.id ?? null;
+          : scopedMdas[0]?.id ?? null;
       const collectionsByMda = await Promise.all(
-        nextMdas.map((entry) => getMDACollections(entry.id)),
+        scopedMdas.map((entry) => getMDACollections(entry.id)),
       );
 
-      setMdas(nextMdas);
+      setMdas(scopedMdas);
       setAllCollections(collectionsByMda.flat());
 
       if (!nextSelectedMDAId) {
@@ -98,9 +104,14 @@ export function useMDAs(user: AuthUser | null) {
         getMDAUsers(user.aggregatorId),
       ]);
 
+      const scopedUsers =
+        user.role === 'mda_admin' && user.mdaId
+          ? nextUsers.filter((entry) => entry.mdaId === user.mdaId)
+          : nextUsers;
+
       setSelectedMDAId(nextSelectedMDAId);
       setSelectedMDADetail(detail);
-      setUsers(nextUsers);
+      setUsers(scopedUsers);
       setSelectedCollectionCode((current) => {
         if (current && collectionsByMda.flat().some((entry) => entry.code === current)) {
           return current;
@@ -122,7 +133,7 @@ export function useMDAs(user: AuthUser | null) {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedMDAId, user?.aggregatorId]);
+  }, [selectedMDAId, user?.aggregatorId, user?.mdaId, user?.role]);
 
   const loadSelectedContext = useCallback(async () => {
     if (!user?.aggregatorId || !selectedMDAId) {
@@ -198,22 +209,27 @@ export function useMDAs(user: AuthUser | null) {
         throw new Error('Missing admin session context.');
       }
 
-      const detail = await getMDADetail(payload.mdaId);
+      const inviteMdaId = payload.mdaId ?? user.mdaId;
+      const detail = inviteMdaId ? await getMDADetail(inviteMdaId) : null;
       const inviteResult = await inviteMDAUser({
         ...payload,
         aggregatorId: user.aggregatorId,
         invitedBy: user.id,
+        invitedByRole: user.role,
+        invitedByMdaId: user.mdaId,
       });
       await logAuditEntry({
         userId: user.id,
         userEmail: user.email,
         userName: user.name,
         action: 'mda_invited',
-        details: `Invitation sent for ${detail.record.mdaCode} (${payload.collectionCode}${payload.serviceCode ? ` / ${payload.serviceCode}` : ''}) to ${payload.email}.`,
+        details: `Invitation sent for ${detail?.record.mdaCode ?? 'SYSTEM'} (${payload.collectionCode ?? 'n/a'}${payload.serviceCode ? ` / ${payload.serviceCode}` : ''}) to ${payload.email}.`,
         aggregatorId: user.aggregatorId,
       });
       await refresh();
-      setSelectedMDAId(payload.mdaId);
+      if (inviteMdaId) {
+        setSelectedMDAId(inviteMdaId);
+      }
       return inviteResult;
     },
     [refresh, user],
@@ -230,7 +246,7 @@ export function useMDAs(user: AuthUser | null) {
             userEmail: user.email,
             userName: user.name,
             action: 'invitation_resent',
-            details: `Invitation resent to ${target.email} for ${target.mdaCode} (${target.collectionCode}${target.serviceCode ? ` / ${target.serviceCode}` : ''}).`,
+            details: `Invitation resent to ${target.email} for ${target.mdaCode ?? 'SYSTEM'} (${target.collectionCode ?? 'n/a'}${target.serviceCode ? ` / ${target.serviceCode}` : ''}).`,
             aggregatorId: user.aggregatorId,
           });
         }
@@ -254,7 +270,7 @@ export function useMDAs(user: AuthUser | null) {
           userEmail: user.email,
           userName: user.name,
           action: 'mda_deactivated',
-          details: `${updated.email} was deactivated for ${updated.mdaCode} (${updated.collectionCode}${updated.serviceCode ? ` / ${updated.serviceCode}` : ''}).`,
+          details: `${updated.email} was deactivated for ${updated.mdaCode ?? 'SYSTEM'} (${updated.collectionCode ?? 'n/a'}${updated.serviceCode ? ` / ${updated.serviceCode}` : ''}).`,
           aggregatorId: user.aggregatorId,
         });
       }
@@ -272,7 +288,7 @@ export function useMDAs(user: AuthUser | null) {
           userEmail: user.email,
           userName: user.name,
           action: 'mda_reactivated',
-          details: `${updated.email} was reactivated for ${updated.mdaCode} (${updated.collectionCode}${updated.serviceCode ? ` / ${updated.serviceCode}` : ''}).`,
+          details: `${updated.email} was reactivated for ${updated.mdaCode ?? 'SYSTEM'} (${updated.collectionCode ?? 'n/a'}${updated.serviceCode ? ` / ${updated.serviceCode}` : ''}).`,
           aggregatorId: user.aggregatorId,
         });
       }

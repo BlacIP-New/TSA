@@ -186,7 +186,7 @@ export default function TransactionsPage() {
           <>
             <SettlementBatchTable
               batches={result.data}
-              isAdmin={user?.role === 'aggregator_admin'}
+              isAdmin={user?.role === 'system_admin' || user?.role === 'system_user'}
               isLoading={isLoading}
               onSelect={setSelectedBatchId}
             />

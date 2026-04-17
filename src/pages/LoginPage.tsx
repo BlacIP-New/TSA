@@ -123,23 +123,31 @@ export default function LoginPage() {
             <p className="mb-2 text-xs font-semibold text-slate-700">Test accounts</p>
             <div className="space-y-1.5 text-xs text-slate-600">
               <div>
-                <span className="font-medium">Admin:</span>{' '}
+                <span className="font-medium">NSW SYSTEM ADMIN:</span>{' '}
                 admin@nsw.gov.ng / Admin@1234
               </div>
               <div>
-                <span className="font-medium">MDA User:</span>{' '}
+                <span className="font-medium">NSW SYSTEM USER:</span>{' '}
+                operations@nsw.gov.ng / System@1234
+              </div>
+              <div>
+                <span className="font-medium">MDA ADMIN:</span>{' '}
+                mdaadmin@works.gov.ng / MDAAdmin@1234
+              </div>
+              <div>
+                <span className="font-medium">MDA USER:</span>{' '}
                 finance@fmf.gov.ng / Viewer@1234
               </div>
               <div>
-                <span className="font-medium">MDA User:</span>{' '}
+                <span className="font-medium">MDA USER:</span>{' '}
                 director@works.gov.ng / Viewer@1234
               </div>
               <div>
-                <span className="font-medium">MDA User:</span>{' '}
+                <span className="font-medium">MDA USER:</span>{' '}
                 audit@lirs.gov.ng / Viewer@1234
               </div>
               <div>
-                <span className="font-medium">MDA User:</span>{' '}
+                <span className="font-medium">MDA USER:</span>{' '}
                 collections@vis.gov.ng / Viewer@1234
               </div>
             </div>

@@ -57,15 +57,18 @@ function calculatePercentageChange(current: number, previous: number) {
 
 function getScopedSettlementBatches({
   aggregatorId,
+  mdaId,
   collectionCode,
   serviceCode,
 }: {
   aggregatorId: string;
+  mdaId?: string;
   collectionCode?: string;
   serviceCode?: string;
 }) {
   return mockSettlementBatches.filter((batch) => {
     if (batch.aggregatorId !== aggregatorId) return false;
+    if (mdaId && batch.mdaId !== mdaId) return false;
     if (collectionCode && batch.collectionCode !== collectionCode) return false;
     if (serviceCode && batch.serviceCode !== serviceCode) return false;
     return true;
@@ -253,6 +256,7 @@ export async function getSettlementBatches(
 
 interface SettlementAccessScope {
   aggregatorId: string;
+  mdaId?: string;
   collectionCode?: string;
   serviceCode?: string;
 }
@@ -270,6 +274,10 @@ export async function getSettlementBatchDetail(
 
   if (detail.batch.aggregatorId !== scope.aggregatorId) {
     throw new Error('Access denied. This settlement batch is outside the active aggregator scope.');
+  }
+
+  if (scope.mdaId && detail.batch.mdaId !== scope.mdaId) {
+    throw new Error('Access denied. This settlement batch is outside your assigned MDA scope.');
   }
 
   if (scope.collectionCode && detail.batch.collectionCode !== scope.collectionCode) {

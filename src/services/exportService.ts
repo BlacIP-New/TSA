@@ -42,16 +42,18 @@ interface ExportSettlementsParams {
 function buildScopeSummary(user: AuthUser, filters: SettlementBatchFilters): ExportScopeSummary {
   const generatedAt = new Date().toISOString();
   const scopeLabel =
-    user.role === 'mda_viewer'
+    user.role === 'mda_user'
       ? `${user.collectionCode ?? 'unassigned'}-${user.serviceCode ?? 'unassigned'}`
-      : user.aggregatorName ?? 'aggregator-scope';
+      : user.role === 'mda_admin'
+        ? `${user.mdaCode ?? 'mda'}-all-collections`
+        : user.aggregatorName ?? 'aggregator-scope';
 
   return {
     portalName: 'TSA Collection Insight Portal',
     scopeLabel,
-    mdaName: user.role === 'mda_viewer' ? user.mdaName ?? 'Assigned MDA' : 'All MDAs',
-    collectionCode: user.collectionCode ?? 'All Collections',
-    serviceCode: user.serviceCode ?? 'All Services',
+    mdaName: user.role === 'mda_user' || user.role === 'mda_admin' ? user.mdaName ?? 'Assigned MDA' : 'All MDAs',
+    collectionCode: user.role === 'mda_user' ? user.collectionCode ?? 'Assigned Collection' : 'All Collections',
+    serviceCode: user.role === 'mda_user' ? user.serviceCode ?? 'All Services' : 'All Services',
     generatedAt,
     generatedBy: user.email,
     dateRangeLabel: buildExportDateRangeLabel(filters),
@@ -106,8 +108,9 @@ export async function exportSettlements(params: ExportSettlementsParams): Promis
     const batches = (
       await getSettlementBatches({
         aggregatorId: user.aggregatorId ?? '',
-        collectionCode: user.role === 'mda_viewer' ? user.collectionCode : undefined,
-        serviceCode: user.role === 'mda_viewer' ? user.serviceCode : undefined,
+        mdaId: user.role === 'mda_admin' || user.role === 'mda_user' ? user.mdaId : undefined,
+        collectionCode: user.role === 'mda_user' ? user.collectionCode : undefined,
+        serviceCode: user.role === 'mda_user' ? user.serviceCode : undefined,
         page: 1,
         limit: 10_000,
         ...filters,
@@ -137,8 +140,9 @@ export async function exportSettlements(params: ExportSettlementsParams): Promis
 
   const detail = await getSettlementBatchDetail(target.batchId, {
     aggregatorId: user.aggregatorId ?? '',
-    collectionCode: user.role === 'mda_viewer' ? user.collectionCode : undefined,
-    serviceCode: user.role === 'mda_viewer' ? user.serviceCode : undefined,
+    mdaId: user.role === 'mda_admin' || user.role === 'mda_user' ? user.mdaId : undefined,
+    collectionCode: user.role === 'mda_user' ? user.collectionCode : undefined,
+    serviceCode: user.role === 'mda_user' ? user.serviceCode : undefined,
   });
 
   const detailScope: ExportScopeSummary = {

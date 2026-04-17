@@ -27,7 +27,7 @@ export const router = createBrowserRouter([
       {
         path: '/mda-management',
         element: (
-          <ProtectedRoute requiredRole="aggregator_admin">
+          <ProtectedRoute requiredRoles={['system_admin', 'system_user', 'mda_admin']}>
             <MDAManagementPage />
           </ProtectedRoute>
         ),
@@ -35,7 +35,7 @@ export const router = createBrowserRouter([
       {
         path: '/audit-log',
         element: (
-          <ProtectedRoute requiredRole="aggregator_admin">
+          <ProtectedRoute requiredRole="system_admin">
             <AuditLogPage />
           </ProtectedRoute>
         ),

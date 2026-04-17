@@ -8,7 +8,7 @@ import { PageTitleProvider, usePageTitle } from '../../context/PageTitleContext'
 const PAGE_TITLES: Record<string, string> = {
   '/dashboard': 'Dashboard',
   '/transactions': 'Transactions',
-  '/mda-management': 'MDA Management',
+  '/mda-management': 'User Management',
   '/audit-log': 'Audit Log',
 };
 

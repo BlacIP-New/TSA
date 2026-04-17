@@ -46,9 +46,11 @@ export function TopBar({ onMenuClick, title }: TopBarProps) {
   }
 
   const primaryLabel =
-    user?.role === 'aggregator_admin'
-      ? user?.aggregatorName || user?.name || 'Aggregator'
-      : user?.collectionCode || user?.name || 'Collection code';
+    user?.role === 'system_admin' || user?.role === 'system_user'
+      ? user?.name || (user?.role === 'system_admin' ? 'NSW SYSTEM ADMIN' : 'NSW SYSTEM USER')
+      : user?.role === 'mda_admin'
+        ? user?.name || 'MDA ADMIN'
+        : user?.name || 'MDA USER';
 
   return (
     <>

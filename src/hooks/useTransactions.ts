@@ -67,8 +67,9 @@ export function useTransactionDashboard(user: AuthUser | null) {
     try {
       const scope = {
         aggregatorId: user.aggregatorId,
-        collectionCode: user.role === 'mda_viewer' ? user.collectionCode : undefined,
-        serviceCode: user.role === 'mda_viewer' ? user.serviceCode : undefined,
+        mdaId: user.role === 'mda_admin' || user.role === 'mda_user' ? user.mdaId : undefined,
+        collectionCode: user.role === 'mda_user' ? user.collectionCode : undefined,
+        serviceCode: user.role === 'mda_user' ? user.serviceCode : undefined,
         from: dateRange.from,
         to: dateRange.to,
       };
@@ -93,6 +94,7 @@ export function useTransactionDashboard(user: AuthUser | null) {
     dateRange.from,
     dateRange.to,
     user?.aggregatorId,
+    user?.mdaId,
     user?.collectionCode,
     user?.role,
     user?.serviceCode,
@@ -145,8 +147,9 @@ export function useSettlementBatchLedger(
     try {
       const response = await getSettlementBatches({
         aggregatorId: user.aggregatorId,
-        collectionCode: user.role === 'mda_viewer' ? user.collectionCode : undefined,
-        serviceCode: user.role === 'mda_viewer' ? user.serviceCode : undefined,
+        mdaId: user.role === 'mda_admin' || user.role === 'mda_user' ? user.mdaId : undefined,
+        collectionCode: user.role === 'mda_user' ? user.collectionCode : undefined,
+        serviceCode: user.role === 'mda_user' ? user.serviceCode : undefined,
         page,
         limit,
         from,
@@ -174,6 +177,7 @@ export function useSettlementBatchLedger(
     limit,
     page,
     user?.aggregatorId,
+    user?.mdaId,
     user?.collectionCode,
     user?.role,
     user?.serviceCode,
@@ -218,8 +222,9 @@ export function useSettlementBatchDetail(batchId: string | null, user: AuthUser 
 
         const response = await getSettlementBatchDetail(currentBatchId, {
           aggregatorId: user.aggregatorId,
-          collectionCode: user.role === 'mda_viewer' ? user.collectionCode : undefined,
-          serviceCode: user.role === 'mda_viewer' ? user.serviceCode : undefined,
+          mdaId: user.role === 'mda_admin' || user.role === 'mda_user' ? user.mdaId : undefined,
+          collectionCode: user.role === 'mda_user' ? user.collectionCode : undefined,
+          serviceCode: user.role === 'mda_user' ? user.serviceCode : undefined,
         });
         if (isMounted) setDetail(response);
       } catch (caughtError) {
@@ -240,7 +245,7 @@ export function useSettlementBatchDetail(batchId: string | null, user: AuthUser 
     return () => {
       isMounted = false;
     };
-  }, [batchId, user?.aggregatorId, user?.collectionCode, user?.role, user?.serviceCode]);
+  }, [batchId, user?.aggregatorId, user?.collectionCode, user?.mdaId, user?.role, user?.serviceCode]);
 
   return {
     detail,

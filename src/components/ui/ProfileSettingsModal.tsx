@@ -33,6 +33,13 @@ export function ProfileSettingsModal({ open, onClose }: ProfileSettingsModalProp
     onClose();
   };
 
+  const roleLabels: Record<typeof user.role, string> = {
+    system_admin: 'NSW SYSTEM ADMIN',
+    system_user: 'NSW SYSTEM USER',
+    mda_admin: 'MDA ADMIN',
+    mda_user: 'MDA USER',
+  };
+
   return (
     <Modal
       open={open}
@@ -58,7 +65,7 @@ export function ProfileSettingsModal({ open, onClose }: ProfileSettingsModalProp
         <div className="grid gap-3 md:grid-cols-2">
           <div className="rounded-lg border border-gray-300 bg-white p-4">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Role</p>
-            <p className="mt-2 text-sm font-semibold text-slate-900">{user.role === 'aggregator_admin' ? 'Aggregator Admin' : 'MDA Viewer'}</p>
+            <p className="mt-2 text-sm font-semibold text-slate-900">{roleLabels[user.role]}</p>
           </div>
           <div className="rounded-lg border border-gray-300 bg-white p-4">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Status</p>

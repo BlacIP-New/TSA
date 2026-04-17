@@ -20,6 +20,7 @@ import {
   InviteMDAPayload,
   MDACollectionCode,
   MDADetail,
+  ManagedUserType,
   MDARecord,
   MDAServiceCode,
   MDAUser,
@@ -35,13 +36,15 @@ function delay(ms = NETWORK_DELAY_MS) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function toDisplayName(email: string) {
-  return email
-    .split('@')[0]
-    .split(/[._-]/)
-    .filter(Boolean)
-    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
-    .join(' ');
+function getManagedUserName(userType: ManagedUserType): string {
+  const labels: Record<ManagedUserType, string> = {
+    system_admin: 'NSW SYSTEM ADMIN',
+    system_user: 'NSW SYSTEM USER',
+    mda_admin: 'MDA ADMIN',
+    mda_user: 'MDA USER',
+  };
+
+  return labels[userType];
 }
 
 function getMDAOrThrow(mdaId: string) {
@@ -152,9 +155,21 @@ export async function getMDAUsers(aggregatorId: string, mdaId?: string): Promise
 }
 
 export async function inviteMDAUser(
-  payload: InviteMDAPayload & { aggregatorId: string; invitedBy: string },
+  payload: InviteMDAPayload & {
+    aggregatorId: string;
+    invitedBy: string;
+    invitedByRole: ManagedUserType;
+    invitedByMdaId?: string;
+  },
 ): Promise<{ user: MDAUser; setupLink: string }> {
   await delay();
+
+  if (payload.invitedByRole === 'mda_user') {
+    throw new Error('MDA Users are not permitted to send invitations.');
+  }
+
+  const invitedType: ManagedUserType =
+    payload.invitedByRole === 'mda_admin' ? 'mda_user' : payload.userType;
 
   const duplicateUser = mdaUsersStore.find(
     (user) =>
@@ -166,21 +181,44 @@ export async function inviteMDAUser(
     throw new Error('An MDA user with this email already exists.');
   }
 
-  const record = getMDAOrThrow(payload.mdaId);
-  getCollectionOrThrow(payload.mdaId, payload.collectionCode);
-  if (payload.serviceCode) {
-    getServiceOrThrow(payload.mdaId, payload.serviceCode, payload.collectionCode);
+  let scopedMdaId = payload.mdaId;
+
+  if (payload.invitedByRole === 'mda_admin') {
+    if (!payload.invitedByMdaId) {
+      throw new Error('Missing inviter MDA scope for this invitation.');
+    }
+    scopedMdaId = payload.invitedByMdaId;
+  }
+
+  let record: MDARecord | null = null;
+
+  if (invitedType === 'mda_admin' || invitedType === 'mda_user') {
+    if (!scopedMdaId) {
+      throw new Error('MDA Code is required for MDA Admin or MDA User invitations.');
+    }
+    record = getMDAOrThrow(scopedMdaId);
+  }
+
+  if (invitedType === 'mda_user') {
+    if (!payload.collectionCode) {
+      throw new Error('Collection code is required for MDA User invitations.');
+    }
+    getCollectionOrThrow(scopedMdaId!, payload.collectionCode);
+    if (payload.serviceCode) {
+      getServiceOrThrow(scopedMdaId!, payload.serviceCode, payload.collectionCode);
+    }
   }
 
   const invitedUser: MDAUser = {
     id: `mda_usr_${Date.now()}`,
     email: payload.email.toLowerCase(),
-    name: toDisplayName(payload.email),
-    mdaId: record.id,
-    mdaCode: record.mdaCode,
-    mdaName: record.mdaName,
-    collectionCode: payload.collectionCode,
-    serviceCode: payload.serviceCode,
+    name: getManagedUserName(invitedType),
+    userType: invitedType,
+    mdaId: record?.id,
+    mdaCode: record?.mdaCode,
+    mdaName: record?.mdaName,
+    collectionCode: invitedType === 'mda_user' ? payload.collectionCode : undefined,
+    serviceCode: invitedType === 'mda_user' ? payload.serviceCode : undefined,
     status: 'pending',
     invitedAt: new Date().toISOString(),
     aggregatorId: payload.aggregatorId,
@@ -192,8 +230,11 @@ export async function inviteMDAUser(
   const provision = provisionInvitedUserAccess({
     email: invitedUser.email,
     name: invitedUser.name,
+    role: invitedUser.userType,
     aggregatorId: invitedUser.aggregatorId,
-    aggregatorName: 'NSW Aggregator',
+    aggregatorName: 'NSW Platform',
+    mdaId: invitedUser.mdaId,
+    mdaCode: invitedUser.mdaCode,
     mdaName: invitedUser.mdaName,
     collectionCode: invitedUser.collectionCode,
     serviceCode: invitedUser.serviceCode,
@@ -223,8 +264,11 @@ export async function resendMDAInvite(id: string): Promise<{ setupLink: string }
   const provision = provisionInvitedUserAccess({
     email: target.email,
     name: target.name,
+    role: target.userType,
     aggregatorId: target.aggregatorId,
-    aggregatorName: 'NSW Aggregator',
+    aggregatorName: 'NSW Platform',
+    mdaId: target.mdaId,
+    mdaCode: target.mdaCode,
     mdaName: target.mdaName,
     collectionCode: target.collectionCode,
     serviceCode: target.serviceCode,
@@ -251,8 +295,11 @@ export async function getMDAInviteSetupLink(id: string): Promise<{ setupLink: st
   const provision = provisionInvitedUserAccess({
     email: target.email,
     name: target.name,
+    role: target.userType,
     aggregatorId: target.aggregatorId,
-    aggregatorName: 'NSW Aggregator',
+    aggregatorName: 'NSW Platform',
+    mdaId: target.mdaId,
+    mdaCode: target.mdaCode,
     mdaName: target.mdaName,
     collectionCode: target.collectionCode,
     serviceCode: target.serviceCode,

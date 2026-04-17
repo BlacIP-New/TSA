@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Building2, ExternalLink, Mail, ShieldPlus } from 'lucide-react';
 import { InviteMDAPayload, MDACollectionCode, MDARecord, MDAServiceCode } from '../../types/mda';
 import { validateEmail } from '../../utils/validators';
+import { UserRole } from '../../types/auth';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Modal } from '../ui/Modal';
@@ -11,6 +12,8 @@ import { useToast } from '../../context/ToastContext';
 interface InviteMDAModalProps {
   open: boolean;
   mdas: MDARecord[];
+  inviterRole: UserRole;
+  inviterMdaId?: string;
   defaultMDAId?: string | null;
   isSubmitting?: boolean;
   loadMDACollections: (mdaId: string) => Promise<MDACollectionCode[]>;
@@ -21,6 +24,7 @@ interface InviteMDAModalProps {
 
 const buildInitialValues = (mdaId?: string | null): InviteMDAPayload => ({
   email: '',
+  userType: 'mda_user',
   mdaId: mdaId ?? '',
   collectionCode: '',
   serviceCode: '',
@@ -29,6 +33,8 @@ const buildInitialValues = (mdaId?: string | null): InviteMDAPayload => ({
 export function InviteMDAModal({
   open,
   mdas,
+  inviterRole,
+  inviterMdaId,
   defaultMDAId,
   isSubmitting = false,
   loadMDACollections,
@@ -50,6 +56,19 @@ export function InviteMDAModal({
     [mdas, values.mdaId],
   );
 
+  const isMdaAdminInviter = inviterRole === 'mda_admin';
+  const canSelectUserType = inviterRole === 'system_admin' || inviterRole === 'system_user';
+  const availableUserTypeOptions = isMdaAdminInviter
+    ? [{ label: 'MDA USER', value: 'mda_user' }]
+    : [
+        { label: 'NSW SYSTEM ADMIN', value: 'system_admin' },
+        { label: 'NSW SYSTEM USER', value: 'system_user' },
+        { label: 'MDA ADMIN', value: 'mda_admin' },
+        { label: 'MDA USER', value: 'mda_user' },
+      ];
+  const needsMdaCode = values.userType === 'mda_admin' || values.userType === 'mda_user';
+  const needsCollectionCode = values.userType === 'mda_user';
+
   useEffect(() => {
     if (!open) {
       setValues(buildInitialValues(defaultMDAId));
@@ -62,11 +81,22 @@ export function InviteMDAModal({
       return;
     }
 
-    setValues((current) => buildInitialValues(current.mdaId || defaultMDAId));
-  }, [defaultMDAId, open]);
+    setValues((current) => {
+      const initial = buildInitialValues(current.mdaId || defaultMDAId || inviterMdaId);
+      if (isMdaAdminInviter) {
+        return {
+          ...initial,
+          userType: 'mda_user',
+          mdaId: inviterMdaId ?? initial.mdaId,
+        };
+      }
+
+      return current.email ? current : initial;
+    });
+  }, [defaultMDAId, inviterMdaId, isMdaAdminInviter, open]);
 
   useEffect(() => {
-    if (!open || !values.mdaId) {
+    if (!open || !values.mdaId || !needsMdaCode) {
       setCollectionCodes([]);
       setServiceCodes([]);
       return;
@@ -108,10 +138,10 @@ export function InviteMDAModal({
     return () => {
       isMounted = false;
     };
-  }, [defaultMDAId, loadMDACollections, open, showToast, values.collectionCode, values.mdaId]);
+  }, [defaultMDAId, loadMDACollections, needsMdaCode, open, showToast, values.collectionCode, values.mdaId]);
 
   useEffect(() => {
-    if (!open || !values.mdaId) {
+    if (!open || !values.mdaId || !needsCollectionCode) {
       setServiceCodes([]);
       return;
     }
@@ -145,12 +175,13 @@ export function InviteMDAModal({
     return () => {
       isMounted = false;
     };
-  }, [loadMDAServiceCodes, open, showToast, values.collectionCode, values.mdaId]);
+  }, [loadMDAServiceCodes, needsCollectionCode, open, showToast, values.collectionCode, values.mdaId]);
 
   function updateValue<K extends keyof InviteMDAPayload>(key: K, value: InviteMDAPayload[K]) {
     setValues((current) => ({
       ...current,
       [key]: value,
+      ...(key === 'userType' ? { mdaId: isMdaAdminInviter ? inviterMdaId ?? '' : '', collectionCode: '', serviceCode: '' } : null),
       ...(key === 'mdaId' ? { collectionCode: '', serviceCode: '' } : null),
     }));
     setSetupLink(null);
@@ -162,23 +193,25 @@ export function InviteMDAModal({
     const emailError = validateEmail(values.email);
     const nextFieldErrors: Partial<Record<keyof InviteMDAPayload, string>> = {
       email: emailError ?? undefined,
-      mdaId: values.mdaId ? undefined : 'MDA is required.',
-      collectionCode: values.collectionCode ? undefined : 'Collection code is required.',
+      userType: values.userType ? undefined : 'User type is required.',
+      mdaId: needsMdaCode && !values.mdaId ? 'MDA Code is required.' : undefined,
+      collectionCode: needsCollectionCode && !values.collectionCode ? 'Collection code is required.' : undefined,
       serviceCode: undefined,
     };
 
     setFieldErrors(nextFieldErrors);
 
-    if (nextFieldErrors.email || nextFieldErrors.mdaId || nextFieldErrors.collectionCode) {
+    if (nextFieldErrors.email || nextFieldErrors.userType || nextFieldErrors.mdaId || nextFieldErrors.collectionCode) {
       return;
     }
 
     try {
       const payload = {
         email: values.email.trim().toLowerCase(),
-        mdaId: values.mdaId,
-        collectionCode: values.collectionCode,
-        serviceCode: values.serviceCode || undefined,
+        userType: values.userType,
+        mdaId: needsMdaCode ? values.mdaId : undefined,
+        collectionCode: needsCollectionCode ? values.collectionCode : undefined,
+        serviceCode: needsCollectionCode ? values.serviceCode || undefined : undefined,
       };
 
       const result = await onSubmit(payload);
@@ -262,25 +295,42 @@ export function InviteMDAModal({
         />
 
         <SearchableDropdown
-          label="MDA"
+          label="User Type"
+          value={values.userType}
+          error={fieldErrors.userType}
+          disabled={!canSelectUserType}
+          hint={isMdaAdminInviter ? 'MDA ADMIN can invite only MDA USER.' : undefined}
+          placeholder="Select user type"
+          searchPlaceholder="Search user types"
+          options={availableUserTypeOptions}
+          onChange={(nextUserType) => updateValue('userType', nextUserType as InviteMDAPayload['userType'])}
+        />
+
+        {needsMdaCode && (
+          <SearchableDropdown
+          label="MDA Code"
           value={values.mdaId}
           error={fieldErrors.mdaId}
-          placeholder="Select MDA"
+          disabled={isMdaAdminInviter}
+          hint={isMdaAdminInviter ? 'Pre-filled from your MDA scope.' : undefined}
+          placeholder="Select MDA code"
           searchPlaceholder="Search by MDA code or name"
           options={mdas.map((mda) => ({
             label: `${mda.mdaCode} — ${mda.mdaName}`,
             value: mda.id,
           }))}
           onChange={(nextMdaId) => updateValue('mdaId', nextMdaId)}
-        />
+          />
+        )}
 
-        <div className="space-y-4">
+        {needsCollectionCode && (
+          <div className="space-y-4">
           <SearchableDropdown
             label="Collection code"
             value={values.collectionCode}
             error={fieldErrors.collectionCode}
             disabled={!values.mdaId || isLoadingScope}
-            hint={values.mdaId && isLoadingScope ? 'Loading MDA collections...' : 'Select an MDA first'}
+            hint={values.mdaId && isLoadingScope ? 'Loading MDA collections...' : 'Select MDA Code first'}
             placeholder={values.mdaId ? 'Select collection code' : 'Choose an MDA first'}
             searchPlaceholder="Search by collection code or name"
             options={collectionCodes.map((collection) => ({
@@ -311,9 +361,10 @@ export function InviteMDAModal({
             }))}
             onChange={(nextServiceCode) => updateValue('serviceCode', nextServiceCode)}
           />
-        </div>
+          </div>
+        )}
 
-        {selectedMDA && (
+        {selectedMDA && needsMdaCode && (
           <div className="app-card p-4">
             <div className="flex items-start gap-3">
               <div className="rounded-lg border border-gray-300 bg-white p-2 text-slate-600">

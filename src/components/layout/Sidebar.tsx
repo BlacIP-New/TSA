@@ -19,7 +19,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard },
   { label: 'Settlement Transactions', to: '/transactions', icon: List },
-  { label: 'MDA Management', to: '/mda-management', icon: Users, adminOnly: true },
+  { label: 'User Management', to: '/mda-management', icon: Users, adminOnly: true },
   { label: 'Audit Log', to: '/audit-log', icon: ClipboardList, adminOnly: true },
 ];
 
@@ -30,9 +30,14 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { user } = useAuth();
-  const isAdmin = user?.role === 'aggregator_admin';
+  const canManageUsers = user?.role === 'system_admin' || user?.role === 'system_user' || user?.role === 'mda_admin';
+  const canViewAudit = user?.role === 'system_admin';
 
-  const filteredNav = navItems.filter((item) => !item.adminOnly || isAdmin);
+  const filteredNav = navItems.filter((item) => {
+    if (!item.adminOnly) return true;
+    if (item.to === '/audit-log') return canViewAudit;
+    return canManageUsers;
+  });
 
   const sidebarContent = (
     <div className="flex h-full flex-col border-r border-slate-200/80 bg-white/72 text-slate-900 backdrop-blur-xl">
@@ -57,9 +62,9 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       <div className="border-b border-slate-200/70 px-5 py-4">
         <p className="app-kicker">Scope</p>
         <p className="mt-2 text-sm font-semibold text-slate-900">
-          {isAdmin ? user?.aggregatorName : user?.mdaName}
+          {user?.role === 'system_admin' || user?.role === 'system_user' ? user?.aggregatorName : user?.mdaName}
         </p>
-        {!isAdmin && (
+        {user?.role === 'mda_user' && (
           <p className="mt-1 text-xs text-slate-500">
             {user?.collectionCode} / {user?.serviceCode}
           </p>

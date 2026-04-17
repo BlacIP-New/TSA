@@ -5,9 +5,10 @@ import { UserRole } from '../../types/auth';
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requiredRole?: UserRole;
+  requiredRoles?: UserRole[];
 }
 
-export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
+export function ProtectedRoute({ children, requiredRole, requiredRoles }: ProtectedRouteProps) {
   const { user, isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
@@ -25,7 +26,9 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     return <Navigate to="/login" replace />;
   }
 
-  if (requiredRole && user?.role !== requiredRole) {
+  const roles = requiredRoles ?? (requiredRole ? [requiredRole] : []);
+
+  if (roles.length > 0 && (!user?.role || !roles.includes(user.role))) {
     return <Navigate to="/dashboard" replace />;
   }
 

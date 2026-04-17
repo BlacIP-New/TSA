@@ -1,4 +1,4 @@
-export type UserRole = 'aggregator_admin' | 'mda_viewer';
+export type UserRole = 'system_admin' | 'system_user' | 'mda_admin' | 'mda_user';
 
 export type UserStatus = 'active' | 'inactive' | 'pending';
 
@@ -10,6 +10,8 @@ export interface AuthUser {
   status: UserStatus;
   aggregatorId?: string;
   aggregatorName?: string;
+  mdaId?: string;
+  mdaCode?: string;
   collectionCode?: string;
   serviceCode?: string;
   mdaName?: string;

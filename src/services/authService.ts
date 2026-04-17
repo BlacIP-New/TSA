@@ -15,15 +15,19 @@
 import { AuthUser, LoginCredentials, LoginResponse } from '../types/auth';
 import {
   MOCK_ADMIN_USER,
+  MOCK_MDA_ADMIN_WORKS,
   MOCK_MDA_USER,
   MOCK_MDA_USER_LIRS,
   MOCK_MDA_USER_VIS,
   MOCK_MDA_USER_WORKS,
+  MOCK_SYSTEM_USER,
 } from '../data/mockUsers';
 import { logAuditEntry } from './auditService';
 
 const DEMO_CREDENTIALS: Record<string, { password: string; user: AuthUser }> = {
   'admin@nsw.gov.ng': { password: 'Admin@1234', user: MOCK_ADMIN_USER },
+  'operations@nsw.gov.ng': { password: 'System@1234', user: MOCK_SYSTEM_USER },
+  'mdaadmin@works.gov.ng': { password: 'MDAAdmin@1234', user: MOCK_MDA_ADMIN_WORKS },
   'finance@fmf.gov.ng': { password: 'Viewer@1234', user: MOCK_MDA_USER },
   'director@works.gov.ng': { password: 'Viewer@1234', user: MOCK_MDA_USER_WORKS },
   'audit@lirs.gov.ng': { password: 'Viewer@1234', user: MOCK_MDA_USER_LIRS },
@@ -47,10 +51,13 @@ type SetupTokenRecord = {
 export interface InvitedUserAccessPayload {
   email: string;
   name: string;
+  role: AuthUser['role'];
   aggregatorId: string;
   aggregatorName: string;
-  mdaName: string;
-  collectionCode: string;
+  mdaId?: string;
+  mdaCode?: string;
+  mdaName?: string;
+  collectionCode?: string;
   serviceCode?: string;
 }
 
@@ -109,10 +116,12 @@ export function provisionInvitedUserAccess(payload: InvitedUserAccessPayload) {
     id: userId,
     email,
     name: payload.name,
-    role: 'mda_viewer',
+    role: payload.role,
     status: 'pending',
     aggregatorId: payload.aggregatorId,
     aggregatorName: payload.aggregatorName,
+    mdaId: payload.mdaId,
+    mdaCode: payload.mdaCode,
     collectionCode: payload.collectionCode,
     serviceCode: payload.serviceCode,
     mdaName: payload.mdaName,

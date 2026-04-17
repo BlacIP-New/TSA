@@ -9,7 +9,7 @@ import { formatCompactCurrency, formatCurrency, formatDate } from '../utils/form
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const isAdmin = user?.role === 'aggregator_admin';
+  const isSystemRole = user?.role === 'system_admin' || user?.role === 'system_user';
   const { dateRange, setDateRange, summary, chart, isLoading, error } =
     useTransactionDashboard(user);
 
@@ -30,7 +30,7 @@ export default function DashboardPage() {
       change: summary?.countPercentageChange,
       icon: <Rows3 className="h-5 w-5" />,
     },
-    isAdmin
+    isSystemRole
       ? {
           label: 'Leading MDA',
           value: formatCompactCurrency(summary?.topPerformer?.totalAmount ?? 0),
@@ -40,8 +40,13 @@ export default function DashboardPage() {
         }
       : {
           label: 'Assigned Scope',
-          value: user.collectionCode ?? 'Not assigned',
-          helper: user.serviceCode ? `Service ${user.serviceCode}` : 'No service code assigned',
+          value: user.role === 'mda_admin' ? user.mdaCode ?? 'MDA scope' : user.collectionCode ?? 'Not assigned',
+          helper:
+            user.role === 'mda_admin'
+              ? 'All collection codes under your MDA'
+              : user.serviceCode
+                ? `Service ${user.serviceCode}`
+                : 'No service code assigned',
           icon: <Building2 className="h-5 w-5" />,
         },
   ];
@@ -77,9 +82,11 @@ export default function DashboardPage() {
         <section className="app-panel border-gray-300 p-5">
           <p className="text-base font-semibold text-slate-950">Current scope</p>
           <p className="mt-1 text-sm text-slate-500">
-            {isAdmin
+            {isSystemRole
               ? 'All dashboard metrics roll up across every MDA under the active aggregator.'
-              : 'This view is already restricted to the signed-in MDA assignment.'}
+              : user.role === 'mda_admin'
+                ? 'This view is restricted to your MDA and aggregated across all collections under it.'
+                : 'This view is already restricted to your assigned MDA collection scope.'}
           </p>
 
           <dl className="mt-5 space-y-3">
@@ -93,11 +100,13 @@ export default function DashboardPage() {
               <dt className="app-kicker">Aggregator</dt>
               <dd className="mt-2 text-sm font-semibold text-slate-950">{user.aggregatorName}</dd>
             </div>
-            {!isAdmin && (
+            {!isSystemRole && (
               <div className="app-card px-4 py-3">
-                <dt className="app-kicker">Collection scope</dt>
+                <dt className="app-kicker">Scope</dt>
                 <dd className="mt-2 text-sm font-semibold text-slate-950">
-                  {user.collectionCode} / {user.serviceCode}
+                  {user.role === 'mda_admin'
+                    ? `${user.mdaCode} (all collections)`
+                    : `${user.collectionCode} / ${user.serviceCode}`}
                 </dd>
               </div>
             )}
@@ -108,11 +117,13 @@ export default function DashboardPage() {
       <MDABreakdownTable
         rows={summary?.breakdown ?? []}
         isLoading={isLoading}
-        title={isAdmin ? 'Per-MDA breakdown' : 'Assigned collection snapshot'}
+        title={isSystemRole ? 'Per-MDA breakdown' : user.role === 'mda_admin' ? 'MDA collection snapshot' : 'Assigned collection snapshot'}
         description={
-          isAdmin
+          isSystemRole
             ? 'Settled collections ranked by volume for the selected window.'
-            : 'Only your assigned collection and service code are included in this breakdown.'
+            : user.role === 'mda_admin'
+              ? 'All collection codes under your MDA are included in this breakdown.'
+              : 'Only your assigned collection and service code are included in this breakdown.'
         }
       />
     </div>
