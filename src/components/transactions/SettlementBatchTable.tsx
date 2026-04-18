@@ -16,7 +16,7 @@ export function SettlementBatchTable({
   isLoading = false,
   onSelect,
 }: SettlementBatchTableProps) {
-  const columnCount = isAdmin ? 8 : 7;
+  const columnCount = isAdmin ? 9 : 8;
 
   return (
     <section className="app-panel border-gray-300">
@@ -27,6 +27,7 @@ export function SettlementBatchTable({
               <th className="px-5 py-4">Settled Date</th>
               <th className="px-5 py-4">Batch ID</th>
               {isAdmin && <th className="px-5 py-4">MDA Name</th>}
+              <th className="px-5 py-4">Channel</th>
               <th className="px-5 py-4">Collection Code</th>
               <th className="px-5 py-4">Service Code</th>
               <th className="px-5 py-4">Status</th>
@@ -75,6 +76,7 @@ export function SettlementBatchTable({
                     </div>
                   </td>
                   {isAdmin && <td className="px-5 py-4 font-medium text-slate-700">{batch.mdaName}</td>}
+                  <td className="px-5 py-4 font-medium text-slate-700">{batch.channel}</td>
                   <td className="px-5 py-4 font-medium text-slate-700">{batch.collectionCode}</td>
                   <td className="px-5 py-4 font-medium text-slate-700">{batch.serviceCode}</td>
                   <td className="px-5 py-4">

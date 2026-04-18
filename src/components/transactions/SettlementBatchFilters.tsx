@@ -1,13 +1,13 @@
 import { Filter, Hash } from 'lucide-react';
 import { SettlementBatchFilters as SettlementBatchFiltersValue, SettlementStatus } from '../../types/transaction';
+import { AuthUser } from '../../types/auth';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { SearchableDropdown } from '../ui/SearchableDropdown';
-import { User } from '../../types/auth';
 
 interface SettlementBatchFiltersProps {
   filters: SettlementBatchFiltersValue;
-  user?: User | null;
+  user?: AuthUser | null;
   isLoading?: boolean;
   embedded?: boolean;
   mdaOptions?: Array<{ label: string; value: string }>;

@@ -81,6 +81,7 @@ export function SettlementBatchDetailDrawer({
 
             <dl className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               <DetailItem label="Settled date" value={formatDate(detail.batch.settledDate)} />
+              <DetailItem label="Channel" value={detail.batch.channel} />
               <DetailItem label="Collection code" value={detail.batch.collectionCode} />
               <DetailItem label="Service code" value={detail.batch.serviceCode} />
               <DetailItem label="Status" value={detail.batch.status} />
@@ -135,6 +136,7 @@ export function SettlementBatchDetailDrawer({
                     <th className="px-5 py-4">Bank</th>
                     <th className="px-5 py-4">Account Number</th>
                     <th className="px-5 py-4">Account Name</th>
+                    <th className="px-5 py-4">Channel</th>
                     <th className="px-5 py-4">Status</th>
                     <th className="px-5 py-4">Amount</th>
                   </tr>
@@ -145,6 +147,7 @@ export function SettlementBatchDetailDrawer({
                       <td className="px-5 py-4 text-slate-700">{line.bankName}</td>
                       <td className="px-5 py-4 font-medium text-slate-700 tabular-nums">{line.accountNumber}</td>
                       <td className="px-5 py-4 text-slate-700">{line.accountName}</td>
+                      <td className="px-5 py-4 text-slate-700">{line.channel}</td>
                       <td className="px-5 py-4">
                         <SettlementStatusBadge status={line.status} />
                       </td>

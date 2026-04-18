@@ -1,6 +1,12 @@
 import { appConfig } from '../config/env';
 import { mockMDACollections, mockMDARegistry, mockMDAServiceCodes } from './mockMDARegistry';
-import { SettlementBatch, SettlementBatchDetail, SettlementLine, SettlementStatus } from '../types/transaction';
+import {
+  SettlementBatch,
+  SettlementBatchDetail,
+  SettlementChannel,
+  SettlementLine,
+  SettlementStatus,
+} from '../types/transaction';
 
 const BANKS = [
   'Access Bank Plc',
@@ -41,6 +47,8 @@ const SETTLEMENT_STATUSES: SettlementStatus[] = [
   'Offline Settlement',
   'Paused Settlement',
 ];
+
+const SETTLEMENT_CHANNELS: SettlementChannel[] = ['Credo Gateway', 'Revhup', 'NSW'];
 
 function toIsoDate(year: number, month: number, day: number, hour: number, minute: number) {
   return new Date(Date.UTC(year, month, day, hour, minute, 0)).toISOString();
@@ -98,6 +106,7 @@ function buildBatchDetailsForMonth(monthOffset: number, batchCountPerMDA: number
       // Keep collection/service pairing stable so MDA viewer scope combinations always have data.
       const service = profile.services[batchIndex % profile.services.length];
       const batchStatus = SETTLEMENT_STATUSES[(mdaIndex + batchIndex) % SETTLEMENT_STATUSES.length];
+      const channel = SETTLEMENT_CHANNELS[(mdaIndex + batchIndex) % SETTLEMENT_CHANNELS.length];
       const settledDay = Math.max(1, referenceDays[batchIndex] ?? daysInMonth - batchIndex * 2);
       const settledDate = toIsoDate(year, month, settledDay, 9 + mdaIndex, 15);
       const batchId = `${year}${pad(month + 1)}${pad(settledDay)}${mdaIndex + 1}${batchIndex + 1}`;
@@ -116,6 +125,7 @@ function buildBatchDetailsForMonth(monthOffset: number, batchCountPerMDA: number
           accountName,
           amount,
           settledDate,
+          channel,
           collectionCode: collection.code,
           serviceCode: service.code,
           mdaId: profile.record.id,
@@ -129,6 +139,7 @@ function buildBatchDetailsForMonth(monthOffset: number, batchCountPerMDA: number
         id: batchId,
         batchId,
         settledDate,
+        channel,
         mdaId: profile.record.id,
         mdaName: profile.record.mdaName,
         collectionCode: collection.code,

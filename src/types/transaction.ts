@@ -10,6 +10,8 @@ export type SettlementStatus =
   | 'Offline Settlement'
   | 'Paused Settlement';
 
+export type SettlementChannel = 'Credo Gateway' | 'Revhup' | 'NSW';
+
 export interface SettlementLine {
   id: string;
   batchId: string;
@@ -18,6 +20,7 @@ export interface SettlementLine {
   accountName: string;
   amount: number;
   settledDate: string;
+  channel: SettlementChannel;
   collectionCode: string;
   serviceCode: string;
   mdaId: string;
@@ -30,6 +33,7 @@ export interface SettlementBatch {
   id: string;
   batchId: string;
   settledDate: string;
+  channel: SettlementChannel;
   mdaId: string;
   mdaName: string;
   collectionCode: string;
