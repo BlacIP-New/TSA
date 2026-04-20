@@ -14,12 +14,17 @@ export function ProfileSettingsModal({ open, onClose }: ProfileSettingsModalProp
   const { user, setUser } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+
+  const resetForm = (nextUser = user) => {
+    if (!nextUser) return;
+    setName(nextUser.name);
+    setEmail(nextUser.email);
+    setIsEditing(false);
+  };
 
   useEffect(() => {
-    if (open && user) {
-      setName(user.name);
-      setEmail(user.email);
-    }
+    if (open && user) resetForm(user);
   }, [open, user]);
 
   if (!user) return null;
@@ -30,7 +35,11 @@ export function ProfileSettingsModal({ open, onClose }: ProfileSettingsModalProp
       name: name.trim() || user.name,
       email: email.trim() || user.email,
     });
-    onClose();
+    setIsEditing(false);
+  };
+
+  const handleCancelEdit = () => {
+    resetForm(user);
   };
 
   const roleLabels: Record<typeof user.role, string> = {
@@ -44,22 +53,51 @@ export function ProfileSettingsModal({ open, onClose }: ProfileSettingsModalProp
     <Modal
       open={open}
       title="Profile settings"
-      description="Update your display details for the current session."
+      description="View your profile details, then edit and save changes when needed."
       onClose={onClose}
       size="lg"
       footer={
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <Button variant="secondary" onClick={onClose} className="w-full sm:w-auto sm:min-w-[128px]">
-            Cancel
-          </Button>
-          <Button onClick={handleSave} className="w-full sm:w-auto sm:min-w-[128px]">Save changes</Button>
+          {isEditing ? (
+            <>
+              <Button
+                variant="secondary"
+                onClick={handleCancelEdit}
+                className="w-full sm:w-auto sm:min-w-[128px]"
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleSave} className="w-full sm:w-auto sm:min-w-[128px]">
+                Save changes
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="secondary" onClick={onClose} className="w-full sm:w-auto sm:min-w-[128px]">
+                Close
+              </Button>
+              <Button onClick={() => setIsEditing(true)} className="w-full sm:w-auto sm:min-w-[128px]">
+                Edit profile
+              </Button>
+            </>
+          )}
         </div>
       }
     >
       <div className="space-y-5">
         <div className="grid gap-4 md:grid-cols-2">
-          <Input label="Full name" value={name} onChange={(event) => setName(event.target.value)} />
-          <Input label="Email address" value={email} onChange={(event) => setEmail(event.target.value)} />
+          <Input
+            label="Full name"
+            value={name}
+            disabled={!isEditing}
+            onChange={(event) => setName(event.target.value)}
+          />
+          <Input
+            label="Email address"
+            value={email}
+            disabled={!isEditing}
+            onChange={(event) => setEmail(event.target.value)}
+          />
         </div>
 
         <div className="grid gap-3 md:grid-cols-2">
