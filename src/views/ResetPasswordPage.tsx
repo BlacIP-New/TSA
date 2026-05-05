@@ -1,6 +1,8 @@
+"use client";
+
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Lock, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { Logo } from '../components/ui/Logo';
 import { Input } from '../components/ui/Input';
@@ -9,11 +11,13 @@ import { useToast } from '../context/ToastContext';
 import { confirmPasswordReset } from '../services/authService';
 import { validatePassword } from '../utils/validators';
 
-export default function ResetPasswordPage() {
+interface ResetPasswordPageProps {
+  token?: string;
+}
+
+export default function ResetPasswordPage({ token = '' }: ResetPasswordPageProps) {
   const { showToast } = useToast();
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const token = searchParams.get('token') ?? '';
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
