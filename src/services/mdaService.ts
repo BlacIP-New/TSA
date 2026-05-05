@@ -190,7 +190,7 @@ export async function inviteMDAUser(
     scopedMdaId = payload.invitedByMdaId;
   }
 
-  let record: MDARecord | null = null;
+  let record: ReturnType<typeof getMDAOrThrow> | null = null;
 
   if (invitedType === 'mda_admin' || invitedType === 'mda_user') {
     if (!scopedMdaId) {

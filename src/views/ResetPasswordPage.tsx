@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Eye, EyeOff, Lock, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { Logo } from '../components/ui/Logo';
 import { Input } from '../components/ui/Input';
@@ -10,8 +11,8 @@ import { validatePassword } from '../utils/validators';
 
 export default function ResetPasswordPage() {
   const { showToast } = useToast();
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const token = searchParams.get('token') ?? '';
 
   const [password, setPassword] = useState('');
@@ -68,7 +69,7 @@ export default function ResetPasswordPage() {
           <p className="text-sm text-slate-500">
             This reset link is invalid or missing. Request a new password reset link to continue.
           </p>
-          <Link to="/forgot-password">
+          <Link href="/forgot-password">
             <Button variant="secondary" size="sm">Request new link</Button>
           </Link>
         </div>
@@ -97,7 +98,7 @@ export default function ResetPasswordPage() {
                   Your password has been successfully reset. You can now sign in with your new password.
                 </p>
               </div>
-              <Button className="w-full" onClick={() => navigate('/login')}>
+              <Button className="w-full" onClick={() => router.push('/login')}>
                 Sign in
               </Button>
             </div>
@@ -151,7 +152,7 @@ export default function ResetPasswordPage() {
 
         <div className="mt-6 text-center">
           <Link
-            to="/login"
+            href="/login"
             className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />

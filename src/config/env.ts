@@ -1,4 +1,4 @@
 export const appConfig = {
-  apiBaseUrl: import.meta.env.VITE_API_BASE_URL ?? '/api',
-  aggregatorId: import.meta.env.VITE_AGGREGATOR_ID ?? 'agg_nsw_001',
+  apiBaseUrl: process.env.NEXT_PUBLIC_API_BASE_URL ?? '/api',
+  aggregatorId: process.env.NEXT_PUBLIC_AGGREGATOR_ID ?? 'agg_nsw_001',
 };

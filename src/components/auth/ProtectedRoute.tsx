@@ -1,4 +1,5 @@
-import { Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import { UserRole } from '../../types/auth';
 
@@ -10,6 +11,24 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children, requiredRole, requiredRoles }: ProtectedRouteProps) {
   const { user, isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
+
+  const roles = requiredRoles ?? (requiredRole ? [requiredRole] : []);
+  const missingAuth = !isLoading && !isAuthenticated;
+  const missingRole =
+    !isLoading &&
+    isAuthenticated &&
+    roles.length > 0 &&
+    (!user?.role || !roles.includes(user.role));
+
+  useEffect(() => {
+    if (missingAuth) {
+      router.replace('/login');
+    }
+    if (missingRole) {
+      router.replace('/dashboard');
+    }
+  }, [missingAuth, missingRole, router]);
 
   if (isLoading) {
     return (
@@ -22,14 +41,8 @@ export function ProtectedRoute({ children, requiredRole, requiredRoles }: Protec
     );
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  const roles = requiredRoles ?? (requiredRole ? [requiredRole] : []);
-
-  if (roles.length > 0 && (!user?.role || !roles.includes(user.role))) {
-    return <Navigate to="/dashboard" replace />;
+  if (missingAuth || missingRole) {
+    return null;
   }
 
   return <>{children}</>;

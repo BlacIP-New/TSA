@@ -239,7 +239,7 @@ export async function getSettlementBatches(
         return false;
       }
 
-      if (params.status && params.status !== '' && batch.status !== params.status) return false;
+      if (params.status && batch.status !== params.status) return false;
       return true;
     })
     .sort((left, right) => new Date(right.settledDate).getTime() - new Date(left.settledDate).getTime());

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Mail, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { Logo } from '../components/ui/Logo';
 import { Input } from '../components/ui/Input';
@@ -58,14 +58,14 @@ export default function ForgotPasswordPage() {
               <div>
                 <h2 className="text-xl font-bold text-gray-900">Check your email</h2>
                 <p className="text-sm text-gray-500 mt-2 leading-relaxed">
-                  We've sent a password reset link to{' '}
+                  We&apos;ve sent a password reset link to{' '}
                   <span className="font-medium text-gray-700">{email}</span>.
                   The link will expire in 1 hour.
                 </p>
               </div>
               <div className="pt-2">
                 <p className="text-xs text-gray-400">
-                  Didn't receive the email? Check your spam folder or{' '}
+                  Didn&apos;t receive the email? Check your spam folder or{' '}
                   <button
                     onClick={() => { setSubmitted(false); }}
                     className="text-[#E8001C] hover:underline font-medium"
@@ -81,7 +81,7 @@ export default function ForgotPasswordPage() {
               <div className="mb-6">
                 <h2 className="text-xl font-bold text-gray-900">Reset your password</h2>
                 <p className="text-sm text-gray-500 mt-1.5">
-                  Enter the email associated with your account and we'll send a reset link.
+                  Enter the email associated with your account and we&apos;ll send a reset link.
                 </p>
               </div>
 
@@ -107,7 +107,7 @@ export default function ForgotPasswordPage() {
 
         <div className="mt-6 text-center">
           <Link
-            to="/login"
+            href="/login"
             className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />

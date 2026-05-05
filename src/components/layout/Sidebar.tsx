@@ -1,4 +1,5 @@
-import { NavLink } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   List,
@@ -30,6 +31,7 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { user } = useAuth();
+  const pathname = usePathname();
   const canManageUsers = user?.role === 'system_admin' || user?.role === 'system_user' || user?.role === 'mda_admin';
   const canViewAudit = user?.role === 'system_admin';
 
@@ -74,32 +76,28 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       <nav className="scrollbar-thin flex-1 space-y-1 overflow-y-auto px-3 py-4">
         <p className="app-kicker px-3 pb-2">Workspace</p>
         {filteredNav.map((item) => (
-          <NavLink
+          <Link
             key={item.to}
-            to={item.to}
+            href={item.to}
             onClick={onClose}
-            className={({ isActive }) =>
+            className={
               `group flex items-center gap-3 rounded px-3 py-3 text-sm font-semibold tracking-[-0.01em] transition-all ${
-                isActive
+                pathname === item.to
                   ? 'border border-gray-300 bg-[#335CFF] text-white'
                   : 'border border-transparent text-slate-600 hover:border-slate-200/80 hover:bg-white/75 hover:text-slate-900'
               }`
             }
           >
-            {({ isActive }) => (
-              <>
-                <item.icon className={`h-4.5 w-4.5 shrink-0 ${isActive ? 'text-[#335CFF]' : 'text-slate-400 group-hover:text-slate-700'}`} />
-                <span className="flex-1">{item.label}</span>
-                <ChevronRight
-                  className={`h-3.5 w-3.5 transition-all ${
-                    isActive
-                      ? 'translate-x-0 opacity-100 text-[#335CFF]'
-                      : '-translate-x-1 opacity-0 text-slate-300 group-hover:translate-x-0 group-hover:opacity-70'
-                  }`}
-                />
-              </>
-            )}
-          </NavLink>
+            <item.icon className={`h-4.5 w-4.5 shrink-0 ${pathname === item.to ? 'text-[#335CFF]' : 'text-slate-400 group-hover:text-slate-700'}`} />
+            <span className="flex-1">{item.label}</span>
+            <ChevronRight
+              className={`h-3.5 w-3.5 transition-all ${
+                pathname === item.to
+                  ? 'translate-x-0 opacity-100 text-[#335CFF]'
+                  : '-translate-x-1 opacity-0 text-slate-300 group-hover:translate-x-0 group-hover:opacity-70'
+              }`}
+            />
+          </Link>
         ))}
       </nav>
 

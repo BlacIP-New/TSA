@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { usePathname } from 'next/navigation';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { SessionExpiredModal } from '../auth/SessionExpiredModal';
@@ -13,13 +13,23 @@ const PAGE_TITLES: Record<string, string> = {
 };
 
 export function AppLayout() {
+  return <AppLayoutContainer />;
+}
+
+export function AppLayoutContainer({ children }: { children?: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const location = useLocation();
-  const title = PAGE_TITLES[location.pathname] ?? '';
+  const pathname = usePathname();
+  const title = PAGE_TITLES[pathname] ?? '';
 
   return (
     <PageTitleProvider>
-      <AppLayoutShell title={title} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+      <AppLayoutShell
+        title={title}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+      >
+        {children}
+      </AppLayoutShell>
     </PageTitleProvider>
   );
 }
@@ -28,10 +38,12 @@ function AppLayoutShell({
   title,
   sidebarOpen,
   setSidebarOpen,
+  children,
 }: {
   title: string;
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
+  children?: React.ReactNode;
 }) {
   const { titleOverride } = usePageTitle();
 
@@ -43,7 +55,7 @@ function AppLayoutShell({
         <TopBar onMenuClick={() => setSidebarOpen(true)} title={titleOverride ?? title} />
 
         <main className="flex-1 overflow-y-auto overscroll-contain">
-          <Outlet />
+          {children}
         </main>
       </div>
 

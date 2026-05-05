@@ -172,6 +172,7 @@ export function useSettlementBatchLedger(
   }, [
     batchId,
     from,
+    to,
     limit,
     page,
     status,

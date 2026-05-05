@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { Clock } from 'lucide-react';
 import { Button } from '../ui/Button';
 
 export function SessionExpiredModal() {
   const [visible, setVisible] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   useEffect(() => {
     function handler() { setVisible(true); }
@@ -31,7 +31,10 @@ export function SessionExpiredModal() {
         </div>
         <Button
           className="w-full"
-          onClick={() => { setVisible(false); navigate('/login'); }}
+          onClick={() => {
+            setVisible(false);
+            router.push('/login');
+          }}
         >
           Sign in again
         </Button>

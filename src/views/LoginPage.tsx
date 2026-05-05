@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
@@ -18,7 +19,7 @@ export default function LoginPage() {
 
   const { setUser } = useAuth();
   const { showToast } = useToast();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   function validate(): boolean {
     const errors: { email?: string; password?: string } = {};
@@ -38,7 +39,7 @@ export default function LoginPage() {
     try {
       const { user } = await login({ email, password });
       setUser(user);
-      navigate('/dashboard');
+      router.push('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed. Please try again.');
     } finally {
@@ -102,7 +103,7 @@ export default function LoginPage() {
 
             <div className="flex justify-end">
               <Link
-                to="/forgot-password"
+                href="/forgot-password"
                 className="text-sm text-[#E8001C] hover:underline font-medium"
               >
                 Forgot password?

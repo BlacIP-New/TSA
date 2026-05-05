@@ -108,7 +108,10 @@ export function InviteMDAModal({
       setIsLoadingScope(true);
 
       try {
-        const nextCollections = await loadMDACollections(values.mdaId);
+        const mdaId = values.mdaId;
+        if (!mdaId) return;
+
+        const nextCollections = await loadMDACollections(mdaId);
 
         if (!isMounted) return;
         setCollectionCodes(nextCollections);
@@ -152,7 +155,10 @@ export function InviteMDAModal({
       setIsLoadingScope(true);
 
       try {
-        const nextServices = await loadMDAServiceCodes(values.mdaId, values.collectionCode || undefined);
+        const mdaId = values.mdaId;
+        if (!mdaId) return;
+
+        const nextServices = await loadMDAServiceCodes(mdaId, values.collectionCode || undefined);
 
         if (!isMounted) return;
         setServiceCodes(nextServices);
@@ -309,7 +315,7 @@ export function InviteMDAModal({
         {needsMdaCode && (
           <SearchableDropdown
           label="MDA Code"
-          value={values.mdaId}
+          value={values.mdaId ?? ''}
           error={fieldErrors.mdaId}
           disabled={isMdaAdminInviter}
           hint={isMdaAdminInviter ? 'Pre-filled from your MDA scope.' : undefined}
@@ -327,7 +333,7 @@ export function InviteMDAModal({
           <div className="space-y-4">
           <SearchableDropdown
             label="Collection code"
-            value={values.collectionCode}
+            value={values.collectionCode ?? ''}
             error={fieldErrors.collectionCode}
             disabled={!values.mdaId || isLoadingScope}
             hint={values.mdaId && isLoadingScope ? 'Loading MDA collections...' : 'Select MDA Code first'}
@@ -342,7 +348,7 @@ export function InviteMDAModal({
 
           <SearchableDropdown
             label="Service code (optional)"
-            value={values.serviceCode}
+            value={values.serviceCode ?? ''}
             error={fieldErrors.serviceCode}
             disabled={!values.mdaId || isLoadingScope}
             hint={

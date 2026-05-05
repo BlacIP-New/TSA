@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { ChevronDown, CircleUserRound, LogOut, Menu, Settings } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { ProfileSettingsModal } from '../ui/ProfileSettingsModal';
@@ -11,7 +11,7 @@ interface TopBarProps {
 
 export function TopBar({ onMenuClick, title }: TopBarProps) {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -42,7 +42,7 @@ export function TopBar({ onMenuClick, title }: TopBarProps) {
   async function handleLogout() {
     setMenuOpen(false);
     await logout();
-    navigate('/login');
+    router.push('/login');
   }
 
   const primaryLabel =

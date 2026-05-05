@@ -8,6 +8,7 @@ export interface AuditLogFilters {
   to?: string;
   action?: AuditAction | '';
   userId?: string;
+  userEmail?: string;
 }
 
 interface AuditLogResult {

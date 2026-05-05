@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Badge } from './Badge';
 import { Button } from './Button';
 import { Input } from './Input';
@@ -16,16 +16,16 @@ export function ProfileSettingsModal({ open, onClose }: ProfileSettingsModalProp
   const [email, setEmail] = useState('');
   const [isEditing, setIsEditing] = useState(false);
 
-  const resetForm = (nextUser = user) => {
+  const resetForm = useCallback((nextUser = user) => {
     if (!nextUser) return;
     setName(nextUser.name);
     setEmail(nextUser.email);
     setIsEditing(false);
-  };
+  }, [user]);
 
   useEffect(() => {
     if (open && user) resetForm(user);
-  }, [open, user]);
+  }, [open, resetForm, user]);
 
   if (!user) return null;
 
